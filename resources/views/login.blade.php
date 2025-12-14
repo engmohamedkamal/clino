@@ -34,7 +34,7 @@
         <div class="row min-vh-100">
 
             <!-- Left Section -->
-            <div class="col-lg-6 d-none d-lg-flex align-items-center left-section p-5">
+            <div class="col-lg-4 d-none d-lg-flex align-items-center left-section p-5">
                 <div>
                     <h2 class="fw-bold mb-3">
                         Enter your personal details to register at the clinic
@@ -47,7 +47,7 @@
             </div>
 
             <!-- Right Section -->
-            <div class="col-lg-6 d-flex align-items-center">
+            <div class="col-lg-8 d-flex align-items-center">
                 <div class="w-100 px-4 px-md-5">
 
                     <h2 class="fw-bold text-primary mb-1">

@@ -34,7 +34,7 @@
         <div class="row min-vh-100">
 
             <!-- Left Section -->
-            <div class="col-lg-6 d-none d-lg-flex align-items-center left-section p-5">
+            <div class="col-lg-4 d-none d-lg-flex align-items-center left-section p-5">
                 <div>
                     <h2 class="fw-bold mb-3">
                         Enter your personal details to register at the clinic
@@ -47,8 +47,8 @@
             </div>
 
             <!-- Right Section -->
-            <div class="col-lg-6 d-flex align-items-center">
-                <div class="w-100 px-4 px-md-5">
+            <div class="col-lg-8 d-flex align-items-center ">
+                <div class="w-100 px-4 px-md-5 m-5">
 
                     <h2 class="fw-bold text-primary mb-1">
                         Welcome to Helper Clinic
@@ -99,23 +99,23 @@
                         </div>
 
                         <!-- Mobile Number -->
-                      <div class="mb-3">
-    <label class="form-label">Mobile Number</label>
-    <small class="text-muted d-block mb-1">
-        Notifications for appointment and reminders will be sent to this number
-    </small>
+                        <div class="mb-3">
+                            <label class="form-label">Mobile Number</label>
+                            <small class="text-muted d-block mb-1">
+                                Notifications for appointment and reminders will be sent to this number
+                            </small>
 
-    <div class="input-group">
-        <input type="tel" id="phone" name="phone" placeholder="Phone"
-               class="form-control @error('phone') is-invalid @enderror"
-               value="{{ old('phone') }}">
-        @error('phone')
-            <div class="invalid-feedback">
-                {{ $message }}
-            </div>
-        @enderror
-    </div>
-</div>
+                            <div class="input-group">
+                                <input type="tel" id="phone" name="phone" placeholder="Phone"
+                                    class="form-control @error('phone') is-invalid @enderror"
+                                    value="{{ old('phone') }}">
+                                @error('phone')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
 
 
                         <!-- ID Number -->
