@@ -40,6 +40,7 @@ class AuthController extends Controller
             'phone'        => 'required|string|min:10|max:15|unique:users,phone',
             'id_number'    => 'required|string|min:14|max:14|unique:users,id_number',
             'password'     => 'required|string|min:8',
+            'role'     => 'nullable|string|min:8|in:admin,doctor,patient',
         ]);
 
     

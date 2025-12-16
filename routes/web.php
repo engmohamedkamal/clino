@@ -10,3 +10,5 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require_once('auth.php');
+require_once('admin.php');
+require_once('doctor.php');

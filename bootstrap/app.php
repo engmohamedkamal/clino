@@ -1,7 +1,9 @@
 <?php
 
-use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\DoctorMiddleware;
+use App\Http\Middleware\RedirectIfNotAuth;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
@@ -12,7 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
   ->withMiddleware(function ($middleware) {
-    $middleware->redirectGuestsTo('/');
+     $middleware->alias([
+            'auth' => RedirectIfNotAuth::class,
+            'admin.area' => AdminMiddleware::class,
+            'doctor.area' => DoctorMiddleware::class,
+        ]);
 })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
