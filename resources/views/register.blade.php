@@ -1,163 +1,209 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="{{ app()->getLocale() }}"
+      dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Helper Clinic Registration</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ __('register.title') }}</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        body {
-            min-height: 100vh;
-        }
-
-        .left-section {
-            background: linear-gradient(rgba(13, 110, 253, .75), rgba(13, 110, 253, .75)),
-                url('صورة تسجيل الدخول.jpg') center/cover no-repeat;
-            color: #fff;
-        }
-
-        .form-control {
-            border-radius: 10px;
-        }
-
-        .btn-primary {
-            border-radius: 12px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('CSS/login.css') }}">
 </head>
 
 <body>
+       <div class="lang-fixed {{ app()->getLocale() == 'ar' ? 'lang-left' : 'lang-right' }}">
+        <div class="dropdown">
+         <a class="lang-btn dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                {{ strtoupper(app()->getLocale()) }}
+            </a>
 
-    <div class="container-fluid">
-        <div class="row min-vh-100">
+            <ul class="dropdown-menu {{ app()->getLocale() == 'ar' ? 'dropdown-menu-start' : 'dropdown-menu-end' }}">
+                <li>
 
-            <!-- Left Section -->
-            <div class="col-lg-4 d-none d-lg-flex align-items-center left-section p-5">
-                <div>
-                    <h2 class="fw-bold mb-3">
-                        Enter your personal details to register at the clinic
-                    </h2>
-                    <p class="fs-5">
-                        and receive medical follow-up services, appointment notifications,
-                        and reminders.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Right Section -->
-            <div class="col-lg-8 d-flex align-items-center ">
-                <div class="w-100 px-4 px-md-5 m-5">
-
-                    <h2 class="fw-bold text-primary mb-1">
-                        Welcome to Helper Clinic
-                    </h2>
-                    <p class="text-muted mb-4">
-                        please enter your details to sign in
-                    </p>
-
-                    <form method="POST" action="{{ route('register.store') }}">
-                        @csrf
-
-                        <!-- Registering For -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">
-                                I am registering for
-                            </label>
-                            <div class="d-flex gap-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="register_for" id="self"
-                                        value="self" {{ old('register_for', 'self') === 'self' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="self">
-                                        my self
-                                    </label>
-                                </div>
-
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="register_for" id="other"
-                                        value="other" {{ old('register_for') === 'other' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="other">
-                                        Other People
-                                    </label>
-                                </div>
-                            </div>
-
-                            @error('register_for')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <!-- Full Name -->
-                        <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                value="{{ old('name') }}" placeholder="name">
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Mobile Number -->
-                        <div class="mb-3">
-                            <label class="form-label">Mobile Number</label>
-                            <small class="text-muted d-block mb-1">
-                                Notifications for appointment and reminders will be sent to this number
-                            </small>
-
-                            <div class="input-group">
-                                <input type="tel" id="phone" name="phone" placeholder="Phone"
-                                    class="form-control @error('phone') is-invalid @enderror"
-                                    value="{{ old('phone') }}">
-                                @error('phone')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-
-
-                        <!-- ID Number -->
-                        <div class="mb-4">
-                            <label class="form-label">ID Number</label>
-                            <input type="text" name="id_number"
-                                class="form-control @error('id_number') is-invalid @enderror"
-                                value="{{ old('id_number') }}" placeholder="ID Number">
-                            @error('id_number')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-4">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password"
-                                class="form-control @error('password') is-invalid @enderror" placeholder="Password">
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Submit -->
-                        <button type="submit" class="btn btn-primary w-100 py-2 fs-5">
-                            Register
-                        </button>
-
-                        <p class="text-center mt-3 text-muted">
-                            Already registered?
-                            <a href="{{ route('/')}}" class="text-decoration-none">
-                                Login
-                            </a>
-                        </p>
-                    </form>
-                </div>
-            </div>
-
+                    <a class="dropdown-item" href="{{ route('lang.switch', 'en') }}">
+                        {{ __('login.lang_en') }}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{{ route('lang.switch', 'ar') }}">
+                        {{ __('login.lang_ar') }}
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
+<div class="container-fluid auth-wrap">
+    <div class="row auth-wrap">
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        {{-- LEFT --}}
+        <div class="col-lg-6 left-panel">
+            <div class="left-content">
+                <div class="brand">
+                    <div class="brand-badge">🏥</div>
+                    <div style="font-size:22px;">{{ __('register.brand') }}</div>
+                </div>
+
+                <h2 class="left-title">{{ __('register.left_title') }}</h2>
+
+                <p class="left-sub">
+                    {{ __('register.left_desc_1') }}<br>
+                    {{ __('register.left_desc_2') }}<br>
+                    {{ __('register.left_desc_3') }}
+                </p>
+            </div>
+        </div>
+
+        {{-- RIGHT --}}
+        <div class="col-lg-6 right-panel">
+
+       
+            <div class="form-box">
+                <h1 class="welcome">{{ __('register.welcome') }}</h1>
+                <div class="welcome-sub">{{ __('register.subtitle') }}</div>
+
+                <form method="POST" action="{{ route('register') }}" novalidate>
+                    @csrf
+
+                    {{-- Full Name --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="name">{{ __('register.name_label') }}</label>
+                        <input
+                            class="form-control @error('name') is-invalid @enderror"
+                            id="name"
+                            name="name"
+                            type="text"
+                            placeholder="{{ __('register.name_placeholder') }}"
+                            value="{{ old('name') }}"
+                            required
+                            autocomplete="name"
+                        >
+                        @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Mobile Number --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="phone">{{ __('register.phone_label') }}</label>
+                        <div class="d-flex gap-3">
+                            <input
+                                class="form-control @error('phone') is-invalid @enderror"
+                                id="phone"
+                                name="phone"
+                                type="text"
+                                placeholder="{{ __('register.phone_placeholder') }}"
+                                value="{{ old('phone') }}"
+                                required
+                                autocomplete="tel"
+                            >
+                        </div>
+
+                        @error('phone')
+                        <div class="text-danger mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Email --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="email">{{ __('register.email_label') }}</label>
+                        <input
+                            class="form-control @error('email') is-invalid @enderror"
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="{{ __('register.email_placeholder') }}"
+                            value="{{ old('email') }}"
+                            required
+                            autocomplete="email"
+                        >
+                        @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Password --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="password">{{ __('register.password_label') }}</label>
+
+                        <div class="position-relative">
+                            <input
+                                class="form-control pe-5 @error('password') is-invalid @enderror"
+                                id="password"
+                                name="password"
+                                type="password"
+                                placeholder="{{ __('register.password_placeholder') }}"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button type="button"
+                                    class="toggle-pass"
+                                    id="togglePassword"
+                                    aria-label="Show password"
+                                    aria-pressed="false">
+                                {{-- eye --}}
+                                <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+
+                                {{-- eye-off --}}
+                                <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                                    <path d="M10.58 10.58A2 2 0 0 0 12 14a2 2 0 0 0 1.42-.58"></path>
+                                    <path d="M9.88 4.24A10.94 10.94 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+                                    <path d="M6.61 6.61A14.27 14.27 0 0 0 2 12s3 8 10 8a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                    <line x1="2" y1="2" x2="22" y2="22"></line>
+                                </svg>
+                            </button>
+                        </div>
+
+                        @error('password')
+                        <div class="text-danger mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Submit --}}
+                    <button class="w-100 login-btn" type="submit">
+                        {{ __('register.submit') }}
+                    </button>
+                </form>
+
+                <p class="text-center mt-3 text-muted">
+                    {{ __('register.already_registered') }}
+                    <a href="{{ route('/') }}" class="text-decoration-none">
+                        {{ __('register.login') }}
+                    </a>
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const passInput = document.getElementById("password");
+    const toggleBtn = document.getElementById("togglePassword");
+    const eyeOpen = document.getElementById("eyeOpen");
+    const eyeClosed = document.getElementById("eyeClosed");
+
+    toggleBtn.addEventListener("click", () => {
+        const isHidden = passInput.type === "password";
+        passInput.type = isHidden ? "text" : "password";
+
+        eyeOpen.style.display = isHidden ? "none" : "block";
+        eyeClosed.style.display = isHidden ? "block" : "none";
+
+        toggleBtn.setAttribute("aria-pressed", String(isHidden));
+        toggleBtn.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+    });
+</script>
+
 </body>
-
 </html>

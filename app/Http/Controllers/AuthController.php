@@ -14,31 +14,28 @@ class AuthController extends Controller
         return view('register');
     }
      public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'login'    => 'required|string',
-            'password' => 'required|string|min:8',
-        ]);
-        $field = is_numeric($credentials['login']) ? 'phone' : 'name';
+{
+    $credentials = $request->validate([
+        'email'    => ['required', 'email'],
+        'password' => ['required', 'string', 'min:8'],
+    ]);
 
-        $user = User::where($field, $credentials['login'])->first();
-
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            return back()
-                ->withInput($request->only('login'))
-                ->with('error', 'Invalid credentials');
-        }
-
-        Auth::login($user);
-        return redirect()->route('home')->with('success', 'Logging successful');
+    if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+        return back()
+            ->withInput($request->only('email'))
+           ->withErrors(['email' => __('auth.failed')]);
     }
+
+    $request->session()->regenerate();
+
+    return redirect()->route('home')->with('success', 'Logging successful');
+}
      public function store(Request $request)
     {
         $validated = $request->validate([
-            'register_for' => 'required|in:self,other',
             'name'         => 'required|string|min:3|max:255',
             'phone'        => 'required|string|min:10|max:15|unique:users,phone',
-            'id_number'    => 'required|string|min:14|max:14|unique:users,id_number',
+            'email'    => 'required|string|min:10|max:255|unique:users,email',
             'password'     => 'required|string|min:8',
             'role'     => 'nullable|string|min:8|in:admin,doctor,patient',
         ]);
@@ -47,8 +44,7 @@ class AuthController extends Controller
         $user = User::create([
             'name'         => $validated['name'],
             'phone'        => $validated['phone'],
-            'id_number'    => $validated['id_number'],
-            'register_for' => $validated['register_for'],
+            'email'    => $validated['email'],
             'password'     => Hash::make($validated['password']),
         ]);
         Auth::login($user);

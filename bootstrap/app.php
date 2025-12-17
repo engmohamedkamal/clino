@@ -13,12 +13,20 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-  ->withMiddleware(function ($middleware) {
-     $middleware->alias([
-            'auth' => RedirectIfNotAuth::class,
-            'admin.area' => AdminMiddleware::class,
-            'doctor.area' => DoctorMiddleware::class,
-        ]);
+  ->withMiddleware(function (\Illuminate\Foundation\Configuration\Middleware $middleware) {
+
+    // aliases
+    $middleware->alias([
+        'auth'        => \App\Http\Middleware\RedirectIfNotAuth::class,
+        'admin.area'  => \App\Http\Middleware\AdminMiddleware::class,
+        'doctor.area' => \App\Http\Middleware\DoctorMiddleware::class,
+    ]);
+
+    // append to web group
+    $middleware->web(append: [
+        \App\Http\Middleware\SetLocale::class,
+    ]);
+
 })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

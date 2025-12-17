@@ -24,9 +24,7 @@ public function info()
     protected $fillable = [
         'name',
         'phone',
-        'model',
-        'id_number',
-        'register_for',
+        'email',
         'password',
     ];
 

@@ -1,0 +1,208 @@
+    :root{
+      --primary:#1C5197;
+      --primary-2:#0570FD;
+      --muted:#6f88a7;
+      --line:#0b4ea2;
+    }
+
+    body{  font-family: 'Inter', sans-serif;}
+
+    .auth-wrap{ min-height: 100vh; }
+
+ 
+    .left-panel{
+      position: relative;
+      color:#fff;
+      overflow:hidden;
+      background-image: url("../login.jpg"); 
+      background-size: cover;
+      background-position: center;
+      min-height: 45vh;
+    }
+    .left-panel::before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, rgba(5,60,140,.92), rgba(0,120,255,.35));
+    }
+    .left-content{
+      position:relative;
+      padding: 42px 48px;
+      height:100%;
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      font-weight:600; letter-spacing:.2px;
+    }
+    .brand-badge{
+      width:34px; height:34px; border-radius:50%;
+      display:grid; place-items:center;
+      border:2px solid rgba(255,255,255,.75);
+      font-size:16px;
+    }
+
+    .left-title{
+      margin-top: 18vh;
+      font-weight:700;
+      font-size: clamp(28px, 3vw, 44px);
+      line-height:1.15;
+      max-width: 520px;
+    }
+    .left-sub{
+      margin-top: 32px;
+      font-size: clamp(18px, 1.5vw, 28px);
+      line-height:1.35;
+      max-width: 520px;
+      opacity:.95;
+    }
+
+    /* RIGHT PANEL */
+    .right-panel{
+      position:relative;
+      background:#fff;
+      padding: 34px 24px;
+    }
+
+    .lang{
+      position:absolute;
+      top: 26px;
+      right: 26px;
+      color: var(--primary);
+      font-weight:600;
+      text-decoration:none;
+      display:flex; align-items:center; gap:6px;
+    }
+    .lang .caret{
+      display:inline-block;
+      border: solid var(--primary);
+      border-width: 0 2px 2px 0;
+      padding: 3px;
+      transform: rotate(45deg);
+      margin-top:-2px;
+    }
+
+    .form-box{
+      max-width: 520px;
+      margin: 0 auto;
+      padding-top: 8vh;
+    }
+
+    .welcome{
+      color: var(--primary);
+      font-weight:700;
+      font-size: clamp(34px, 3vw, 52px);
+      line-height:1;
+      text-align:center;
+      margin-bottom: 8px;
+    }
+    .welcome-sub{
+      text-align:center;
+      color: var(--muted);
+      font-size: 22px;
+      margin-bottom: 54px;
+    }
+
+    .form-label{
+      color: var(--primary);
+      font-weight:700;
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .form-control{
+      height: 52px;
+      border-radius: 12px;
+      border: 2px solid var(--line);
+      padding: 0 18px;
+      font-size: 18px;
+    }
+    .form-control::placeholder{ color:#9aaec6; }
+
+    .login-btn{
+      height: 58px;
+      border-radius: 14px;
+      border:0;
+      font-size: 28px;
+      font-weight:400;
+      color:#fff;
+      background: linear-gradient(90deg, #0a66ff 0%, #78a9df 100%);
+      box-shadow: 0 14px 28px rgba(10,102,255,.18);
+    }
+    .login-btn:hover{ filter: brightness(0.98); }
+
+    @media (min-width: 992px){
+      .left-panel{ min-height: 100vh; }
+      .right-panel{ min-height: 100vh; }
+      .right-panel{ padding: 34px 36px; }
+      .form-box{ padding-top: 14vh; }
+    }
+  .toggle-pass{
+  position:absolute;
+  top:50%;
+  transform: translateY(-50%);
+  width:40px;
+  height:40px;
+  border:0;
+  background:transparent;
+  color: var(--primary);
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  cursor: pointer;
+}
+
+/* English (LTR) → يمين */
+[dir="ltr"] .toggle-pass{
+  right:14px;
+}
+
+/* Arabic (RTL) → شمال */
+[dir="rtl"] .toggle-pass{
+  left:14px;
+}
+
+.toggle-pass:hover{
+  background: rgba(11,78,162,.08);
+}
+
+[dir="rtl"] {
+  text-align: right;
+}
+[dir="rtl"] .caret{
+  transform: rotate(-135deg);
+}
+
+/* ===== Fixed Language Button ===== */
+.lang-fixed{
+  position: fixed;
+  bottom: 24px;
+  z-index: 999999;
+}
+
+.lang-right{ right: 24px; }
+.lang-left{ left: 24px; }
+
+/* الزر الثابت */
+.lang-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  font-weight: 600;
+  color: #0a66ff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+
+.lang-btn:hover{
+  transform: translateY(-3px);
+}
+
+/* Dropdown */
+.lang-fixed .dropdown-menu{
+  min-width: 120px;
+}

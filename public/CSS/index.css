@@ -1,6 +1,7 @@
 body{
  
     font-family: 'Inter', sans-serif;
+    padding-top: 80px;
 }
 
 :root {
@@ -18,8 +19,83 @@ body{
 }
  
 /* hero-section*/
+.hero-section h1{
+  font-size: 45px;
+  
+}
+.hero-badge {
+  position: relative;
+  top: -50px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 6px 14px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.heart-icon {
+  color: #FFFF00; /* لون قلب هادي */
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* زر View Services */
+.view-services-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 28px;
+  background: #ffffff;
+  color: #0d6efd;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.view-services-btn:hover {
+  background: #f1f5ff;
+  transform: translateY(-2px);
+}
+
+/* زر Play */
+.play-btn {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.play-btn:hover {
+  background: #ffffff;
+  color: var(--secondary-color);
+  transform: scale(1.1);
+}
+
+.play-btn {
+  animation: pulse 2s infinite;
+}
+
+
 
 .hero-section .container {
+  
  background-image: linear-gradient(
     to right, 
     rgba(0, 79, 183, 0.7)
@@ -105,6 +181,32 @@ color: var(--secondary-color);
     background-color: var(--primary-color);
     
 }
+
+.read-more-btn {
+  padding: 14px 36px;        /* تكبير الزرار */
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 25px;       /* شكل كبسولة */
+  border: none;
+  cursor: pointer;
+background-color: var(--secondary-color);
+ 
+  color: #fff;
+
+  transition: all 0.3s ease;
+}
+
+/* Hover */
+.read-more-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px #1C5197;
+}
+
+/* Active */
+.read-more-btn:active {
+  transform: scale(0.98);
+}
+
 
  /* <!-- Services --> */
 
@@ -282,6 +384,54 @@ color: var(--secondary-color);
     flex: 0 0 100%; /* الموبايل: كارد واحد كامل */
   }
 }
+.dashboard-btn{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:10px 14px 10px 22px;
+  background: linear-gradient(90deg, #0a66ff, #3f8cff);
+  color:#fff;
+  border-radius:999px;
+  text-decoration:none;
+  font-size:18px;
+  font-weight:500;
+  box-shadow: 0 8px 20px rgba(10,102,255,.25);
+}
+
+.dashboard-btn:hover{
+  color:#fff;
+  filter:brightness(.98);
+}
+
+.arrow-circle{
+  width:42px;
+  height:42px;
+  background:#fff;
+  color:#0a66ff;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+
+.icon-btn{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:2px solid #0a66ff;
+  background:#fff;
+  color:#0a66ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+}
+
+.icon-btn:hover{
+  background:#0a66ff;
+  color:#fff;
+}
 
 /* footer */
 
@@ -294,4 +444,140 @@ footer{
   opacity: 1;        
   background-color: #fff; 
   border: none;
+}
+.border-left-line{ border-left: 2px solid #ddd; }
+
+.lang-fixed{
+  position: fixed;
+  bottom: 24px;
+  z-index: 999999;
+}
+
+.lang-right{ right: 24px; }
+.lang-left{ left: 24px; }
+
+/* الزر الثابت */
+.lang-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  font-weight: 600;
+  color: #0a66ff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+
+.lang-btn:hover{
+  transform: translateY(-3px);
+}
+
+/* Dropdown */
+.lang-fixed .dropdown-menu{
+  min-width: 120px;
+}
+
+/* ===== Reveal Animation ===== */
+.reveal-item{
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .7s ease, transform .7s ease;
+  will-change: opacity, transform;
+}
+
+.reveal-item.is-visible{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* صور تتحرك شوية */
+.reveal-item.is-visible img{
+  animation: imgPop .7s ease both;
+}
+@keyframes imgPop{
+  from{ transform: scale(.98); }
+  to{ transform: scale(1); }
+}
+
+/* احترام تقليل الحركة */
+@media (prefers-reduced-motion: reduce){
+  .reveal-item{ transition: none; transform: none; opacity: 1; }
+}
+
+/* Base */
+.reveal-up, .reveal-text, .reveal-img{
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .7s ease, transform .7s ease;
+  will-change: opacity, transform;
+}
+
+/* Directional slide */
+.reveal-section[data-dir="ltr"] .reveal-text{
+  transform: translateX(-28px);
+}
+.reveal-section[data-dir="ltr"] .reveal-img{
+  transform: translateX(28px);
+}
+
+.reveal-section[data-dir="rtl"] .reveal-text{
+  transform: translateX(28px);
+}
+.reveal-section[data-dir="rtl"] .reveal-img{
+  transform: translateX(-28px);
+}
+
+/* When active */
+.reveal-section.is-visible .reveal-up,
+.reveal-section.is-visible .reveal-text,
+.reveal-section.is-visible .reveal-img{
+  opacity: 1;
+  transform: translateX(0) translateY(0);
+}
+
+/* Stagger */
+.reveal-section.is-visible .reveal-up{ transition-delay: 0ms; }
+.reveal-section.is-visible .reveal-text{ transition-delay: 120ms; }
+.reveal-section.is-visible .reveal-img:nth-of-type(1){ transition-delay: 220ms; }
+
+/* صور */
+.reveal-section.is-visible .reveal-img img{
+  animation: imgPop .7s ease both;
+}
+@keyframes imgPop{
+  from{ transform: scale(.985); }
+  to{ transform: scale(1); }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce){
+  .reveal-up, .reveal-text, .reveal-img{
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+.service-img{
+  width: 100px;
+  height: 100px;      /* ثابت */
+  min-height: 100px;  /* تأكيد */
+  max-height: 100px;  /* تأكيد */
+  margin: 0 auto 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f5f7fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-img img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   
+  border-radius: 16px;
 }
