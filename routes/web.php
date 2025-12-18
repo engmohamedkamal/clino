@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
   Route::get('/home', [HomeController::class, "index"])->name('home');
+  
+    Route::get('/dashboard', function () {
+        return view('dashboard.index');
+    })->name('dashboard');
+
 });
 Route::get('lang/{locale}', function ($locale) {
     if (!in_array($locale, ['en', 'ar'])) {
@@ -21,3 +26,4 @@ Route::get('lang/{locale}', function ($locale) {
 require_once('auth.php');
 require_once('admin.php');
 require_once('doctor.php');
+require_once('patient.php');

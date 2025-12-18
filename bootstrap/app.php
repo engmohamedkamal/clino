@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         'auth'        => \App\Http\Middleware\RedirectIfNotAuth::class,
         'admin.area'  => \App\Http\Middleware\AdminMiddleware::class,
         'doctor.area' => \App\Http\Middleware\DoctorMiddleware::class,
+        'patient.area' => \App\Http\Middleware\PatientMiddleware::class,
     ]);
 
     // append to web group

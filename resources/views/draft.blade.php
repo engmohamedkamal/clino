@@ -5,8 +5,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ __('home.title') }}</title>
-
+  <title>{{ $setting->name }}</title>
+ <link rel="shortcut icon" href="{{ asset('storage/' . $setting->logo) }}" type="image/x-icon" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -41,7 +41,7 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg bg-white py-3 fixed-top">
     <div class="container">
-      <a class="navbar-brand fw-bold nav-logo" href="#">{{ __('home.brand') }}</a>
+      <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" width="100" class="navbar-brand fw-bold nav-logo">
 
       <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
         <span class="navbar-toggler-icon"></span>
@@ -57,7 +57,7 @@
         </ul>
 
         <div class="d-flex align-items-center gap-3">
-          <a href="" class="dashboard-btn">
+          <a href="{{ route('dashboard') }}" class="dashboard-btn">
             <span>{{ __('home.nav.dashboard') }}</span>
           </a>
 
@@ -91,7 +91,7 @@
           </h1>
 
           <p class="mt-3 text-white">
-            {{ __('home.hero.desc') }}
+            {{ $setting->slogan }}
           </p>
 
           <div class="hero-actions mt-4">
@@ -173,10 +173,10 @@
       <div class="col-lg-6 col-md-12 d-flex custom-font">
         <div class="about-text m-auto reveal-text">
           <h2 style="font-size: 2.8rem;" class="mb-2 fw-bolder">{{ __('home.about.vision_title') }}</h2>
-          <p class="fw-medium mb-3">{{ __('home.about.vision_text') }}</p>
+          <p class="fw-medium mb-3">{{ $setting->vision }}</p>
 
           <h2 style="font-size: 2.8rem;" class="mt-3 mb-2 fw-bolder">{{ __('home.about.mission_title') }}</h2>
-          <p class="fw-medium mb-4">{{ __('home.about.mission_text') }}</p>
+          <p class="fw-medium mb-4">{{ $setting->mission }}</p>
 
           <button class="read-more-btn">{{ __('home.about.read_more') }}</button>
         </div>
@@ -222,78 +222,7 @@
 
 
 @endforeach
-        {{-- <div class="col-md-4">
-          <div class="service-card">
-            <div class="service-icon"><i class="fa-solid fa-tooth"></i></div>
-            <h5>{{ __('home.services.items.dentistry.title') }}</h5>
-            <p>{{ __('home.services.items.dentistry.desc') }}</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="service-card">
-            <div class="service-icon"><i class="fa-solid fa-stethoscope"></i></div>
-            <h5>{{ __('home.services.items.general.title') }}</h5>
-            <p>{{ __('home.services.items.general.desc') }}</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="service-card">
-            <div class="service-icon"><i class="fa-solid fa-brain"></i></div>
-            <h5>{{ __('home.services.items.neuro.title') }}</h5>
-            <p>{{ __('home.services.items.neuro.desc') }}</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="service-card">
-            <div class="service-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-            <h5>{{ __('home.services.items.cardiology.title') }}</h5>
-            <p>{{ __('home.services.items.cardiology.desc') }}</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="service-card">
-            <div class="service-icon"><i class="fa-solid fa-pills"></i></div>
-            <h5>{{ __('home.services.items.pharmacy.title') }}</h5>
-            <p>{{ __('home.services.items.pharmacy.desc') }}</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="service-card">
-            <div class="service-icon"><i class="fa-solid fa-user-doctor"></i></div>
-            <h5>{{ __('home.services.items.staff.title') }}</h5>
-            <p>{{ __('home.services.items.staff.desc') }}</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="service-card">
-            <div class="service-icon"><i class="fa-solid fa-dna"></i></div>
-            <h5>{{ __('home.services.items.dna.title') }}</h5>
-            <p>{{ __('home.services.items.dna.desc') }}</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="service-card">
-            <div class="service-icon"><i class="fa-solid fa-eye"></i></div>
-            <h5>{{ __('home.services.items.eye.title') }}</h5>
-            <p>{{ __('home.services.items.eye.desc') }}</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="service-card">
-            <div class="service-icon"><i class="fa-solid fa-ambulance"></i></div>
-            <h5>{{ __('home.services.items.aid.title') }}</h5>
-            <p>{{ __('home.services.items.aid.desc') }}</p>
-          </div>
-        </div> --}}
-
+  
       </div>
     </div>
   </section>
@@ -316,19 +245,26 @@
       <div class="carousel-area">
         <div class="carousel-track">
 
-          @foreach(__('home.testimonials.cards') as $card)
-            <div class="testimonial-card">
-              <i class="quote fa-solid fa-quote-left"></i>
-              <div class="user">
-                <div class="avatar"></div>
-                <div>
-                  <h6>{{ $card['name'] }}</h6>
-                  <span>{{ $card['role'] }}</span>
-                </div>
-              </div>
-              <p>{{ $card['text'] }}</p>
-            </div>
-          @endforeach
+          @forelse($feedbacks as $feedback)
+  <div class="testimonial-card">
+    <i class="quote fa-solid fa-quote-left"></i>
+
+    <div class="user">
+      <div class="">
+        <img src="{{ asset('face.png') }}" width="50" height="50" alt="">
+      </div>
+
+      <div>
+        <h6>{{ optional($feedback->user)->name ?? 'Unknown User' }}</h6>
+      </div>
+    </div>
+
+    <p>{{ \Illuminate\Support\Str::limit($feedback->comment, 150) }}</p>
+  </div>
+@empty
+  <p class="text-center text-muted">No feedback found yet.</p>
+@endforelse
+
 
         </div>
       </div>
@@ -347,13 +283,13 @@
       <div class="row align-items-start">
 
         <div class="col-md-3 text-center text-md-start">
-          <h4 class="fw-bolder mb-3">{{ __('home.footer.brand') }}</h4>
-          <p class="mb-3">{{ __('home.footer.desc') }}</p>
+          <h4 class="fw-bolder mb-3">{{ $setting->name }}</h4>
+          <p class="mb-3">{{ $setting->slogan }}</p>
 
           <div class="social-icons">
-            <a href="#" class="me-2"><i class="fab fa-facebook-f text-white"></i></a>
-            <a href="#" class="me-2"><i class="fab fa-twitter text-white"></i></a>
-            <a href="#"><i class="fab fa-instagram text-white"></i></a>
+            <a href="{{ $setting->facebook }}" class="me-2"><i class="fab fa-facebook-f text-white"></i></a>
+            <a href="{{ $setting->instagram }}" class="me-2"><i class="fab fa-twitter text-white"></i></a>
+            <a href="{{ $setting->twitter }}"><i class="fab fa-instagram text-white"></i></a>
           </div>
         </div>
 
@@ -373,18 +309,18 @@
               <h4 class="fw-bolder mb-3">{{ __('home.footer.contact_title') }}</h4>
 
               <p class="mb-1">
-                <a href="tel:+20123456789" class="text-white text-decoration-none">
-                  +20 123 456 789
+                <a href="tel:{{ $setting->phone }}" class="text-white text-decoration-none">
+                  {{$setting->phone}}
                 </a>
               </p>
 
               <p class="mb-1">
-                <a href="mailto:clinic@email.com" class="text-white text-decoration-none">
-                  clinic@email.com
+                <a href="mailto:{{ $setting->email }}" class="text-white text-decoration-none">
+                  {{$setting->email}}
                 </a>
               </p>
 
-              <p class="mb-0">{{ __('home.footer.street') }}</p>
+              <p class="mb-0">{{ $setting->address }}</p>
             </div>
 
           </div>

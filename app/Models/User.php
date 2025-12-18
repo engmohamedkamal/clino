@@ -13,6 +13,17 @@ public function info()
 {
     return $this->hasOne(\App\Models\UserInfo::class);
 }
+public function feedback()
+{
+    return $this->hasOne(Feedback::class);
+}
+
+public function patientInfo()
+{
+    return $this->hasOne(PatientInfo::class);
+}
+
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -26,6 +37,7 @@ public function info()
         'phone',
         'email',
         'password',
+        'role'
     ];
 
     /**

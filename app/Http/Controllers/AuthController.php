@@ -10,46 +10,62 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(){
+    public function register()
+    {
         return view('register');
     }
-     public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email'    => ['required', 'email'],
-        'password' => ['required', 'string', 'min:8'],
-    ]);
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string', 'min:8'],
+        ]);
 
-    if (!Auth::attempt($credentials, $request->boolean('remember'))) {
-        return back()
-            ->withInput($request->only('email'))
-           ->withErrors(['email' => __('auth.failed')]);
+        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => __('auth.failed')]);
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->route('home')->with('success', 'Logging successful');
     }
-
-    $request->session()->regenerate();
-
-    return redirect()->route('home')->with('success', 'Logging successful');
-}
-     public function store(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'         => 'required|string|min:3|max:255',
-            'phone'        => 'required|string|min:10|max:15|unique:users,phone',
-            'email'    => 'required|string|min:10|max:255|unique:users,email',
-            'password'     => 'required|string|min:8',
-            'role'     => 'nullable|string|min:8|in:admin,doctor,patient',
+            'name' => 'required|string|min:3|max:255',
+            'phone' => 'required|string|min:10|max:15|unique:users,phone',
+            'email' => 'required|string|min:10|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
+            'role' => 'nullable|string|in:admin,doctor,patient',
         ]);
 
-    
         $user = User::create([
-            'name'         => $validated['name'],
-            'phone'        => $validated['phone'],
-            'email'    => $validated['email'],
-            'password'     => Hash::make($validated['password']),
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            // لو مفيش role جاية من الفورم خليه patient افتراضي
+            'role' => $validated['role'] ?? 'patient',
         ]);
+
+        // لو اللي عامل إنشاء يوزر هو أدمن ومسجل دخوله دلوقتي
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            // مهم: ما تعملش Auth::login($user) عشان ما تبدلش جلسة الأدمن باليوزر الجديد
+            return redirect()
+                ->route('users.show', $user->id)
+                ->with('success', 'User created successfully');
+        }
+
+        // لو حد بيسجل أول مرة (مش أدمن)
         Auth::login($user);
-        return redirect()->route('home')->with('success', 'Registration successful');
+
+        return redirect()
+            ->route('home')
+            ->with('success', 'Registration successful');
     }
+
     public function logout(Request $request)
     {
         Auth::logout();
@@ -58,4 +74,60 @@ class AuthController extends Controller
 
         return redirect()->route('/');
     }
+    public function edit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('admin.users.edit', compact('user'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+
+        $data = [
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'role' => $request->role,
+        ];
+
+        // لو المستخدم كتب باسورد جديد
+        if ($request->filled('password')) {
+            $data['password'] = bcrypt($request->password);
+        }
+
+        $user->update($data);
+
+        return redirect()->route('users.index')
+            ->with('success', 'User updated successfully');
+    }
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+
+        $users = User::when($search, function ($query, $search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%");
+        })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->appends(['search' => $search]);
+        return view('admin.users.show', compact('users', 'search'));
+    }
+
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', 'User deleted successfully');
+    }
+    public function show($id)
+    {
+        $users = User::All();
+        return view('admin.users.show', compact('users'));
+    }
+
 }
