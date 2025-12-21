@@ -21,10 +21,15 @@ class ServiceRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ];
+          $imageRule = $this->isMethod('post')
+        ? 'required'
+        : 'nullable';
+
+    return [
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'image' => [$imageRule, 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+        'status' => ['required', 'boolean'],
+    ];
     }
 }

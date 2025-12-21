@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserInfoController;
+use App\Http\Controllers\DoctorInfoController;
+
 
 Route::middleware(['auth','doctor.area'])->group(function () {
     Route::get('/my-info', [UserInfoController::class, 'show'])->name('my-info.show');
@@ -13,4 +15,14 @@ Route::middleware(['auth','doctor.area'])->group(function () {
     // تحديث فقط
     Route::get('/my-info/edit', [UserInfoController::class, 'edit'])->name('my-info.edit');
     Route::put('/my-info', [UserInfoController::class, 'update'])->name('my-info.update');
+
+
+    Route::get('/doctor-info/create', [DoctorInfoController::class, 'create'])->name('doctor-info.create');
+
+    Route::post('/doctor-info/store', [DoctorInfoController::class, 'store'])->name('doctor-info.store');
+
+    Route::get('/doctor-info/edit', [DoctorInfoController::class, 'edit'])->name('doctor-info.edit');
+
+    Route::post('/doctor-info/update', [DoctorInfoController::class, 'update'])->name('doctor-info.update');
+
 });

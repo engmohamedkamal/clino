@@ -1,0 +1,168 @@
+/* ===== Contact Main ===== */
+.contact-main{
+  background: #fff;
+}
+
+/* small heading */
+.mini-title{
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e5aa8;
+  letter-spacing: 0.5px;
+}
+
+.mini-sub{
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.contact-wrap{
+  width: 100%;
+  max-width: 820px;  
+  margin: 0 auto;
+}
+
+
+/* big form card */
+.inquiry-card{
+  width: 100%;
+  max-width: 100%;  
+  background: #1e5aa8;
+  border-radius: 14px;
+  padding: 26px 26px 22px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+}
+
+
+.inquiry-label{
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.inquiry-control{
+  border-radius: 8px;
+  border: 0;
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+.inquiry-textarea{
+  resize: none;
+}
+
+/* button */
+.inquiry-btn{
+  background: #fff;
+  color: #1e5aa8;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 700;
+  border: 0;
+  transition: 0.2s ease;
+}
+
+.inquiry-btn:hover{
+  background: #f2f7ff;
+  color: #1e5aa8;
+  transform: translateY(-1px);
+}
+
+/* info cards */
+.info-card{
+  background: #1e5aa8;
+  border-radius: 12px;
+  padding: 18px 18px 16px;
+  height: 100%;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.10);
+}
+
+.info-head{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.info-ico{
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+.info-title{
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.info-text{
+  color: rgba(255,255,255,0.86);
+  font-size: 11px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* care section */
+.care-block{
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.care-title{
+  font-weight: 800;
+  color: #1e5aa8;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.care-text{
+  color: #6b7280;
+  font-size: 11px;
+  margin-bottom: 14px;
+}
+
+.care-social{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.care-social a{
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(30,90,168,0.25);
+  color: #1e5aa8;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.care-social a:hover{
+  background: rgba(30,90,168,0.08);
+  transform: translateY(-1px);
+}
+
+.care-foot{
+  font-size: 11px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* responsive */
+@media (max-width: 575.98px){
+  .inquiry-card{
+    padding: 20px 16px;
+  }
+}

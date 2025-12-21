@@ -1,0 +1,255 @@
+:root {
+    --primary-color: #0570FD;
+    --secondary-color: #1C5197;
+    --accent-color: #FFFF00;
+
+  
+}
+
+
+.stats-section .container{
+    background-color: var(--secondary-color); 
+
+}
+
+.stats-section .container .item p{
+   color: white;
+
+
+}
+.stats-section .container .item h3{
+   color: white;
+}
+
+/* Vision / Mission */
+.vm-section{
+  padding: 34px 0;
+}
+
+.vm-section--space{
+  padding-top: 46px;
+}
+
+.vm-title{
+
+  color: #1e5aa8;
+  margin: 0 0 14px;
+  font-weight: 800;
+}
+
+.vm-text{
+  max-width: 720px;
+  color: #9aa3ad;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Quotes on the right */
+.vm-quotes{
+  display: inline-flex;
+  gap: 22px;
+  align-items: flex-start;
+  color: rgba(30, 90, 168, 0.55);
+
+  line-height: 0.75;
+  margin-top: 8px;
+  font-size: 120px;
+}
+
+.vm-quotes .q{
+  display: block;
+}
+
+/* ===== Team Section ===== */
+.team-title{
+  color: #1e5aa8;
+  font-weight: 800;
+  font-size: 22px;
+  margin: 0 0 10px;
+}
+
+.team-pill{
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: #1e5aa8;
+  color: #fff;
+  font-weight: 700;
+}
+
+.team-sub{
+  max-width: 760px;
+  margin: 0 auto;
+  color: #8b95a1;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* slider */
+.team-slider{
+  width: 100%;
+  overflow: hidden;
+}
+
+.team-track{
+  display: flex;
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.team-slide{
+  width: 100%;
+  flex: 0 0 100%;
+}
+
+/* card */
+.team-card{
+background:var(--secondary-color)
+;
+  border-radius: 16px;
+  padding: 20px 18px;
+  text-align: center;
+  color: #fff;
+  min-height: 240px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.10);
+}
+
+.team-avatar{
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  outline: 2px solid rgba(255,255,255,0.18);
+}
+
+.team-avatar img{
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.team-name{
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.team-role{
+  display: inline-block;
+ background: linear-gradient(to right, #041f42, #0570FD);
+
+;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+/* social */
+.team-social{
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.team-social a{
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--secondary-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.team-social a:hover{
+  transform: translateY(-2px);
+  background: #f3f7ff;
+}
+
+/* arrows */
+.team-arrows{
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.arrow-btn{
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(30,90,168,0.35);
+  background: #fff;
+  color: #1e5aa8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.arrow-btn:hover{
+  background: rgba(30,90,168,0.08);
+  transform: translateY(-1px);
+}
+
+.team-controls{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.team-page{
+  min-width: 90px;
+  text-align: center;
+  font-size: 13px;
+  color: #1e5aa8;
+  font-weight: 700;
+}
+
+.arrow-btn{
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(30,90,168,0.35);
+  background: #fff;
+  color: var(--secondary-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.arrow-btn:hover{
+  background: rgba(30,90,168,0.08);
+  transform: translateY(-1px);
+}
+
+.arrow-btn:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* responsive */
+@media (max-width: 991.98px){
+  .vm-title{
+    font-size: 40px;
+  }
+
+  .vm-quotes{
+    font-size: 90px;
+    justify-content: flex-start;
+  }
+}

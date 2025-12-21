@@ -17,14 +17,14 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'phone' => ['required', 'string', 'regex:/^[0-9]+$/','digits:11'],
             'password' => ['required', 'string', 'min:8'],
         ]);
 
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
-                ->withInput($request->only('email'))
-                ->withErrors(['email' => __('auth.failed')]);
+                ->withInput($request->only('phone'))
+                ->withErrors(['phone' => __('auth.failed')]);
         }
 
         $request->session()->regenerate();
@@ -36,15 +36,15 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255',
             'phone' => 'required|string|min:10|max:15|unique:users,phone',
-            'email' => 'required|string|min:10|max:255|unique:users,email',
-            'password' => 'required|string|min:8',
+            'id_number' => 'required|string|min:10|max:255|unique:users,id_number',
+            'password' => 'required|string|min:8|confirmed',
             'role' => 'nullable|string|in:admin,doctor,patient',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'phone' => $validated['phone'],
-            'email' => $validated['email'],
+            'id_number' => $validated['id_number'],
             'password' => Hash::make($validated['password']),
             // لو مفيش role جاية من الفورم خليه patient افتراضي
             'role' => $validated['role'] ?? 'patient',
@@ -88,7 +88,7 @@ class AuthController extends Controller
         $data = [
             'name' => $request->name,
             'phone' => $request->phone,
-            'email' => $request->email,
+            'id_number' => $request->id_number,
             'role' => $request->role,
         ];
 
@@ -108,7 +108,7 @@ class AuthController extends Controller
 
         $users = User::when($search, function ($query, $search) {
             $query->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('id_number', 'like', "%{$search}%")
                 ->orWhere('phone', 'like', "%{$search}%");
         })
             ->orderBy('id', 'desc')

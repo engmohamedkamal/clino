@@ -18,8 +18,8 @@ return [
     'name_label' => 'Full Name',
     'name_placeholder' => 'name',
 
-    'phone_label' => 'Mobile Number',
-    'phone_placeholder' => 'Phone',
+    'phone_label' => 'Phone Number',
+    'phone_placeholder' => 'Enter Number',
 
     'email_label' => 'Email',
     'email_placeholder' => 'email@example.com',
@@ -32,8 +32,12 @@ return [
     // Footer
     'already_registered' => 'Already registered?',
     'login' => 'Login',
-
+// ID Number
+    'id_number_label'              => 'ID Number',
+    'id_number_placeholder'        => 'Enter your ID number',
     // Language
     'lang_en' => 'EN',
     'lang_ar' => 'AR',
+      'password_confirm_label'       => 'Confirm Password',
+    'password_confirm_placeholder' => 'Re-enter your password',
 ];

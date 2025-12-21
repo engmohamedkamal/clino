@@ -23,6 +23,14 @@ public function patientInfo()
     return $this->hasOne(PatientInfo::class);
 }
 
+public function contact()
+{
+    return $this->hasOne(Contact::class);
+}
+public function doctorInfo()
+{
+    return $this->hasOne(DoctorInfo::class);
+}
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -35,7 +43,7 @@ public function patientInfo()
     protected $fillable = [
         'name',
         'phone',
-        'email',
+        'id_number',
         'password',
         'role'
     ];

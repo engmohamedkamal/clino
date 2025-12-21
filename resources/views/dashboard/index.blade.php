@@ -1,4 +1,4 @@
-<h1>Welcome to the Dashboard</h1>
+{{-- <h1>Welcome to the Dashboard</h1>
 <a href="{{ route('appointment') }}">Add Appointment</a>
 <a href="{{ route('appointment.show') }}">Show Appointment</a>
 
@@ -11,7 +11,7 @@
 
 <a href="{{ route('patient-info.index') }}">Patients Info</a>
 <a href="{{ route('patient-info.create') }}">Add Patient Info</a>
-{{-- <a href="{{ route('patient-info.show', $patientInfo->id) }}">View Details</a> --}}
+<a href="{{ route('patient-info.show', $patientInfo->id) }}">View Details</a>
 
 
 @php
@@ -26,4 +26,6 @@
     <a href="{{ route('settings.edit') }}" class="btn btn-warning">
         Edit Settings
     </a>
-@endif
+@endif --}}
+<a href="{{ route('service') }}">Add Service</a>
+<a href="{{ route('feedback.form') }}">Add Feedback</a>

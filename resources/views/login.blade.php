@@ -78,20 +78,26 @@
                     <form method="POST" action="{{ route('login') }}" novalidate>
                         @csrf
 
-                        {{-- Email --}}
-                        <div class="mb-4">
-                            <label class="form-label" for="email">
-                                {{ __('login.email_label') }}
-                            </label>
-
-                            <input class="form-control @error('email') is-invalid @enderror" id="email" type="email"
-                                name="email" placeholder="{{ __('login.email_placeholder') }}"
-                                value="{{ old('email') }}" autocomplete="email" required>
-
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                          {{-- Mobile Number --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="phone">{{ __('register.phone_label') }}</label>
+                        <div class="d-flex gap-3">
+                            <input
+                                class="form-control @error('phone') is-invalid @enderror"
+                                id="phone"
+                                name="phone"
+                                type="text"
+                                placeholder="{{ __('register.phone_placeholder') }}"
+                                value="{{ old('phone') }}"
+                                required
+                                autocomplete="tel"
+                            >
                         </div>
+
+                        @error('phone')
+                        <div class="text-danger mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
 
                         {{-- Password --}}
                         <div class="mb-5">

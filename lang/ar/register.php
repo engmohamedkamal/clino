@@ -36,4 +36,8 @@ return [
     // Language
     'lang_en' => 'EN',
     'lang_ar' => 'AR',
+  'id_number_label'              => 'رقم الهوية',
+    'id_number_placeholder'        => 'أدخل رقم الهوية',
+     'password_confirm_label'       => 'تأكيد كلمة المرور',
+    'password_confirm_placeholder' => 'أعد إدخال كلمة المرور',
 ];
