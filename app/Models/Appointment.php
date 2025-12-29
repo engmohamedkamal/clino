@@ -16,4 +16,8 @@ class Appointment extends Model
         'dob',
         'reason',
     ];
+
+    protected $casts = [
+        'dob' => 'date',
+    ];
 }

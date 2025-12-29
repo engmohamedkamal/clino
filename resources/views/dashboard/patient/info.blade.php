@@ -1,4 +1,5 @@
 @extends('layouts.dash')
+
 @section('dash-content')
 <main class="main">
 
@@ -11,9 +12,12 @@
       </button>
 
       <div>
-        <h3 class="appointment-title mt-2 mb-0">Add Yor Info</h3>
+        <h3 class="appointment-title mt-2 mb-0">Add New Patient</h3>
+        <p class="mb-0 small text-muted">Fill patient details then click save</p>
       </div>
     </div>
+
+    <a href="{{ route('patients.index') }}" class="dp-btn">Patients List</a>
   </header>
 
   <!-- Content -->
@@ -27,7 +31,19 @@
             {{ session('success') }}
           </div>
         @endif
-        <form method="POST" action="{{ route('patient-info.store') }}">
+
+        {{-- Validation Errors --}}
+        @if ($errors->any())
+          <div class="alert alert-danger mb-3">
+            <ul class="mb-0">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
+
+        <form method="POST" action="{{ route('patients.store') }}">
           @csrf
 
           <div class="row g-3">
@@ -37,7 +53,29 @@
               <h6 class="fw-bold mb-2">Basic Information</h6>
             </div>
 
-           
+            <div class="col-md-6">
+              <label class="form-label appointment-label" for="patientName">Patient Name</label>
+              <input
+                type="text"
+                id="patientName"
+                name="patient_name"
+                value="{{ old('patient_name') }}"
+                class="form-control appointment-control @error('patient_name') is-invalid @enderror"
+                placeholder="Enter Name">
+              @error('patient_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label appointment-label" for="patientEmail">Patient Email</label>
+              <input
+                type="email"
+                id="patientEmail"
+                name="patient_email"
+                value="{{ old('patient_email') }}"
+                class="form-control appointment-control @error('patient_email') is-invalid @enderror"
+                placeholder="Enter email address">
+              @error('patient_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
 
             <div class="col-md-6">
               <label class="form-label appointment-label" for="phone">Phone</label>
@@ -51,21 +89,21 @@
               @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3">
               <label class="form-label appointment-label" for="gender">Gender</label>
               <select
                 id="gender"
                 name="gender"
                 class="form-select appointment-control @error('gender') is-invalid @enderror">
                 <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Select</option>
-                <option value="male" @selected(old('gender') === 'male')>Male</option>
-                <option value="female" @selected(old('gender') === 'female')>Female</option>
+                <option value="Male" @selected(old('gender') === 'Male')>Male</option>
+                <option value="Female" @selected(old('gender') === 'Female')>Female</option>
                 <option value="Other" @selected(old('gender') === 'Other')>Other</option>
               </select>
               @error('gender') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3">
               <label class="form-label appointment-label" for="dob">Date of Birth</label>
               <input
                 type="date"
@@ -76,7 +114,7 @@
               @error('dob') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
-            <div class="col-6">
+            <div class="col-12">
               <label class="form-label appointment-label" for="address">Address</label>
               <input
                 type="text"
@@ -172,7 +210,7 @@
               <h6 class="fw-bold mb-2">Medical Details</h6>
             </div>
 
-            <div class="col-3">
+            <div class="col-12">
               <label class="form-label appointment-label" for="medical_history">Medical History</label>
               <textarea
                 id="medical_history"
@@ -183,7 +221,7 @@
               @error('medical_history') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
-            <div class="col-3">
+            <div class="col-12">
               <label class="form-label appointment-label" for="allergies">Allergies</label>
               <textarea
                 id="allergies"
@@ -194,7 +232,7 @@
               @error('allergies') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
-            <div class="col-3">
+            <div class="col-12">
               <label class="form-label appointment-label" for="current_medications">Current Medications</label>
               <textarea
                 id="current_medications"
@@ -205,12 +243,12 @@
               @error('current_medications') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
-            <div class="col-3">
+            <div class="col-12">
               <label class="form-label appointment-label" for="notes">Notes</label>
               <textarea
                 id="notes"
                 name="notes"
-                rows="3"
+                rows="4"
                 class="form-control appointment-control appointment-textarea @error('notes') is-invalid @enderror"
                 placeholder="Additional notes...">{{ old('notes') }}</textarea>
               @error('notes') <div class="invalid-feedback">{{ $message }}</div> @enderror

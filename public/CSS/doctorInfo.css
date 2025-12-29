@@ -1,0 +1,181 @@
+/* Wrapper spacing */
+.di-wrap{
+  width: 100%;
+  max-width: 980px;
+  border-radius: 26px;
+}
+
+/* Inputs like the screenshot */
+.di-control{
+  background: #f1f1f1 !important;
+  border: 1px solid #ececec !important;
+  border-radius: 14px !important;
+  padding: 12px 14px !important;
+  font-weight: 600;
+  color: #111827;
+  box-shadow: none !important;
+}
+
+.di-control::placeholder{
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.di-control:focus{
+  background: #f3f4f6 !important;
+  border-color: rgba(37, 99, 235, .35) !important;
+  box-shadow: 0 0 0 .18rem rgba(37, 99, 235, .12) !important;
+}
+
+/* Select arrow spacing */
+.form-select.di-control{
+  padding-right: 40px !important;
+}
+
+/* Textarea bigger like screenshot */
+.di-textarea{
+  min-height: 200px;
+  resize: vertical;
+}
+
+/* File group */
+.di-file-group{
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.di-file-text{
+  border-right: 0 !important;
+}
+
+.di-file-btn{
+  background: #f1f1f1;
+  border: 1px solid #ececec;
+  border-left: 0;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.di-file-btn i{
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.di-file-btn:hover{
+  background: #ececec;
+}
+
+/* Save button like screenshot */
+.di-save-btn{
+  background: #1f4f8c;
+  border: none;
+  color: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  transition: .2s ease;
+}
+
+.di-save-btn:hover{
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+/* labels */
+.appointment-label{
+  font-weight: 800;
+  color: #111827;
+}
+
+/* Error state */
+.di-control.is-invalid{
+  border-color: rgba(239, 68, 68, .6) !important;
+}
+
+.invalid-feedback{
+  font-weight: 700;
+}
+/* ===== repeatable inputs helpers ===== */
+.di-label-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.di-mini-btn{
+  background: rgba(31,79,140,.10);
+  border: 1px solid rgba(31,79,140,.18);
+  color: #1f4f8c;
+  font-weight: 900;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.di-mini-btn:hover{
+  background: rgba(31,79,140,.14);
+}
+
+.di-repeat-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.di-repeat-item{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.di-x-btn{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #ececec;
+  background: #f1f1f1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.di-x-btn i{
+  color:#6b7280;
+  font-size: 16px;
+}
+
+.di-x-btn:hover{
+  background:#eaeaea;
+}
+
+/* skills row */
+.di-skill-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.di-skill-val{
+  max-width: 140px;
+}
+
+/* responsive */
+@media (max-width: 576px){
+  .di-repeat-item,
+  .di-skill-row{
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .di-x-btn{
+    width: 100%;
+    height: 44px;
+  }
+  .di-skill-val{
+    max-width: 100%;
+  }
+}

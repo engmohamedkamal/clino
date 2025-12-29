@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class DoctorInfoController extends Controller
 {
-    /**
-     * Open form only if first time
-     */
     public function create()
     {
         $doctorInfo = DoctorInfo::where('user_id', Auth::id())->first();
@@ -20,12 +17,8 @@ class DoctorInfoController extends Controller
                              ->with('error', 'You have already entered your info.');
         }
 
-        return view('doctor-info.create');
+        return view('dashboard.doctor.index');
     }
-
-    /**
-     * Store doctor info once
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -58,10 +51,6 @@ class DoctorInfoController extends Controller
 
         return redirect()->route('doctor-info.edit')->with('success', 'Doctor Info Created Successfully.');
     }
-
-    /**
-     * Edit form
-     */
     public function edit()
     {
         $doctorInfo = DoctorInfo::where('user_id', Auth::id())->first();
@@ -71,12 +60,9 @@ class DoctorInfoController extends Controller
                              ->with('error', 'You must add your info first.');
         }
 
-        return view('doctor-info.edit', compact('doctorInfo'));
+        return view('dashboard.doctor.edit', compact('doctorInfo'));
     }
 
-    /**
-     * Update data
-     */
     public function update(Request $request)
     {
         $doctorInfo = DoctorInfo::where('user_id', Auth::id())->first();

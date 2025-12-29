@@ -26,4 +26,9 @@ protected $fillable = [
     'current_medications',
     'notes',
 ];
+
+protected $casts = [
+  'dob' => 'date',
+];
+
 }

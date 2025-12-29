@@ -11,21 +11,23 @@ class FeedbackController extends Controller
 {
     public function index()
     {
-        return view('patients.feedback.index');
+        return view('dashboard.feedback.index');
     }
-    public function store(Request $request)
-    {
-            $validated = $request->validate([
+   public function store(Request $request)
+{
+
+    if (Feedback::where('user_id', $request->user_id)->exists()) {
+        return back()->with('success', 'You have already submitted feedback before.');
+    }
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
         'comment' => 'required|string|max:255',
-        'user_id' => 'required|exists:users,id|unique:feedback,user_id',
-    ], [
-        'user_id.unique' => 'You have already submitted feedback.',
     ]);
 
+    Feedback::create($validated);
 
-        Feedback::create($validated);
+    return back()->with('success', 'Feedback added successfully');
+}
 
-        return back()->with('success', 'Feedback added successfully');
-    }
 
 }

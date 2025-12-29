@@ -1,99 +1,120 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\UserInfo;
+use App\Models\patientInfo;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class UserInfoController extends Controller
 {
-    public function show()
+    public function myInfo()
     {
-        $info = Auth::user()->info; // hasOne
-        return view('my-info.show', compact('info'));
-    }
+        
+        $info = Auth::user()->patientInfo; 
 
+        if (!$info) {
+            return redirect()->route('patient-info.create')
+                ->with('info', 'Please add your info first.');
+        }
+
+        return view('patient-info.show', compact('info'));
+    }
     public function create()
     {
-        // لو المستخدم عنده بيانات بالفعل، ممنوع create
-        if (Auth::user()->info) {
-            return redirect()->route('my-info.edit')
+        $info = Auth::user()->patientInfo;
+
+        if ($info) {
+            return redirect()->route('patient-info.edit', $info->id)
                 ->with('info', 'You already added your info. You can update it.');
         }
 
-        return view('my-info.create');
+        return view('patient-info.create');
     }
 
+    /**
+     * ✅ Store
+     */
     public function store(Request $request)
     {
-        if (Auth::user()->info) {
-            return redirect()->route('my-info.edit')
+        
+        // ممنوع يعمل create لو عنده info
+        if (Auth::user()->patientInfo) {
+            return redirect()->route('patient-info.my')
                 ->with('info', 'You already added your info. You can update it.');
         }
 
-        $data = $this->validated($request);
-
-        // image upload
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('user-info', 'public');
-        }
-
+        $data = $this->validated($request, null);
         $data['user_id'] = Auth::id();
 
-        UserInfo::create($data);
+        $info = PatientInfo::create($data);
 
-        return redirect()->route('my-info.show')->with('success', 'Info saved successfully.');
+        return redirect()->route('patient-info.my')
+            ->with('success', 'Info saved successfully ✅');
     }
 
-    public function edit()
+    /**
+     * ✅ Show (resource) - اختياري تسيبه شغال
+     */
+    public function show(PatientInfo $patient_info)
     {
-        $info = Auth::user()->info;
+        abort_if($patient_info->user_id !== Auth::id(), 403);
 
-        // لو مفيش بيانات، يروح create
-        if (!$info) {
-            return redirect()->route('my-info.create')
-                ->with('info', 'Please add your info first.');
-        }
-
-        return view('my-info.edit', compact('info'));
+        $info = $patient_info;
+        return view('patient-info.show', compact('info'));
     }
 
-    public function update(Request $request)
+    /**
+     * ✅ Edit (resource)
+     */
+    public function edit(patientInfo $patient_info)
     {
-        $info = Auth::user()->info;
+        // dd(Auth::user()->patientInfo);
 
-        if (!$info) {
-            return redirect()->route('my-info.create')
-                ->with('info', 'Please add your info first.');
-        }
+        abort_if($patient_info->user_id !== Auth::id(), 403);
 
-        $data = $this->validated($request);
-
-        if ($request->hasFile('image')) {
-            // delete old if exists
-            if ($info->image) {
-                Storage::disk('public')->delete($info->image);
-            }
-            $data['image'] = $request->file('image')->store('user-info', 'public');
-        }
-
-        $info->update($data);
-
-        return redirect()->route('my-info.show')->with('success', 'Info updated successfully.');
+        $info = $patient_info;
+        return view('patient-info.edit', compact('info'));
     }
 
-    private function validated(Request $request): array
+    /**
+     * ✅ Update (resource)
+     */
+    public function update(Request $request, PatientInfo $patient_info)
+    {
+        abort_if($patient_info->user_id !== Auth::id(), 403);
+
+        $data = $this->validated($request, $patient_info->id);
+
+        $patient_info->update($data);
+
+        return redirect()->route('patient-info.my')
+            ->with('success', 'Info updated successfully ✅');
+    }
+
+    /**
+     * ✅ Validation
+     */
+    private function validated(Request $request, ?int $ignoreId): array
     {
         return $request->validate([
-            'availability_schedule' => ['nullable','string','max:255'],
-            'gender' => ['nullable','string','max:50'],
-            'dob' => ['nullable','date'],
-            'specialization' => ['nullable','string','max:255'],
-            'license_number' => ['nullable','string','max:255'],
-            'address' => ['nullable','string','max:255'],
-            'image' => ['nullable','image','max:2048'], // 2MB
-            'about' => ['nullable','string'],
+            'gender' => 'required|in:male,female',
+            'dob' => 'required|date',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'blood_type' => 'nullable|string|max:10',
+            'weight' => 'nullable|numeric',
+            'height' => 'nullable|numeric',
+            'emergency_contact_name' => 'required|string|max:255',
+            'emergency_contact_phone' => 'required|string|max:20',
+            'medical_history' => 'nullable|string',
+            'allergies' => 'nullable|string',
+            'current_medications' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
     }
 }
+

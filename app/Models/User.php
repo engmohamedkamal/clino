@@ -27,10 +27,12 @@ public function contact()
 {
     return $this->hasOne(Contact::class);
 }
+// app/Models/User.php
 public function doctorInfo()
 {
-    return $this->hasOne(DoctorInfo::class);
+    return $this->hasOne(\App\Models\DoctorInfo::class);
 }
+
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;

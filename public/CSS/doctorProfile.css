@@ -1,0 +1,472 @@
+/* ===== App Layout (Sidebar + Main) ===== */
+.app{
+  min-height:100vh;
+  display:flex;
+  background:#f3f7fb;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+ 
+}
+
+/* Sidebar already exists عندك */
+.sidebar{
+  width:260px;
+  height:100vh;
+  flex:0 0 260px;
+}
+/* ===== Main Layout ===== */
+.dp-main{
+  flex:1;
+  min-width:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:#f3f7fb;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* ===== Topbar ===== */
+.dp-topbar{
+  height:72px;
+  background:#ffffff;
+  border-bottom:1px solid #e6eef7;
+  padding:0 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.dp-title{
+  margin:0;
+  font-size:24px;
+  font-weight:900;
+  color:#0f172a;
+}
+
+.dp-top-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.dp-search{
+  position:relative;
+  width:380px;
+}
+
+.dp-search-input{
+  width:100%;
+  height:42px;
+  border-radius:10px;
+  border:1px solid #e6eef7;
+  padding:0 44px 0 14px;
+  background:#fff;
+  font-size:13px;
+  outline:none;
+}
+
+.dp-search-ic{
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:20px;
+  color:#9ca3af;
+}
+
+.dp-icon-btn{
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  border:1px solid #e6eef7;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#9ca3af;
+}
+
+.dp-btn{
+  height:34px;
+  padding:0 14px;
+  border-radius:8px;
+  background:#0b3b91;
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
+
+/* ===== Content ===== */
+.dp-content{
+  flex:1;
+  overflow:auto;
+  padding:22px;
+}
+
+.dp-container{
+  max-width:1160px;
+  margin:0 auto;
+}
+
+.dp-section{
+  margin-top:18px;
+}
+
+/* ===== Cards ===== */
+.dp-card{
+  background:#ffffff;
+  border:1px solid #e6eef7;
+  border-radius:14px;
+}
+
+/* ===== Hero ===== */
+.dp-hero{
+  background:linear-gradient(90deg,#2e8cf3 0%,#0b3b91 100%);
+  border-radius:26px;
+  padding:18px;
+  min-height:170px;
+}
+
+.dp-hero-inner{
+  display:flex;
+  align-items:center;
+  gap:24px;
+}
+
+.dp-hero-photo{
+  width:150px;
+  height:150px;
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.dp-hero-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.dp-hero-text{ color:#fff; }
+
+.dp-hero-small{
+  font-size:14px;
+  opacity:.9;
+}
+
+.dp-hero-name{
+  font-size:22px;
+  font-weight:900;
+  color:#ffde59;
+  margin:4px 0 6px;
+}
+
+.dp-hero-sub{
+  font-size:14px;
+  line-height:1.3;
+}
+
+.dp-stars{
+  display:flex;
+  gap:2px;
+  margin-top:10px;
+}
+
+.dp-stars .material-icons-round{ font-size:18px; }
+.dp-stars .on{ color:#fbbf24; }
+.dp-stars .off{ color:rgba(255,255,255,.4); }
+
+.dp-hero-rev{
+  font-size:12px;
+  margin-top:4px;
+}
+
+/* ===== Stats ===== */
+.dp-stat{
+  padding:18px;
+  min-height:150px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.dp-stat-icon{
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.icon-blue{ background:#eef5ff; color:#2563eb; }
+.icon-red{ background:#fff1f2; color:#fb7185; }
+.icon-green{ background:#effff4; color:#22c55e; }
+.icon-yellow{ background:#fffde7; color:#facc15; }
+
+.dp-stat-label{
+  font-size:14px;
+  color:#6b7280;
+  margin-top:10px;
+}
+
+.dp-stat-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+}
+
+.dp-stat-value{
+  font-weight:400;
+  
+  
+}
+
+.dp-stat-delta{
+  color:#22c55e;
+  font-size:13px;
+  font-weight:200;
+  display:flex;
+  align-items:center;
+}
+
+/* ===== About ===== */
+.dp-about{
+  padding:18px;
+}
+
+.dp-about-grid{
+  display:grid;
+  grid-template-columns:1.6fr .9fr;
+  gap:24px;
+}
+
+.dp-h2{
+  font-size:30px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.dp-para{
+  font-size:13px;
+  color:#9aa6b2;
+  line-height:1.15;
+}
+
+.dp-about-mid{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.dp-meta-title{
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.dp-meta-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  color:#9aa6b2;
+  font-weight:600;
+  
+}
+
+.dp-meta-ic{
+  color:#2563eb;
+}
+
+.dp-send{
+  margin-top:auto;
+  height:34px;
+  border:none;
+  border-radius:10px;
+  background:#0b3b91;
+  color:#fff;
+  font-weight:300;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:0 14px;
+}
+
+/* ===== Availability ===== */
+.dp-avail{
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+}
+
+.dp-chip{
+  background:#ededed;
+  color:#8d8d8d;
+  font-size:12px;
+  font-weight:700;
+  padding:7px 10px;
+  border-radius:6px;
+}
+
+.dp-book{
+  margin-top:auto;
+  height:34px;
+  border:none;
+  border-radius:10px;
+  background:#0b3b91;
+  color:#fff;
+  font-weight:300;
+  width:160px;
+  align-self:center;
+}
+
+/* ===== Bottom Cards (Speciality / Activities / Skills) ===== */
+.dp-box{
+  padding:18px;
+}
+
+/* Speciality list */
+.dp-list{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-top:10px;
+}
+
+.dp-li{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.dp-badge{
+  width:30px;
+  height:30px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.dp-badge .material-icons-round{
+  font-size:16px;
+  color:#fff;
+}
+
+.b-blue{ background:#2f6fe6; }
+.b-orange{ background:#ff7a45; }
+.b-green{ background:#28c76f; }
+.b-yellow{ background:#ffcc00; }
+
+.dp-li-title{
+  font-weight:500;
+  font-size:14px;
+  line-height:1.1rem;
+  color:#0f172a;
+}
+
+.dp-li-sub{
+  color:#9aa6b2;
+  font-size:12px;
+  font-weight:700;
+  margin-top:2px;
+}
+
+/* Activities dots */
+.dp-acts{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  margin-top:14px;
+}
+
+.dp-act{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.dp-dot{
+  width:18px;
+  height:18px;
+  border-radius:999px;
+  background:#fff;
+  border:2px solid #2f6fe6;
+  margin-top:2px;
+}
+
+
+/* Skills */
+.dp-skill{
+  margin-top:16px;
+}
+
+.dp-skill-top{
+  display:flex;
+  justify-content:space-between;
+  color:#9aa6b2;
+  font-weight:800;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+.dp-line{
+  height:3px;
+  width:100%;
+  background:#d6d6d6;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.dp-fill{
+  height:100%;
+  display:block;
+  border-radius:999px;
+}
+
+.f-blue{ background:#2f6fe6; }
+.f-orange{ background:#ff7a45; }
+.f-green{ background:#28c76f; }
+.f-yellow{ background:#ffff00; }
+
+.w45{ width:45%; }
+.w65{ width:65%; }
+.w85{ width:85%; }
+.w90{ width:90%; }
+
+/* Activities dots - different colors */
+.dp-acts .dp-act:nth-child(1) .dp-dot{
+  border-color: #2563eb; /* أزرق */
+}
+
+.dp-acts .dp-act:nth-child(3) .dp-dot{
+  border-color: #f59e0b; /* برتقالي */
+}
+
+.dp-acts .dp-act:nth-child(2) .dp-dot{
+  border-color: #22c55e; /* أخضر */
+}
+
+
+.dp-acts .dp-act:nth-child(4) .dp-dot{
+  border-color: #ffff00; /* أحمر */
+}
+
+
+
+/* ===== Responsive ===== */
+@media (max-width:991px){
+  .dp-search{ width:280px; }
+  .dp-about-grid{ grid-template-columns:1fr; }
+  .dp-book,.dp-send{ width:100%; }
+}
+
+@media (max-width:575px){
+  .dp-content{ padding:14px; }
+  .dp-hero-inner{ flex-direction:column; align-items:flex-start; }
+  .dp-hero-photo{ width:130px; height:130px; }
+}
+

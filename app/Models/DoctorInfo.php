@@ -1,5 +1,5 @@
 <?php
-
+// app/Models/DoctorInfo.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,23 +12,35 @@ class DoctorInfo extends Model
     protected $fillable = [
         'user_id',
         'gender',
-        'specialization',
-        'license_number',
         'dob',
-        'availability_schedule',
+        'Specialization',
+        'license_number',
         'address',
+        'availability_schedule',
+        'facebook',
+        'instagram',
+        'twitter',
+        'skills',
+        'activities',
         'image',
-        'facebook_url',
-        'instagram_url',
-        'twitter_url',
         'about',
     ];
 
-    /**
-     * Relation → each doctor belongs to a user
-     */
+ 
+    
+    // app/Models/DoctorInfo.php
+    protected $casts = [
+    'dob' => 'date',
+    'availability_schedule' => 'array',
+    'Specialization' => 'array',
+    'activities' => 'array',
+    'skills' => 'array',
+];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 }
+
+

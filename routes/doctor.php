@@ -17,12 +17,22 @@ Route::middleware(['auth','doctor.area'])->group(function () {
     Route::put('/my-info', [UserInfoController::class, 'update'])->name('my-info.update');
 
 
-    Route::get('/doctor-info/create', [DoctorInfoController::class, 'create'])->name('doctor-info.create');
+});
 
-    Route::post('/doctor-info/store', [DoctorInfoController::class, 'store'])->name('doctor-info.store');
+Route::middleware(['auth','admin_or_doctor'])->group(function () {
 
-    Route::get('/doctor-info/edit', [DoctorInfoController::class, 'edit'])->name('doctor-info.edit');
+    Route::get('/doctor-info', [DoctorInfoController::class, 'show'])
+        ->name('doctor-info.show');
 
-    Route::post('/doctor-info/update', [DoctorInfoController::class, 'update'])->name('doctor-info.update');
+    Route::get('/doctor-info/create', [DoctorInfoController::class, 'create'])
+        ->name('doctor-info.create');
 
+    Route::post('/doctor-info', [DoctorInfoController::class, 'store'])
+        ->name('doctor-info.store');
+
+    Route::get('/doctor-info/{doctorInfo}/edit', [DoctorInfoController::class, 'edit'])
+        ->name('doctor-info.edit');
+
+    Route::put('/doctor-info/{doctorInfo}', [DoctorInfoController::class, 'update'])
+        ->name('doctor-info.update');
 });

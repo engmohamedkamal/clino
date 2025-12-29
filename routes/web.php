@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
-
+use App\Http\Controllers\Admin\AppointmentController;
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, "index"])->name('home');
     Route::get('/about', [HomeController::class, "about"])->name('about');
@@ -18,6 +18,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/contact/edit', [ContactController::class, 'edit'])->name('contact.edit');
     Route::put('/contact', [ContactController::class, 'update'])->name('contact.update');
     Route::delete('/contact', [ContactController::class, 'destroy'])->name('contact.destroy');
+
+    
+  Route::get('/appointment', [AppointmentController::class, "index"])->name('appointment');
+  Route::post('/appointment-store', [AppointmentController::class, "store"])->name('appointment.store');
+  Route::get('/appointment-show', [AppointmentController::class, "show"])->name('appointment.show');
+  Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointment.destroy');
+  Route::get('/appointment/{id}/edit', [AppointmentController::class, 'edit'])->name('appointment.edit');
+  Route::put('/appointment/{id}', [AppointmentController::class, 'update'])->name('appointment.update');
+
 });
 Route::get('lang/{locale}', function ($locale) {
     if (!in_array($locale, ['en', 'ar'])) {

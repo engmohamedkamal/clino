@@ -78,7 +78,7 @@
         </p>
 
         <div class="d-flex flex-wrap ">
-         <a href="#" class="btn btn-featured-primary  fw-semibold">
+         <a href="{{ route('appointment') }}" class="btn btn-featured-primary  fw-semibold">
           Book Consultation
         </a>
        
@@ -162,11 +162,6 @@
       </div>
     </div>
   </section>
-
-
-
-
-
   <!-- CTA -->
   <section class="cta-section text-center CTA">
     <div class="container">
@@ -177,7 +172,7 @@
         Don't wait until it's too late. Our expert team is ready to provide you with the best care possible.
       </p>
       <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
-        <a href="#" class=" btn btn-featured-primary  fw-semibold">
+        <a href="{{ route('appointment') }}" class=" btn btn-featured-primary  fw-semibold">
           Book an Appointment Now
         </a>
         <a href="{{ route('contact.index') }}" class="btn btn-featured-primary  fw-semibold">

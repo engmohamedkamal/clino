@@ -21,15 +21,46 @@ class AppointmentRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'patient_name' => 'required|string|max:255',
+        $user = auth()->user();
+
+        // rules common for all
+        $rules = [
             'doctor_name' => 'required|string|max:255',
-            'gender' => 'required|in:male,female',
-            'appointment_date' => 'required|date|after_or_equal:today',
+            'appointment_date' => 'required|date',
             'appointment_time' => 'required|date_format:H:i',
-            'patient_number' => 'required|string|max:20',
-            'dob' => 'required|date|before:today',
-            'reason' => 'nullable|string|max:500',
+            'reason' => 'nullable|string|max:1000',
+        ];
+
+        // Admin/Doctor لازم يدخل بيانات المريض
+        if ($user && $user->role !== 'patient') {
+            $rules += [
+                'patient_name' => 'required|string|max:255',
+                'patient_number' => 'required|string|max:20',
+                'dob' => 'required|date',
+                'gender' => 'required|in:male,female',
+            ];
+        }
+
+        // Patient مش محتاج يبعتهُم (هنا Optional أو نسيبهم خالص)
+        // لو عندك input hidden ممكن تخليهم nullable
+        else {
+            $rules += [
+                'patient_name' => 'nullable',
+                'patient_number' => 'nullable',
+                'dob' => 'nullable',
+                'gender' => 'nullable',
+            ];
+        }
+
+        return $rules;
+    }
+    public function messages(): array
+    {
+        return [
+            'doctor_name.required' => 'Please select a doctor.',
+            'appointment_date.required' => 'Please choose a date.',
+            'appointment_time.required' => 'Please choose a time.',
         ];
     }
+
 }
