@@ -1,125 +1,175 @@
+@extends('layouts.dash')
+@section('dash-content')
 
+<link rel="stylesheet" href="{{ asset('CSS/Setting.css') }}" />
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@php
+  $isEdit = !empty($settings);
+  $action = $isEdit ? route('settings.update', $settings->id) : route('settings.store');
+@endphp
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<main class="main">
 
-    <title>Hello, world!</title>
-  </head>
-  <body>
-   <div class="container">
-    {{-- Alerts --}}
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <h4 class="mb-0">Create Settings</h4>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('settings.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" name="name" class="form-control"
-                               value="{{ old('name') }}">
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Slogan</label>
-                        <input type="text" name="slogan" class="form-control"
-                               value="{{ old('slogan') }}">
-                    </div>
-
-                    <div class="col-md-12 mb-3">
-                        <label class="form-label">Vision</label>
-                        <textarea name="vision" class="form-control" rows="3">{{ old('vision') }}</textarea>
-                    </div>
-
-                    <div class="col-md-12 mb-3">
-                        <label class="form-label">Mission</label>
-                        <textarea name="mission" class="form-control" rows="3">{{ old('mission') }}</textarea>
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Facebook URL</label>
-                        <input type="text" name="facebook" class="form-control"
-                               value="{{ old('facebook') }}">
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Instagram URL</label>
-                        <input type="text" name="instagram" class="form-control"
-                               value="{{ old('instagram') }}">
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Twitter URL</label>
-                        <input type="text" name="twitter" class="form-control"
-                               value="{{ old('twitter') }}">
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Phone</label>
-                        <input type="text" name="phone" class="form-control"
-                               value="{{ old('phone') }}">
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control"
-                               value="{{ old('email') }}">
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Address</label>
-                        <input type="text" name="address" class="form-control"
-                               value="{{ old('address') }}">
-                    </div>
-
-                    <div class="col-md-12 mb-3">
-                        <label class="form-label">Logo</label>
-                        <input type="file" name="logo" class="form-control">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Save Settings</button>
-            </form>
-        </div>
+  <header class="topbar">
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h3 class="appointment-title mt-2">Setting</h3>
     </div>
-</div>
-    <!-- Optional JavaScript; choose one of the two! -->
+  </header>
 
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  {{-- Alerts --}}
+  <div class="mt-3">
+    @if(session('success'))
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    @endif
 
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-    <!--
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    -->
-  </body>
-</html>
+    @if(session('info'))
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ session('info') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    @endif
+
+
+  </div>
+
+  <section class="st-panel">
+    <div class="st-card">
+
+      <form class="st-form" action="{{ $action }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @if($isEdit) @method('PUT') @endif
+
+        <div class="row g-4">
+
+          <!-- Name / Slogan -->
+          <div class="col-12 col-md-6">
+            <label class="st-label">Name</label>
+            <input type="text" name="name"
+              class="form-control st-input @error('name') is-invalid @enderror"
+              placeholder="Enter Name"
+              value="{{ old('name', $settings->name ?? '') }}" />
+            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="st-label">Slogan</label>
+            <input type="text" name="slogan"
+              class="form-control st-input @error('slogan') is-invalid @enderror"
+              placeholder="Enter Slogan"
+              value="{{ old('slogan', $settings->slogan ?? '') }}" />
+            @error('slogan') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <!-- Vision -->
+          <div class="col-12">
+            <label class="st-label">Vision</label>
+            <textarea name="vision"
+              class="form-control st-input st-textarea @error('vision') is-invalid @enderror"
+              rows="3"
+              placeholder="Enter Vision">{{ old('vision', $settings->vision ?? '') }}</textarea>
+            @error('vision') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <!-- Mission -->
+          <div class="col-12">
+            <label class="st-label">Mission</label>
+            <textarea name="mission"
+              class="form-control st-input st-textarea @error('mission') is-invalid @enderror"
+              rows="3"
+              placeholder="Enter mission">{{ old('mission', $settings->mission ?? '') }}</textarea>
+            @error('mission') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <!-- Socials -->
+          <div class="col-12 col-lg-4">
+            <label class="st-label">Facebook URL</label>
+            <input type="url" name="facebook"
+              class="form-control st-input @error('facebook') is-invalid @enderror"
+              placeholder="Facebook"
+              value="{{ old('facebook', $settings->facebook ?? '') }}" />
+            @error('facebook') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="col-12 col-lg-4">
+            <label class="st-label">Instagram URL</label>
+            <input type="url" name="instagram"
+              class="form-control st-input @error('instagram') is-invalid @enderror"
+              placeholder="instagram"
+              value="{{ old('instagram', $settings->instagram ?? '') }}" />
+            @error('instagram') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="col-12 col-lg-4">
+            <label class="st-label">Twitter URL</label>
+            <input type="url" name="twitter"
+              class="form-control st-input @error('twitter') is-invalid @enderror"
+              placeholder="twitter"
+              value="{{ old('twitter', $settings->twitter ?? '') }}" />
+            @error('twitter') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <!-- Phone / Email / Address -->
+          <div class="col-12 col-lg-4">
+            <label class="st-label">Phone</label>
+            <input type="text" name="phone"
+              class="form-control st-input @error('phone') is-invalid @enderror"
+              placeholder="phone"
+              value="{{ old('phone', $settings->phone ?? '') }}" />
+            @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="col-12 col-lg-4">
+            <label class="st-label">Email</label>
+            <input type="email" name="email"
+              class="form-control st-input @error('email') is-invalid @enderror"
+              placeholder="email"
+              value="{{ old('email', $settings->email ?? '') }}" />
+            @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="col-12 col-lg-4">
+            <label class="st-label">Address</label>
+            <input type="text" name="address"
+              class="form-control st-input @error('address') is-invalid @enderror"
+              placeholder="address"
+              value="{{ old('address', $settings->address ?? '') }}" />
+            @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <!-- Logo -->
+          <div class="col-12">
+            <label class="st-label">Logo</label>
+            <input class="form-control st-file-input @error('logo') is-invalid @enderror"
+              type="file" name="logo" accept="image/*" />
+            @error('logo') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+
+            @if(!empty($settings->logo))
+              <div class="mt-2">
+                <small class="text-muted">Current Logo:</small><br>
+                <img src="{{ asset('storage/'.$settings->logo) }}" alt="logo" style="height:50px">
+              </div>
+            @endif
+          </div>
+
+          <!-- Save -->
+          <div class="col-12">
+            <button type="submit" class="btn st-save-btn w-100">
+              {{ $isEdit ? 'Update' : 'Save' }}
+            </button>
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+  </section>
+
+</main>
+@endsection

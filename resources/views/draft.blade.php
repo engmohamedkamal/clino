@@ -159,7 +159,7 @@
           <div class="col-md-4">
             <div class="service-card text-center">
               <div class="service-img">
-                <img src="{{ $service->image }}" alt="{{ $service->name }}">
+                <img src="{{ asset('storage/'.$service->image) }}" alt="{{ $service->name }}">
               </div>
 
               <h5>{{ $service->name }}</h5>

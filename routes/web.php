@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorInfoController;
 use App\Http\Controllers\Admin\AppointmentController;
 Route::middleware(['auth'])->group(function () {
@@ -10,9 +11,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/about', [HomeController::class, "about"])->name('about');
     Route::get('/our-service', [HomeController::class, "service"])->name('our.service');
 
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+  Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
     Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
@@ -29,8 +28,11 @@ Route::middleware(['auth'])->group(function () {
   Route::put('/appointment/{id}', [AppointmentController::class, 'update'])->name('appointment.update');
   
   Route::get('/doctor', [DoctorInfoController::class, "list"])->name('doctor.list');
+  Route::get('/doctor-info/{id}', [DoctorInfoController::class, 'show'])
+        ->whereNumber('id')
+        ->name('doctor-info.show');
 });
-Route::get('lang/{locale}', function ($locale) {
+Route::get('lang/{locale}', action: function ($locale) {
     if (!in_array($locale, ['en', 'ar'])) {
         abort(404);
     }

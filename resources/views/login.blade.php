@@ -61,11 +61,6 @@
 
             {{-- RIGHT --}}
             <div class="col-lg-6 right-panel">
-
-                {{-- Language Dropdown --}}
-
-
-
                 <div class="form-box">
                     <h1 class="welcome">
                         {{ __('login.welcome') }}

@@ -108,7 +108,10 @@
                     <div class="team-card">
                         <div class="team-avatar"><img src="{{asset('storage/'.$doctor->image)}}" alt="doctor"></div>
                         <div class="team-name">{{ $doctor->user->name ?? '' }}</div>
-                        <div class="team-role">{{ $doctor->specialization ?? '' }}</div>
+                        <div class="team-role">
+    {{ is_array($doctor->Specialization) ? implode(' • ', $doctor->Specialization) : $doctor->Specialization }}
+</div>
+
                         <div class="team-social">
                             <a href="{{ $doctor->facebook_url ?? '' }}" aria-label="facebook"><i class="fa-brands fa-facebook-f"></i></a>
                             <a href="{{ $doctor->instagram_url ?? '' }}" aria-label="instagram"><i class="fa-brands fa-instagram"></i></a>

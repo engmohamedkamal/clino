@@ -22,18 +22,20 @@
                     <div class="brand-logo">
                         <i class="fa-solid fa-hospital"></i>
                     </div>
-                    <span class="fw-bold fs-5">Helper Clinic</span>
+                    <a href="{{ route('home') }}" style="text-decoration: none;">
+                        <span class="fw-bold fs-5">Helper Clinic</span>
+                    </a>
                 </div>
 
                 <!-- Navigation -->
                 <nav class="side-nav">
-
-                    <a href="{{ route('dashboard') }}"
-                        class="side-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <i class="fa-solid fa-border-all"></i>
-                        Dashboard
-                    </a>
-
+                    @if(Auth()->user()->role === 'admin')
+                        <a href="{{ route('dashboard') }}"
+                            class="side-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <i class="fa-solid fa-border-all"></i>
+                            Dashboard
+                        </a>
+                    @endif
                     {{-- <a href="{{ route('users.index') }}"
                         class="side-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-users"></i>
@@ -77,23 +79,23 @@
                             Feedback
                         </a>
                     @endif
-@if(auth()->user()->role === 'doctor')
-  <a href="{{ auth()->user()->doctorInfo
-              ? route('doctor-info.show', auth()->user()->doctorInfo->id)
-              : route('doctor-info.create') }}"
-     class="side-link {{ request()->routeIs('doctor-info.*') ? 'active' : '' }}">
-     
-    <i class="fa-solid fa-user-doctor"></i>
-    Profile
-  </a>
-@endif
+                    @if(auth()->user()->role === 'doctor')
+                                    <a href="{{ auth()->user()->doctorInfo
+                        ? route('doctor-info.show', auth()->user()->doctorInfo->id)
+                        : route('doctor-info.create') }}"
+                                        class="side-link {{ request()->routeIs('doctor-info.*') ? 'active' : '' }}">
 
-                        <a href="{{ route('doctor.list') }}"
-                            class="side-link {{ request()->routeIs('doctor.*') ? 'active' : '' }}">
-                            <i class="fa-solid fa-users"></i>
-                            Doctor List
-                        </a>
-                    
+                                        <i class="fa-solid fa-user-doctor"></i>
+                                        Profile
+                                    </a>
+                    @endif
+
+                    <a href="{{ route('doctor.list') }}"
+                        class="side-link {{ request()->routeIs('doctor.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-users"></i>
+                        Doctor List
+                    </a>
+
                     {{-- <a href="{{ route('reports.index') }}"
                         class="side-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
                         <i class="fa-regular fa-file-lines"></i>
@@ -106,7 +108,20 @@
                         Setting
                     </a>--}}
 
+                    @if (auth()->user()->role === 'admin')
 
+                        <a href="{{ route('settings.index') }}"
+                            class="side-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                            <i class="fa-solid fa-gear"></i>
+                            Setting
+                        </a>
+                        <a href="{{ route('service.index') }}"
+                            class="side-link {{ request()->routeIs('service.*') ? 'active' : '' }}">
+                            <i class="fa-solid fa-briefcase-medical"></i>
+                            Services
+                        </a>
+
+                    @endif
                     <div class="side-divider"></div>
 
                     <!-- Logout -->
@@ -120,74 +135,124 @@
 
                 </nav>
             </aside>
-
-
         </div>
 
         <!-- ================= Sidebar (Mobile / Offcanvas) ================= -->
-        <div class="offcanvas offcanvas-start sidebar-offcanvas d-lg-none" tabindex="-1" id="mobileSidebar">
+       <!-- ================= Sidebar (Mobile / Offcanvas) ================= -->
+<div class="offcanvas offcanvas-start sidebar-offcanvas d-lg-none"
+     tabindex="-1" id="mobileSidebar">
 
-            <div class="offcanvas-header">
-                <div class="brand d-flex align-items-center gap-2">
-                    <div class="brand-logo">
-                        <i class="fa-solid fa-hospital"></i>
-                    </div>
-                    <span class="fw-bold fs-5">Helper Clinic</span>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-            </div>
+  <div class="offcanvas-header">
+    <div class="brand d-flex align-items-center gap-2">
+      <div class="brand-logo">
+        <i class="fa-solid fa-hospital"></i>
+      </div>
+      <a href="{{ route('home') }}"
+         class="text-decoration-none"
+         data-bs-dismiss="offcanvas">
+        <span class="fw-bold fs-5">Helper Clinic</span>
+      </a>
+    </div>
 
-            <div class="offcanvas-body pt-0">
-                <nav class="side-nav">
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
 
-                    <a href="dashBoard.html" class="side-link active">
-                        <i class="fa-solid fa-border-all"></i>
-                        Dashboard
-                    </a>
+  <div class="offcanvas-body pt-0">
+    <nav class="side-nav">
 
-                    <a href="#" class="side-link">
-                        <i class="fa-solid fa-users"></i>
-                        Users
-                    </a>
+      @if(auth()->user()->role === 'admin')
+        <a data-bs-dismiss="offcanvas"
+           href="{{ route('dashboard') }}"
+           class="side-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+          <i class="fa-solid fa-border-all"></i>
+          Dashboard
+        </a>
+      @endif
 
-                    <a href="#" class="side-link">
-                        <i class="fa-solid fa-screwdriver-wrench"></i>
-                        Services
-                    </a>
+      <a data-bs-dismiss="offcanvas"
+         href="{{ route('appointment') }}"
+         class="side-link {{ request()->routeIs('appointment.*') ? 'active' : '' }}">
+        <i class="fa-regular fa-calendar"></i>
+        Appointment
+      </a>
 
-                    <a href="appointment.html" class="side-link">
-                        <i class="fa-regular fa-calendar"></i>
-                        Appointment
-                    </a>
+      @if(auth()->user()->role !== 'patient')
+        <a data-bs-dismiss="offcanvas"
+           href="{{ route('patients.index') }}"
+           class="side-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">
+          <i class="fa-solid fa-users"></i>
+          Patient
+        </a>
+      @endif
 
-                    <a href="doctorProfile.html" class="side-link">
-                        <i class="fa-solid fa-user-doctor"></i>
-                        Doctor
-                    </a>
+      @if(auth()->user()->role === 'patient')
+        <a data-bs-dismiss="offcanvas"
+           href="{{ route('patient-info.my') }}"
+           class="side-link {{ request()->routeIs('patient-info.*') ? 'active' : '' }}">
+          <i class="fa-solid fa-users"></i>
+          Profile
+        </a>
 
-                    <a href="{{ route('patients.create') }}" class="side-link">
-                        <i class="fa-solid fa-users"></i>
-                        Patient
-                    </a>
+        <a data-bs-dismiss="offcanvas"
+           href="{{ route('feedback.form') }}"
+           class="side-link {{ request()->routeIs('feedback.*') ? 'active' : '' }}">
+          <i class="fa-regular fa-comment-dots"></i>
+          Feedback
+        </a>
+      @endif
 
-                    <a href="#" class="side-link">
-                        <i class="fa-regular fa-file-lines"></i>
-                        Report
-                    </a>
+      @if(auth()->user()->role === 'doctor')
+        <a data-bs-dismiss="offcanvas"
+           href="{{ auth()->user()->doctorInfo
+                    ? route('doctor-info.show', auth()->user()->doctorInfo->id)
+                    : route('doctor-info.create') }}"
+           class="side-link {{ request()->routeIs('doctor-info.*') ? 'active' : '' }}">
+          <i class="fa-solid fa-user-doctor"></i>
+          Profile
+        </a>
+      @endif
 
-                    <a href="#" class="side-link">
-                        <i class="fa-solid fa-gear"></i>
-                        Setting
-                    </a>
+      <a data-bs-dismiss="offcanvas"
+         href="{{ route('doctor.list') }}"
+         class="side-link {{ request()->routeIs('doctor.*') ? 'active' : '' }}">
+        <i class="fa-solid fa-users"></i>
+        Doctor List
+      </a>
 
-                    <a href="feedback.html" class="side-link">
-                        <i class="fa-regular fa-comment-dots"></i>
-                        Feedback
-                    </a>
+      @if(auth()->user()->role === 'admin')
+        <a data-bs-dismiss="offcanvas"
+           href="{{ route('settings.index') }}"
+           class="side-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+          <i class="fa-solid fa-gear"></i>
+          Setting
+        </a>
 
-                </nav>
-            </div>
-        </div>
+        <a data-bs-dismiss="offcanvas"
+           href="{{ route('service.index') }}"
+           class="side-link {{ request()->routeIs('service.*') ? 'active' : '' }}">
+          <i class="fa-solid fa-briefcase-medical"></i>
+          Services
+        </a>
+      @endif
+
+      <div class="side-divider"></div>
+
+      <!-- Logout -->
+      <form method="POST"
+            action="{{ route('logout') }}"
+            data-bs-dismiss="offcanvas">
+        @csrf
+        <button type="submit"
+                class="side-link logout-link w-100 text-start border-0 bg-transparent">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Logout
+        </button>
+      </form>
+
+    </nav>
+  </div>
+</div>
+
         @yield('dash-content')
     </div>
     <!-- Bootstrap JS -->

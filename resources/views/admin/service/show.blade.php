@@ -1,66 +1,156 @@
-<!doctype html>
-<html lang="en">
+@extends('layouts.dash')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Show Service</title>
-</head>
+@section('dash-content')
+<link rel="stylesheet" href="{{ asset('CSS/patientList.css') }}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
-<body class="container m-5">
-    <table class="table">
+<section class="pl-main container">
+  <div class="pl-topbar">
+    <h2 class="pl-title">Services</h2>
+
+    <div class="pl-actions">
+
+      {{-- Edit: يروح لصفحة edit لو مختار خدمة واحدة --}}
+      <button class="pl-icon-btn" type="button" aria-label="Edit" id="editBtn">
+        <span class="material-icons-round">edit</span>
+      </button>
+
+      {{-- Delete Selected --}}
+      <form id="bulkDeleteForm" method="POST" action="{{ route('service.bulkDestroy') }}" class="d-inline">
+        @csrf
+        @method('DELETE')
+        <button class="pl-icon-btn" type="submit" aria-label="Delete" id="deleteBtn">
+          <span class="material-icons-round">delete</span>
+        </button>
+      </form>
+
+      {{-- Add --}}
+      <a href="{{ route('service.create') }}" class="pl-icon-btn primary" aria-label="Add">
+        <span class="material-icons-round">add</span>
+      </a>
+
+      {{-- Search --}}
+      <form class="pl-search" method="GET" action="{{ route('service.index') }}">
+        <span class="material-icons-round">search</span>
+        <input
+          id="searchInput"
+          name="q"
+          type="text"
+          value="{{ request('q') }}"
+          placeholder="Search services..."
+        >
+      </form>
+    </div>
+  </div>
+
+  @if(session('success'))
+    <div class="alert alert-success mb-3">{{ session('success') }}</div>
+  @endif
+
+  @if($errors->any())
+    <div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
+  @endif
+
+  <!-- Table Card -->
+  <div class="pl-table-card">
+    <div class="table-responsive">
+      <table class="table pl-table mb-0 align-middle">
         <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Description</th>
-                <th scope="col">Image</th>
-                <th scope="col">Status</th>
-                <th scope="col">Action</th>
-            </tr>
+          <tr>
+            <th class="check-col">
+              <input class="form-check-input pl-check" type="checkbox" id="selectAll">
+            </th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+          </tr>
         </thead>
-        <tbody>
-            @foreach ($services as $service)
 
-                <tr>
-                    <th scope="row">{{ $loop->iteration }}</th>
-                    <td>{{ $service->name }}</td>
-                    <td>{{ $service->description }}</td>
-                    <td><img src="{{ $service->image }}" width="50" height="50"></td>
-                    <td>
-                        @if($service->status == 1)
-                            <span class="badge bg-success">Active</span>
-                        @else
-                            <span class="badge bg-danger">Inactive</span>
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ route('service.edit', $service->id) }}" class="btn btn-sm btn-warning me-1">Edit</a>
-                        <form action="{{ route('service.destroy', $service->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger"
-                                onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
+        <tbody id="servicesTbody">
+          @forelse($services as $service)
+            <tr data-id="{{ $service->id }}">
+              <td>
+                <input class="form-check-input pl-check row-check"
+                       type="checkbox"
+                       name="ids[]"
+                       value="{{ $service->id }}"
+                       form="bulkDeleteForm">
+              </td>
 
+              <td>
+                <img
+                  src="{{ $service->image ? asset('storage/'.$service->image) : asset('images/default-service.png') }}"
+                  alt="service"
+                  style="width:44px;height:44px;object-fit:cover;border-radius:10px">
+              </td>
+
+              <td>{{ $service->name }}</td>
+
+              <td>{{ \Illuminate\Support\Str::limit($service->description ?? '-', 40) }}</td>
+
+              <td>
+                @if($service->status)
+                  <span class="badge text-bg-success">Active</span>
+                @else
+                  <span class="badge text-bg-secondary">Inactive</span>
+                @endif
+              </td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="5" class="text-center py-4">No services found.</td>
+            </tr>
+          @endforelse
         </tbody>
-    </table>
-   <p>You can show up to 9 services on the Home page.</p>
-<p>Simply activate the ones you want everyone to see!</p>
-<p>All other services will appear on the Services page.</p>
+      </table>
+    </div>
 
-    <div>
-    {{ $services->links() }}
-</div>
+    {{-- Pagination --}}
+    <div class="mt-4 custom-pagination">
+      {{ $services->links('pagination::bootstrap-5') }}
+    </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
-</body>
+</section>
 
-</html>
+{{-- ✅ JS صغير للـ select all + edit selected + bulk delete --}}
+<script>
+  const selectAll = document.getElementById('selectAll');
+  const editBtn   = document.getElementById('editBtn');
+  const bulkForm  = document.getElementById('bulkDeleteForm');
+
+  function getCheckedIds() {
+    return [...document.querySelectorAll('.row-check:checked')].map(cb => cb.value);
+  }
+
+  selectAll?.addEventListener('change', () => {
+    const checked = selectAll.checked;
+    document.querySelectorAll('.row-check').forEach(cb => cb.checked = checked);
+  });
+
+  editBtn?.addEventListener('click', () => {
+    const ids = getCheckedIds();
+    if (ids.length !== 1) {
+      alert('اختار Service واحدة بس عشان تعمل Edit');
+      return;
+    }
+    // يروح ل edit route
+    window.location.href = "{{ url('/service') }}/" + ids[0] + "/edit";
+    // لو route عندك /services بدل /service غيرها هنا:
+    // window.location.href = "{{ url('/services') }}/" + ids[0] + "/edit";
+  });
+
+  bulkForm?.addEventListener('submit', (e) => {
+    const ids = getCheckedIds();
+    if (ids.length === 0) {
+      e.preventDefault();
+      alert('اختار Service/Services الأول عشان تعمل Delete');
+      return;
+    }
+    if (!confirm('Delete selected services?')) {
+      e.preventDefault();
+    }
+  });
+</script>
+@endsection

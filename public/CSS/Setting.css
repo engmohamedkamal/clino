@@ -1,0 +1,97 @@
+
+
+/* Center Panel */
+.st-panel{
+  display:flex;
+  justify-content:center;
+  padding-top: 26px;
+}
+
+.st-card{
+  width: min(980px, 100%);
+  background:#ffffff;
+  border-radius: 34px;
+  padding: 34px 34px 28px;
+  box-shadow: 0 18px 45px rgba(15,23,42,.08);
+}
+
+/* Form */
+.st-label{
+  font-weight: 500;
+  font-size: 18px;
+  margin-bottom: 10px;
+  color:#0f172a;
+  
+}
+
+.st-input{
+  border: 0;
+  background: #efefef;
+  border-radius: 14px;
+  height: 46px;
+  padding: 12px 14px;
+  box-shadow: none;
+}
+
+.st-input::placeholder{
+  color:#9aa4b2;
+  font-weight: 400;
+}
+
+.st-input:focus{
+  background:#ececec;
+  box-shadow: 0 0 0 .2rem rgba(59,130,246,.10);
+}
+
+.st-textarea{
+  height:auto;
+  min-height: 92px;
+  resize: none;
+}
+
+/* File */
+.st-file-input{
+  border: 0;
+  border-radius: 14px;
+  background: #efefef;
+  height: 46px;
+}
+
+.st-file-input:focus{
+  box-shadow: 0 0 0 .2rem rgba(59,130,246,.10);
+}
+
+/* Save Button */
+.st-save-btn{
+  height: 50px;
+  border-radius: 18px;
+  font-size: 27px;
+  font-weight: 500;
+  background:#1e4f8f;
+  border: 0;
+  box-shadow: 0 16px 28px rgba(30,79,143,.25);
+}
+
+.st-save-btn:hover{
+  filter: brightness(1.03);
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px){
+  .st-card{
+    padding: 22px 18px 18px;
+    border-radius: 26px;
+  }
+
+  .st-page-title{
+    font-size: 24px;
+  }
+
+  .st-search{
+    width: 52vw;
+  }
+
+  .st-save-btn{
+    font-size: 28px;
+  }
+}

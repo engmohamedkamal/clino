@@ -37,9 +37,22 @@
 
       <div class="sideBtn d-flex align-items-center">
 
-        <a class="btn btn-primary rounded-pill px-4 me-2" href="{{ route('dashboard') }}">
-          Dashboard
-        </a>
+        @php
+  $user = auth()->user();
+
+  $dashboardRoute = match ($user->role) {
+      'admin'   => route('dashboard'),
+      'doctor'  => $user->doctorInfo
+                      ? route('doctor-info.show', $user->doctorInfo->id)
+                      : route('doctor-info.create'),
+      'patient' => route('patient-info.my'),
+      default   => route('dashboard'),
+  };
+@endphp
+
+<a class="btn btn-primary rounded-pill px-4 me-2" href="{{ $dashboardRoute }}">
+  Dashboard
+</a>
 
         <form method="POST" action="{{ route('logout') }}">
           @csrf

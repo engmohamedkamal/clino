@@ -15,20 +15,7 @@
   </p>
 
   <!-- Filter Pills -->
-  <div class="d-flex flex-wrap justify-content-center gap-2 mb-5">
-    <button class="btn btn-sm px-4 py-2 service-filter active" data-filter="all">
-      All
-    </button>
-    <button class="btn btn-sm px-4 py-2 service-filter" data-filter="diagnostics">
-      Diagnostics
-    </button>
-    <button class="btn btn-sm px-4 py-2 service-filter" data-filter="surgery">
-      Surgery
-    </button>
-    <button class="btn btn-sm px-4 py-2 service-filter" data-filter="emergency">
-      Emergency
-    </button>
-  </div>
+
 
   <!-- Services Grid -->
   <div class="row g-4 text-start">
@@ -37,7 +24,7 @@
     <div class="col-12 col-md-6 col-lg-4 service-item" data-category="surgery">
       <div class="service-card">
         <div class="service-icon-circle">
-  <img src="{{ $service->image }}" alt="{{ $service->name }}">
+  <img src="{{ asset('storage/'.$service->image)}}" alt="{{ $service->name }}">
 </div>
 
         <h3 class="h5 fw-bold mb-2 ">{{ $service->name }}</h3>
