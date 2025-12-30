@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DoctorInfoController;
 use App\Http\Controllers\Admin\AppointmentController;
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, "index"])->name('home');
@@ -26,7 +27,8 @@ Route::middleware(['auth'])->group(function () {
   Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointment.destroy');
   Route::get('/appointment/{id}/edit', [AppointmentController::class, 'edit'])->name('appointment.edit');
   Route::put('/appointment/{id}', [AppointmentController::class, 'update'])->name('appointment.update');
-
+  
+  Route::get('/doctor', [DoctorInfoController::class, "list"])->name('doctor.list');
 });
 Route::get('lang/{locale}', function ($locale) {
     if (!in_array($locale, ['en', 'ar'])) {

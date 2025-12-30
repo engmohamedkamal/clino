@@ -77,13 +77,23 @@
                             Feedback
                         </a>
                     @endif
-                    @if(Auth()->user()->role === 'doctor')
-                        <a href="{{ route('doctor-info.show') }}"
-                            class="side-link {{ request()->routeIs('doctor-info.*') ? 'active' : '' }}">
+@if(auth()->user()->role === 'doctor')
+  <a href="{{ auth()->user()->doctorInfo
+              ? route('doctor-info.show', auth()->user()->doctorInfo->id)
+              : route('doctor-info.create') }}"
+     class="side-link {{ request()->routeIs('doctor-info.*') ? 'active' : '' }}">
+     
+    <i class="fa-solid fa-user-doctor"></i>
+    Profile
+  </a>
+@endif
+
+                        <a href="{{ route('doctor.list') }}"
+                            class="side-link {{ request()->routeIs('doctor.*') ? 'active' : '' }}">
                             <i class="fa-solid fa-users"></i>
-                            Profile
+                            Doctor List
                         </a>
-                    @endif
+                    
                     {{-- <a href="{{ route('reports.index') }}"
                         class="side-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
                         <i class="fa-regular fa-file-lines"></i>

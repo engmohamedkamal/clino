@@ -1,7 +1,7 @@
 @extends('layouts.dash')
 @section('dash-content')
-
 <link rel="stylesheet" href="{{ asset('CSS/doctorInfo.css') }}">
+<link rel="stylesheet" href="{{ asset('CSS/doctorProfile.css') }}">
 
 @php
   $info = $info ?? null;
@@ -32,18 +32,14 @@
   if (count($skillsArr) === 0) $skillsArr = [['name' => '', 'value' => 0]];
 @endphp
 
-<main class="main">
+<main class="dp-main">
 
   <!-- Topbar -->
-  <header class="topbar">
-    <div class="d-flex align-items-center gap-2">
-      <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
-        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-      <div class="page-title">Doctor info</div>
-    </div>
-  </header>
+  <header class="dp-topbar" style="height: 175px;">
+      <h1 class="dp-title">Doctor Info</h1>
+
+     
+    </header>
 
   <!-- Content -->
   <section class="content-area">
