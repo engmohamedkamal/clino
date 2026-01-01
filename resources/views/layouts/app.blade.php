@@ -5,7 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Bootstrap -->
-   <link rel="shortcut icon" href="{{ asset('storage/' . $setting->logo) }}" type="image/x-icon" />
+   <link rel="shortcut icon"
+      href="{{ $setting?->logo
+                ? asset('storage/' . $setting->logo)
+                : asset('images/favicon.ico') }}"
+      type="image/x-icon" />
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -20,7 +25,13 @@
 
   <nav class="navbar navbar-expand-lg bg-white py-3 fixed-top">
     <div class="container">
-      <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" width="100" class="navbar-brand fw-bold nav-logo">
+     @if($setting?->logo)
+  <img src="{{ asset('storage/' . $setting->logo) }}"
+       alt="Logo"
+       width="100"
+       class="navbar-brand fw-bold nav-logo">
+@endif
+
 
       <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
         <span class="navbar-toggler-icon"></span>

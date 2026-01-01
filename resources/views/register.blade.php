@@ -6,7 +6,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ __('register.title') }}</title>
-<link rel="shortcut icon" href="{{ asset('storage/' . $setting->logo) }}" type="image/x-icon" />
+<link rel="shortcut icon"
+      href="{{ $setting?->logo
+                ? asset('storage/' . $setting->logo)
+                : asset('images/favicon.ico') }}"
+      type="image/x-icon" />
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('CSS/login.css') }}">
 </head>

@@ -67,42 +67,42 @@ class AuthController extends Controller
 
         return redirect()->route('home')->with('success', 'Logging successful');
     }
- public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|min:3|max:255',
-        'phone' => 'required|string|min:10|max:15|unique:users,phone',
-        'id_number' => 'required|string|min:10|max:255|unique:users,id_number',
-        'password' => 'required|string|min:8|confirmed',
-        'role' => 'nullable|string|in:admin,doctor,patient',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|min:3|max:255',
+            'phone' => 'required|string|min:10|max:15|unique:users,phone',
+            'id_number' => 'required|string|min:10|max:255|unique:users,id_number',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'nullable|string|in:admin,doctor,patient',
+        ]);
 
-    // لو اللي بيعمل register مش أدمن، خليه patient افتراضي
-    // لو أدمن هو اللي بيضيف، يقدر يختار role من الفورم
-    $role = $validated['role'] ?? (Auth::check() && Auth::user()->role === 'admin' ? 'patient' : 'patient');
+        // لو اللي بيعمل register مش أدمن، خليه patient افتراضي
+        // لو أدمن هو اللي بيضيف، يقدر يختار role من الفورم
+        $role = $validated['role'] ?? (Auth::check() && Auth::user()->role === 'admin' ? 'patient' : 'patient');
 
-    $user = User::create([
-        'name' => $validated['name'],
-        'phone' => $validated['phone'],
-        'id_number' => $validated['id_number'],
-        'password' => Hash::make($validated['password']),
-        'role' => $role,
-    ]);
+        $user = User::create([
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'id_number' => $validated['id_number'],
+            'password' => Hash::make($validated['password']),
+            'role' => $role,
+        ]);
 
-    // ✅ لو Admin بيضيف مستخدم: ما نعملش login للمستخدم الجديد
-    if (Auth::check() && Auth::user()->role === 'admin') {
+        // ✅ لو Admin بيضيف مستخدم: ما نعملش login للمستخدم الجديد
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return redirect()
+                ->route('users.index')
+                ->with('success', 'User created successfully');
+        }
+
+        // ✅ لو Register طبيعي: login للمستخدم الجديد
+        Auth::login($user);
+
         return redirect()
-            ->route('users.index')
-            ->with('success', 'User created successfully');
+            ->route('home')
+            ->with('success', 'Registration successful');
     }
-
-    // ✅ لو Register طبيعي: login للمستخدم الجديد
-    Auth::login($user);
-
-    return redirect()
-        ->route('home')
-        ->with('success', 'Registration successful');
-}
 
     public function logout(Request $request)
     {
@@ -114,10 +114,10 @@ class AuthController extends Controller
         return redirect('/'); // ✅ بدل route('/')
     }
     public function show($id)
-{
-    $users = User::latest()->paginate(10);
-    return view('dashboard.users.view', compact('users'));
-}
+    {
+        $users = User::latest()->paginate(10);
+        return view('dashboard.users.view', compact('users'));
+    }
 
     public function edit($id)
     {
