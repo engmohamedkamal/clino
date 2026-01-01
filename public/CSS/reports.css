@@ -1,0 +1,451 @@
+:root{
+  --bg: #f3f8ff;
+  --card: #ffffff;
+  --border: #e7eef8;
+  --text: #0f172a;
+  --muted: #6b7c96;
+  --blue: #1a73e8;
+  --shadow: 0 10px 24px rgba(15, 23, 42, .06);
+  --radius-lg: 16px;
+  --radius-md: 12px;
+}
+
+/* منع أي سكرول أفقي بدون ما يبوظ الظلال */
+html, body { overflow-x: hidden; }
+.app, .rp-main { overflow-x: clip; }
+
+/* main */
+.rp-main{
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 24px;
+  min-width: 0;
+}
+
+
+
+/* Stats */
+.rp-stats{ margin-bottom: 10px; }
+
+.rp-stat-card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+
+.rp-stat-label{
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.rp-stat-value{
+  font-size: 26px;
+  color: var(--text);
+}
+
+.rp-stat-ico{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display:grid;
+  place-items:center;
+  font-size: 18px;
+}
+
+.rp-bg-blue{ background:#eaf3ff; color: var(--blue); }
+.rp-bg-green{ background:#eafaf1; color:#23b26b; }
+.rp-bg-purple{ background:#f2efff; color:#7c3aed; }
+
+/* Block */
+.rp-block{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 14px 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 12px;
+}
+
+.rp-sep{
+  border-color: #edf3ff;
+  opacity: 1;
+  margin: 12px 0 14px;
+}
+
+/* Tabs: مش أزرق إلا Hover */
+.rp-tabs{
+  display:flex;
+  gap: 22px;
+  overflow: hidden;
+  flex-wrap: nowrap;
+}
+
+.rp-tab{
+  background: transparent;
+  border: none;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  color: #6f82a1;
+  font-weight: 700;
+  padding: 10px 0;
+  position: relative;
+  white-space: nowrap;
+}
+
+.rp-tab::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: var(--blue);
+  transition: .2s;
+}
+
+.rp-tab:hover{ color: var(--blue); }
+.rp-tab:hover::after{ width: 100%; }
+
+/* Filters */
+.rp-input{ position: relative; }
+.rp-input .form-control{
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  padding-left: 44px;
+  box-shadow: none;
+}
+
+.rp-input i{
+  position:absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #98a7bf;
+}
+
+.rp-date{
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid #cfe2ff;
+  background: #fff;
+  padding: 0 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.rp-date-left{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.rp-date-ico{
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #eaf3ff;
+  color: var(--blue);
+  display:grid;
+  place-items:center;
+  flex: 0 0 auto;
+}
+
+.rp-date-text{
+  display:flex;
+  flex-direction:column;
+  line-height: 1.1;
+  text-align:left;
+  min-width: 0;
+}
+
+.rp-date-text small{
+  font-size: 10px;
+  letter-spacing: .6px;
+  color: var(--muted);
+}
+
+.rp-date-text strong{
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.rp-square-btn{
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #5b6f8f;
+}
+
+.rp-filter-btn{
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #344863;
+  font-weight: 700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.rp-primary-btn{
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--blue);
+  color:#fff;
+  font-weight: 800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+/* Add Button */
+.rp-add-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: none;
+  background:var(--blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Hover */
+.rp-add-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Active */
+.rp-add-btn:active {
+  transform: scale(0.95);
+}
+
+
+
+
+/* Cards */
+/* Card layout */
+.rp-card{
+  background: #fff;
+  border: 1px solid #e7eef8;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(15,23,42,.06);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.rp-card-body{
+  padding: 16px;
+  flex: 1 1 auto;
+}
+
+/* Card header */
+.rp-card-head{
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.rp-card-ico{
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+
+.rp-ico-blue{ background:#eaf3ff; color:#1a73e8; }
+.rp-ico-purple{ background:#f2efff; color:#7c3aed; }
+.rp-ico-orange{ background:#fff3e6; color:#f97316; }
+
+.rp-card-title h6{
+  font-size: 14px;
+  font-weight: 900;
+  margin: 0;
+}
+
+.rp-card-meta{
+  font-size: 12px;
+  color: #7a8aa3;
+  margin-top: 4px;
+}
+
+/* Rows */
+.rp-card-row{
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: #3d4f6a;
+  margin-top: 10px;
+}
+
+.rp-card-row i{
+  color: #9aa8bc;
+  margin-top: 2px;
+}
+
+/* Footer */
+.rp-card-foot{
+  padding: 10px 14px;
+  border-top: 1px solid #edf3ff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.rp-foot-purple{
+  background: #f5f0ff;
+}
+
+.rp-id{
+  font-size: 12px;
+  color: #8aa0bb;
+  font-weight: 700;
+}
+
+/* Footer actions */
+.rp-foot-actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rp-foot-btn{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: #5d6f8d;
+  display: grid;
+  place-items: center;
+}
+
+.rp-foot-btn.is-disabled{
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* Status pills */
+.rp-pill{
+  font-size: 11px;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.rp-pill-done{
+  background: #eafaf1;
+  color: #1c9c63;
+}
+
+.rp-pill-pending{
+  background: #fff6df;
+  color: #c58a00;
+}
+
+/* Pills */
+.rp-pill{
+  font-size: 11px;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 999px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.rp-pill-done{
+  background: #eafaf1;
+  color: #1c9c63;
+}
+
+.rp-pill-pending{
+  background: #fff6df;
+  color: #c58a00;
+}
+
+/* Footer */
+.rp-card-foot{
+  padding: 10px 14px;
+  border-top: 1px solid #edf3ff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top: auto;           /* يثبت الفوتر تحت */
+}
+
+.rp-foot-purple{ background: #f5f0ff; }
+
+.rp-id{
+  font-size: 12px;
+  color: #8aa0bb;
+  font-weight: 700;
+}
+
+.rp-foot-actions{
+  display:flex;
+  gap: 10px;
+}
+
+.rp-foot-btn{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: #5d6f8d;
+  display:grid;
+  place-items:center;
+}
+
+.rp-foot-btn:hover{ background: rgba(255,255,255,.7); }
+.rp-foot-btn.is-disabled{ opacity: .45; }
+
+/* ================= Responsive (بدون ما نكسر الديزاين) ================= */
+
+/* فلتر-row: نتحكم في الأعمدة على الديسكتوب عشان New Report يفضل جنبهم */
+@media (min-width: 992px){
+  .rp-col-search{ flex: 0 0 44%; max-width: 44%; }
+  .rp-col-date{   flex: 0 0 28%; max-width: 28%; }
+  .rp-col-actions{flex: 0 0 18%; max-width: 18%; }
+  .rp-col-new{    flex: 0 0 10%; max-width: 10%; min-width: 170px; }
+}
+
+/* على الشاشات الأصغر: Bootstrap طبيعي يخليها تحت بعض بدون سكرول */
+@media (max-width: 992px){
+  .rp-topbar{ flex-direction: column; align-items: stretch; }
+  .rp-top-actions{ width: 100%; justify-content: space-between; }
+  .rp-top-search{ max-width: 100%; }
+  .rp-tabs{ overflow-x: auto; }       /* هنا مسموح سكرول تبويبات فقط، مش الصفحة */
+  .rp-tabs::-webkit-scrollbar{ display:none; }
+}

@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorInfoController;
+use App\Http\Controllers\DoctorServicesController;
 use App\Http\Controllers\Admin\AppointmentController;
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, "index"])->name('home');
@@ -23,14 +24,23 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/appointment', [AppointmentController::class, "index"])->name('appointment');
   Route::post('/appointment-store', [AppointmentController::class, "store"])->name('appointment.store');
   Route::get('/appointment-show', [AppointmentController::class, "show"])->name('appointment.show');
-  Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointment.destroy');
-  Route::get('/appointment/{id}/edit', [AppointmentController::class, 'edit'])->name('appointment.edit');
-  Route::put('/appointment/{id}', [AppointmentController::class, 'update'])->name('appointment.update');
-  
+
   Route::get('/doctor', [DoctorInfoController::class, "list"])->name('doctor.list');
   Route::get('/doctor-info/{id}', [DoctorInfoController::class, 'show'])
         ->whereNumber('id')
         ->name('doctor-info.show');
+
+           // الدكتور يعدل خدماته هو (بدون id)
+    Route::get('/doctor/services', [DoctorServicesController::class, 'edit'])->name('doctor.services.edit');
+    Route::put('/doctor/services', [DoctorServicesController::class, 'update'])->name('doctor.services.update');
+
+    // للأدمن يعدل خدمات دكتور معين
+    Route::get('/admin/doctors/{doctorInfo}/services', [DoctorServicesController::class, 'edit'])->name('admin.doctors.services.edit');
+    Route::put('/admin/doctors/{doctorInfo}/services', [DoctorServicesController::class, 'update'])->name('admin.doctors.services.update');
+
+    // toggle (اختياري)
+    Route::patch('/admin/doctors/{doctorInfo}/services/{service}/toggle', [DoctorServicesController::class, 'toggle'])
+        ->name('admin.doctors.services.toggle');
 });
 Route::get('lang/{locale}', action: function ($locale) {
     if (!in_array($locale, ['en', 'ar'])) {

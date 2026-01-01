@@ -26,20 +26,33 @@ class DoctorInfo extends Model
         'about',
     ];
 
- 
-    
+
+
     // app/Models/DoctorInfo.php
     protected $casts = [
-    'dob' => 'date',
-    'availability_schedule' => 'array',
-    'Specialization' => 'array',
-    'activities' => 'array',
-    'skills' => 'array',
-];
+        'dob' => 'date',
+        'availability_schedule' => 'array',
+        'Specialization' => 'array',
+        'activities' => 'array',
+        'skills' => 'array',
+
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+
+
+    public function services()
+    {
+        return $this->belongsToMany(
+            Service::class,
+            'doctor_service'
+        )
+            ->withPivot(['price', 'duration', 'active'])
+            ->withTimestamps();
     }
 }
 

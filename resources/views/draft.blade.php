@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('content')
   <!-- Hero Section -->
+  <link rel="shortcut icon" href="{{ asset('storage/' . $setting->logo) }}" type="image/x-icon" />
   <title>Home</title>
   <section id="Home" class="hero-section ">
     <div class="container rounded-5 ">

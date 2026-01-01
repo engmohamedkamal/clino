@@ -2,22 +2,58 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
+    public function index(Request $request)
+    {
+        $q = $request->query('q');
+
+        $users = User::query()
+            ->when($q, function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('name', 'like', "%{$q}%")
+                        ->orWhere('phone', 'like', "%{$q}%")
+                        ->orWhere('id_number', 'like', "%{$q}%")
+                        ->orWhere('role', 'like', "%{$q}%");
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('dashboard.users.view', compact('users'));
+    }
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || count($ids) === 0) {
+            return back()->withErrors('اختار يوزر/يوزرز الأول عشان تعمل Delete');
+        }
+        $ids = array_values(array_diff($ids, [auth()->id()]));
+
+        User::whereIn('id', $ids)->delete();
+
+        return redirect()->route('users.index')->with('success', 'Users deleted successfully.');
+    }
     public function register()
+    {
+        return view('dashboard.users.add');
+    }
+    public function userRegister()
     {
         return view('register');
     }
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'phone' => ['required', 'string', 'regex:/^[0-9]+$/','digits:11'],
+            'phone' => ['required', 'string', 'regex:/^[0-9]+$/', 'digits:11'],
             'password' => ['required', 'string', 'min:8'],
         ]);
 
@@ -31,70 +67,98 @@ class AuthController extends Controller
 
         return redirect()->route('home')->with('success', 'Logging successful');
     }
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|min:3|max:255',
-            'phone' => 'required|string|min:10|max:15|unique:users,phone',
-            'id_number' => 'required|string|min:10|max:255|unique:users,id_number',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'nullable|string|in:admin,doctor,patient',
-        ]);
+ public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|min:3|max:255',
+        'phone' => 'required|string|min:10|max:15|unique:users,phone',
+        'id_number' => 'required|string|min:10|max:255|unique:users,id_number',
+        'password' => 'required|string|min:8|confirmed',
+        'role' => 'nullable|string|in:admin,doctor,patient',
+    ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'phone' => $validated['phone'],
-            'id_number' => $validated['id_number'],
-            'password' => Hash::make($validated['password']),
-            // لو مفيش role جاية من الفورم خليه patient افتراضي
-            'role' => $validated['role'] ?? 'patient',
-        ]);
+    // لو اللي بيعمل register مش أدمن، خليه patient افتراضي
+    // لو أدمن هو اللي بيضيف، يقدر يختار role من الفورم
+    $role = $validated['role'] ?? (Auth::check() && Auth::user()->role === 'admin' ? 'patient' : 'patient');
 
-        // لو اللي عامل إنشاء يوزر هو أدمن ومسجل دخوله دلوقتي
-        if (Auth::check() && Auth::user()->role === 'admin') {
-            // مهم: ما تعملش Auth::login($user) عشان ما تبدلش جلسة الأدمن باليوزر الجديد
-            return redirect()
-                ->route('users.show', $user->id)
-                ->with('success', 'User created successfully');
-        }
+    $user = User::create([
+        'name' => $validated['name'],
+        'phone' => $validated['phone'],
+        'id_number' => $validated['id_number'],
+        'password' => Hash::make($validated['password']),
+        'role' => $role,
+    ]);
 
-        // لو حد بيسجل أول مرة (مش أدمن)
-        Auth::login($user);
-
+    // ✅ لو Admin بيضيف مستخدم: ما نعملش login للمستخدم الجديد
+    if (Auth::check() && Auth::user()->role === 'admin') {
         return redirect()
-            ->route('home')
-            ->with('success', 'Registration successful');
+            ->route('users.index')
+            ->with('success', 'User created successfully');
     }
+
+    // ✅ لو Register طبيعي: login للمستخدم الجديد
+    Auth::login($user);
+
+    return redirect()
+        ->route('home')
+        ->with('success', 'Registration successful');
+}
 
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('/');
+        return redirect('/'); // ✅ بدل route('/')
     }
+    public function show($id)
+{
+    $users = User::latest()->paginate(10);
+    return view('dashboard.users.view', compact('users'));
+}
+
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('admin.users.edit', compact('user'));
+        return view('dashboard.users.edit', compact('user'));
     }
-
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:3', 'max:255'],
+            'phone' => [
+                'required',
+                'string',
+                'min:10',
+                'max:15',
+                Rule::unique('users', 'phone')->ignore($user->id),
+            ],
+            'id_number' => [
+                'required',
+                'string',
+                'min:10',
+                'max:255',
+                Rule::unique('users', 'id_number')->ignore($user->id),
+            ],
+            'role' => ['required', 'string', Rule::in(['admin', 'doctor', 'patient'])],
+
+            // ✅ password optional
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ]);
 
         $data = [
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'id_number' => $request->id_number,
-            'role' => $request->role,
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'id_number' => $validated['id_number'],
+            'role' => $validated['role'],
         ];
 
-        // لو المستخدم كتب باسورد جديد
-        if ($request->filled('password')) {
-            $data['password'] = bcrypt($request->password);
+        if (!empty($validated['password'])) {
+            $data['password'] = Hash::make($validated['password']);
         }
 
         $user->update($data);
@@ -102,21 +166,6 @@ class AuthController extends Controller
         return redirect()->route('users.index')
             ->with('success', 'User updated successfully');
     }
-    public function index(Request $request)
-    {
-        $search = $request->input('search');
-
-        $users = User::when($search, function ($query, $search) {
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('id_number', 'like', "%{$search}%")
-                ->orWhere('phone', 'like', "%{$search}%");
-        })
-            ->orderBy('id', 'desc')
-            ->paginate(10)
-            ->appends(['search' => $search]);
-        return view('admin.users.show', compact('users', 'search'));
-    }
-
     public function destroy($id)
     {
         $user = User::findOrFail($id);
@@ -124,10 +173,4 @@ class AuthController extends Controller
 
         return redirect()->route('users.index')->with('success', 'User deleted successfully');
     }
-    public function show($id)
-    {
-        $users = User::All();
-        return view('admin.users.show', compact('users'));
-    }
-
 }

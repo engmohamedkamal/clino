@@ -102,6 +102,7 @@ html, body {
   margin-top: auto;
 }
 
+
 /* ================= Main Content ================= */
 .main-content {
   flex: 1;
@@ -680,3 +681,87 @@ html, body {
 
 
 
+/* Layout */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar fixed */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow: hidden; /* خلي الـ nav هو اللي يسكرول */
+  z-index: 1040;
+  width: 280px; /* لو عندك عرض مختلف غيّريه */
+}
+
+/* Scroll only inside nav (لو اللينكات كتير) */
+.sidebar .side-nav {
+  overflow-y: auto;
+  max-height: calc(100vh - 80px); /* تقريبًا بعد brand */
+}
+
+/* Page content area beside fixed sidebar */
+.main-wrap {
+  flex: 1;
+  margin-left: 280px; /* نفس عرض sidebar */
+  min-height: 100vh;
+}
+
+/* Mobile: sidebar hidden so content full width */
+@media (max-width: 991.98px) {
+  .sidebar { display: none !important; }
+  .main-wrap { margin-left: 0; }
+}
+
+/* Logout link */
+.side-link.logout {
+  color: #ef4444; /* أحمر خفيف */
+}
+
+/* Hover */
+.side-link.logout:hover {
+  background: #fee2e2; /* خلفية أحمر فاتح */
+  color: #b91c1c;      /* أحمر غامق */
+}
+
+/* Icon */
+.side-link.logout i {
+  color: #ef4444;
+}
+
+.side-link.logout:hover i {
+  color: #b91c1c;
+}
+/* Logout button base */
+.logout-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 14px;
+  border-radius: 14px;
+
+  color: #ef4444;           /* أحمر */
+  font-weight: 500;
+
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.logout-link:hover {
+  background: #fee2e2;      /* خلفية أحمر فاتح */
+  color: #b91c1c;           /* أحمر غامق */
+}
+
+/* Icon color */
+.logout-link i {
+  color: #ef4444;
+}
+
+.logout-link:hover i {
+  color: #b91c1c;
+}
