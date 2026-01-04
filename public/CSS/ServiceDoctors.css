@@ -1,0 +1,295 @@
+:root{
+  --dd-bg: #f6f8fc;
+  --dd-card: #ffffff;
+  --dd-text: #0f172a;
+  --dd-muted: #64748b;
+  --dd-line: #e7eef7;
+  --dd-primary: #13B6EC;
+  --dd-primary-2: #0b5ed7;
+  --dd-pill: #eef2f7;
+  --dd-pill-border: #e5edf7;
+  --dd-shadow: 0 18px 40px rgba(15, 23, 42, .07);
+}
+
+.dd-body{
+  background: var(--dd-bg);
+  color: var(--dd-text);
+}
+
+.dd-main{
+  padding: 44px 0 70px;
+}
+
+.dd-head{
+  margin-bottom: 18px;
+}
+
+.dd-title{
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+
+.dd-subtitle{
+  margin: 0;
+  color: var(--dd-muted);
+  max-width: 760px;
+}
+
+.dd-filters{
+  margin-top: 16px;
+  margin-bottom: 18px;
+  background: #fff;
+  border: 1px solid var(--dd-line);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.dd-filter-pill{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.dd-pill-btn{
+  background: var(--dd-pill);
+  border: 1px solid var(--dd-pill-border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.dd-pill-btn:focus{
+  box-shadow: none;
+}
+
+.dd-filter-right{
+  display: flex;
+  justify-content: flex-end;
+}
+
+.dd-icon-btn{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--dd-line);
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.dd-icon-btn:hover{
+  background: #f7faff;
+}
+
+.dd-card{
+  height: 100%;
+  background: var(--dd-card);
+  border: 1px solid var(--dd-line);
+  border-radius: 18px;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+   height: 100%;
+  display: flex;
+}
+
+.dd-card:hover{
+  transform: translateY(-3px);
+  box-shadow: var(--dd-shadow);
+  border-color: rgba(29, 78, 216, .15);
+}
+
+.dd-card-body{
+  padding: 18px;
+    display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dd-card-head{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dd-avatar{
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid var(--dd-line);
+  background: #fff;
+}
+
+.dd-avatar-wrap{
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: radial-gradient(circle at 30% 30%, #b8f3ff, #dbeafe);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--dd-line);
+}
+
+.dd-avatar-wrap .dd-avatar{
+  border-radius: 999px;
+  border: 0;
+  width: 48px;
+  height: 48px;
+}
+
+.dd-main-info{
+  min-width: 0;
+  flex: 1;
+}
+
+.dd-name-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dd-name{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dd-rate{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  color: #f59e0b;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  flex: 0 0 auto;
+}
+
+.dd-rate.gold{
+  background: #fff7ed;
+  border-color: #fcd34d;
+}
+
+.dd-role{
+  display: inline-block;
+  margin-top: 2px;
+  font-weight: 700;
+  color: var(--dd-primary);
+  text-decoration: none;
+}
+
+.dd-role:hover{
+  text-decoration: underline;
+}
+
+.dd-exp{
+  color: var(--dd-muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.dd-desc{
+  color: #475569;
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 0 0 12px;
+  min-height: 44px;
+    flex-grow: 1;
+}
+
+.dd-slots-title{
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.dd-slot-pills{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.dd-slots{
+  margin-top: auto;
+}
+
+.dd-slot{
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--dd-line);
+  background: #fff;
+  color: #334155;
+  font-weight: 700;
+  font-size: 12px;
+    white-space: nowrap;     /* يمنع كسر الكلام */
+  font-size: 11px;         /* تصغير بسيط */
+  padding: 6px 8px;
+}
+
+.dd-slot.active{
+  border-color: rgba(29, 78, 216, .35);
+  background: rgba(29, 78, 216, .08);
+  color: var(--dd-primary);
+}
+
+.dd-slot.disabled{
+  background: #f8fafc;
+  color: #94a3b8;
+  border-color: #eef2f7;
+}
+
+.dd-slot-pills{
+  display: flex;
+  flex-wrap: nowrap;      
+  gap: 8px;
+}
+
+.dd-book-btn{
+  width: 100%;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #154c92;
+  color: #fff;
+  font-weight: 800;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+    margin-top: 14px;
+
+}
+
+.dd-book-btn:hover{
+  background: #123f7a;
+  color: #fff;
+}
+
+@media (max-width: 576px){
+  .dd-main{
+    padding-top: 28px;
+  }
+
+  .dd-card-body{
+    padding: 16px;
+  }
+}

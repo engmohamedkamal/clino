@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AppointmentRequest extends FormRequest
@@ -20,40 +21,28 @@ class AppointmentRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-        $user = auth()->user();
+{
+    $user = auth()->user();
 
-        // rules common for all
-        $rules = [
-            'doctor_name' => 'required|string|max:255',
-            'appointment_date' => 'required|date',
-            'appointment_time' => 'required|date_format:H:i',
-            'reason' => 'nullable|string|max:1000',
-        ];
+    $rules = [
+        'doctor_name' => ['required','string', Rule::exists('users','name')->where('role','doctor')],
 
-        // Admin/Doctor لازم يدخل بيانات المريض
-        if ($user && $user->role !== 'patient') {
-            $rules += [
-                'patient_name' => 'required|string|max:255',
-                'patient_number' => 'required|string|max:20',
-                'dob' => 'required|date',
-                'gender' => 'required|in:male,female',
-            ];
-        }
+        'appointment_date'  => ['required','date'],
+        'appointment_time'  => ['required'],
+        'reason'            => ['nullable','string'],
+    ];
 
-        // Patient مش محتاج يبعتهُم (هنا Optional أو نسيبهم خالص)
-        // لو عندك input hidden ممكن تخليهم nullable
-        else {
-            $rules += [
-                'patient_name' => 'nullable',
-                'patient_number' => 'nullable',
-                'dob' => 'nullable',
-                'gender' => 'nullable',
-            ];
-        }
-
-        return $rules;
+    // ✅ لو مش patient (Admin/Doctor) يبقى لازم يدخل بيانات المريض من الفورم
+    if ($user && $user->role !== 'patient') {
+        $rules['patient_name']   = ['required','string','max:255'];
+        $rules['patient_number'] = ['required','string','max:50'];
+        $rules['dob']            = ['required','date'];
+        $rules['gender']         = ['required','in:male,female,Other'];
     }
+
+    return $rules;
+}
+
     public function messages(): array
     {
         return [

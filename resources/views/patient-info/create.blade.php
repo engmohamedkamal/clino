@@ -15,6 +15,11 @@
       </div>
     </div>
   </header>
+@if(session('error'))
+  <div class="alert alert-danger mb-3">
+    {{ session('error') }}
+  </div>
+@endif
 
   <!-- Content -->
   <section class="content-area">
@@ -27,6 +32,7 @@
             {{ session('success') }}
           </div>
         @endif
+        
         <form method="POST" action="{{ route('patient-info.store') }}">
           @csrf
 

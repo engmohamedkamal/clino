@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorInfoController;
 use App\Http\Controllers\DoctorServicesController;
@@ -22,7 +23,7 @@ Route::middleware(['auth'])->group(function () {
 
     
   Route::get('/appointment', [AppointmentController::class, "index"])->name('appointment');
-  Route::post('/appointment-store', [AppointmentController::class, "store"])->name('appointment.store');
+  // Route::post('/appointment-store', [AppointmentController::class, "store"])->name('appointment.store');
   Route::get('/appointment-show', [AppointmentController::class, "show"])->name('appointment.show');
 
   Route::get('/doctor', [DoctorInfoController::class, "list"])->name('doctor.list');
@@ -41,6 +42,13 @@ Route::middleware(['auth'])->group(function () {
     // toggle (اختياري)
     Route::patch('/admin/doctors/{doctorInfo}/services/{service}/toggle', [DoctorServicesController::class, 'toggle'])
         ->name('admin.doctors.services.toggle');
+
+        Route::get('/doctors/{doctor}/availability', [AppointmentController::class, 'doctorAvailability'])
+  ->name('doctors.availability');
+
+  Route::get('/services/{service}/doctors', [ServiceController::class, 'doctors'])
+    ->name('services.doctors');
+
 });
 Route::get('lang/{locale}', action: function ($locale) {
     if (!in_array($locale, ['en', 'ar'])) {

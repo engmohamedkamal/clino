@@ -111,4 +111,8 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
   Route::put('/admin/doctors/services/bulk', [DoctorServicesBulkController::class, 'bulkUpdate'])
     ->name('admin.doctors.services.bulkUpdate');
 
+    Route::put('/appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])
+    ->name('appointments.updateStatus');
+
+
 });

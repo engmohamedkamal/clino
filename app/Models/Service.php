@@ -16,4 +16,6 @@ class Service extends Model
             ->withPivot(['price', 'duration', 'active'])
             ->withTimestamps();
     }
+
+    
 }

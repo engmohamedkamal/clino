@@ -33,6 +33,7 @@
             </div>
           @endif
 
+
           <form method="POST" action="{{ route('patients.store') }}">
             @csrf
 

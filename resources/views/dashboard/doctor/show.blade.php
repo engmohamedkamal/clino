@@ -223,15 +223,28 @@
                 <h2 class="dp-h2">Availability</h2>
 
                 <div class="row g-3 dp-chips">
-                  @forelse($availability as $item)
-                    <div class="col-6">
-                      <div class="dp-chip">{{ $item }}</div>
-                    </div>
-                  @empty
-                    <div class="col-12">
-                      <div class="dp-chip">No schedule added</div>
-                    </div>
-                  @endforelse
+                 @forelse($availability as $row)
+  @php
+    $day  = $row['day'] ?? '';
+    $from = $row['from'] ?? '';
+    $to   = $row['to'] ?? '';
+
+    // optional: format 09:00 -> 9:00 AM
+    $fromLabel = $from ? \Carbon\Carbon::createFromFormat('H:i', $from)->format('g:i A') : '';
+    $toLabel   = $to   ? \Carbon\Carbon::createFromFormat('H:i', $to)->format('g:i A') : '';
+  @endphp
+
+  <div class="col-6">
+    <div class="dp-chip">
+      {{ $day }} {{ $fromLabel }} to {{ $toLabel }}
+    </div>
+  </div>
+@empty
+  <div class="col-12">
+    <div class="dp-chip">No schedule added</div>
+  </div>
+@endforelse
+
                 </div>
               </div>
             </div>

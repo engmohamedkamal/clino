@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Controllers\Controller;
-use App\Models\DoctorInfo;
 use App\Models\Service;
+use App\Models\DoctorInfo;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 
 class DoctorServicesBulkController extends Controller
 {
@@ -42,7 +43,7 @@ class DoctorServicesBulkController extends Controller
         ]);
 
         $allowedDoctorIds = DoctorInfo::query()
-            ->when(!$user->hasRole('admin'), fn ($q) => $q->where('user_id', $user->id))
+           ->when($user->role !== 'admin', fn ($q) => $q->where('user_id', $user->id))
             ->pluck('id')
             ->toArray();
 

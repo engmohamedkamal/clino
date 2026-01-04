@@ -15,6 +15,7 @@ class Appointment extends Model
         'patient_number',
         'dob',
         'reason',
+        'status'
     ];
 
 protected $casts = [

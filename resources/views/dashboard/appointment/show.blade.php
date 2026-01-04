@@ -72,7 +72,8 @@
               <th>Time</th>
               <th>Gender</th>
               <th>DOB</th>
-              <th>Created At</th>
+              <th>Status</th>
+              {{-- <th>Created At</th> --}}
             </tr>
           </thead>
 
@@ -92,8 +93,72 @@
                 <td>{{ $appt->appointment_date ?? '-' }}</td>
                 <td>{{ $appt->appointment_time ?? '-' }}</td>
                 <td>{{ $appt->gender ?? '-' }}</td>
-                <td>{{ $appt->dob ?? '-' }}</td>
-                <td>{{ optional($appt->created_at)->format('Y-m-d') }}</td>
+                <td>
+  {{ $appt->dob ? \Carbon\Carbon::parse($appt->dob)->format('d/m/Y') : '-' }}
+<td>
+  @if(auth()->user()->role === 'admin' || auth()->user()->role === 'doctor')
+
+    <div class="dropdown">
+      <button
+        class="badge dropdown-toggle border-0
+          @if($appt->status === 'pending') bg-warning text-dark
+          @elseif($appt->status === 'cancelled') bg-danger
+          @elseif($appt->status === 'completed') bg-success
+          @endif"
+        type="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        {{ ucfirst($appt->status) }}
+      </button>
+
+      <ul class="dropdown-menu">
+        <li>
+          <form method="POST" action="{{ route('appointments.updateStatus', $appt->id) }}">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="status" value="pending">
+            <button class="dropdown-item">Pending</button>
+          </form>
+        </li>
+
+        <li>
+          <form method="POST" action="{{ route('appointments.updateStatus', $appt->id) }}">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="status" value="cancelled">
+            <button class="dropdown-item text-danger">Cancelled</button>
+          </form>
+        </li>
+
+        <li>
+          <form method="POST" action="{{ route('appointments.updateStatus', $appt->id) }}">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="status" value="completed">
+            <button class="dropdown-item text-success">Completed</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+
+  @else
+
+    <span class="badge
+      @if($appt->status === 'pending') bg-warning text-dark
+      @elseif($appt->status === 'cancelled') bg-danger
+      @elseif($appt->status === 'completed') bg-success
+      @endif">
+      {{ ucfirst($appt->status) }}
+    </span>
+
+  @endif
+</td>
+
+
+
+
+                {{-- <td>{{ optional($appt->created_at)->format('Y-m-d') }}</td> --}}
               </tr>
             @empty
               <tr>

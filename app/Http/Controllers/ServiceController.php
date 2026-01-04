@@ -8,9 +8,16 @@ use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
-    /**
-     * Display a listing of the services + search.
-     */
+     public function doctors(Service $service)
+    {
+        // assuming: Service has doctors() relationship
+        $doctors = $service->doctors()
+            ->with('user') // لو DoctorInfo مربوط بـ user
+            ->wherePivot('active', true) // لو عندك active في pivot
+            ->get();
+
+        return view('services.doctors', compact('service', 'doctors'));
+    }
     public function index(Request $request)
     {
         $query = Service::query();

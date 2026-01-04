@@ -12,7 +12,7 @@ class DoctorInfoController extends Controller
     public function show($id)
     {
         $info = DoctorInfo::with('user')->findOrFail($id);
-        $user = $info->user; // صاحب البروفايل
+        $user = $info->user;
 
         return view('dashboard.doctor.show', compact('info', 'user'));
     }
@@ -41,7 +41,6 @@ class DoctorInfoController extends Controller
     {
         $user = auth()->user();
 
-        // Create مرة واحدة فقط
         if ($user->doctorInfo) {
             return redirect()
                 ->route('doctor-info.show', $user->doctorInfo->id)
@@ -64,13 +63,11 @@ class DoctorInfoController extends Controller
 
     public function update(DoctorInfoRequest $request, DoctorInfo $doctorInfo)
     {
-        // owner only
         $this->authorizeOwner($doctorInfo);
 
         $data = $this->cleanMultiValues($request->validated());
 
         if ($request->hasFile('image')) {
-            // delete old
             if ($doctorInfo->image && Storage::disk('public')->exists($doctorInfo->image)) {
                 Storage::disk('public')->delete($doctorInfo->image);
             }
@@ -103,20 +100,20 @@ class DoctorInfoController extends Controller
     }
 
     /**
-     * ✅ تنظيف وتحضير المصفوفات multi-valued
+     * ✅ تنظيف وتحضير البيانات multi-valued
      */
     private function cleanMultiValues(array $data): array
     {
-        // availability_schedule: ["Mon 9-2", "Tue 9-2"]
-        $data['availability_schedule'] = $this->cleanStringArray($data['availability_schedule'] ?? null);
+        // ✅ availability_schedule: array of rows [{day, from, to}, ...]
+        $data['availability_schedule'] = $this->cleanAvailabilityRows($data['availability_schedule'] ?? null);
 
-        // Specialization: ["General Surgery", "Cardiology"]
+        // ✅ Specialization: ["General Surgery", "Cardiology"]
         $data['Specialization'] = $this->cleanStringArray($data['Specialization'] ?? null);
 
-        // activities: ["Clinic rounds", "Research"]
+        // ✅ activities: ["Clinic rounds", "Research"]
         $data['activities'] = $this->cleanStringArray($data['activities'] ?? null);
 
-        // skills: [{name:"Operations", value:45}, ...]
+        // ✅ skills: [{name:"Operations", value:45}, ...]
         $skills = $data['skills'] ?? null;
         if (is_array($skills)) {
             $clean = [];
@@ -124,9 +121,7 @@ class DoctorInfoController extends Controller
                 $name = isset($s['name']) ? trim((string) $s['name']) : '';
                 $value = isset($s['value']) ? (int) $s['value'] : null;
 
-                if ($name === '' || $value === null) {
-                    continue;
-                }
+                if ($name === '' || $value === null) continue;
 
                 $value = max(0, min(100, $value));
                 $clean[] = ['name' => $name, 'value' => $value];
@@ -137,6 +132,53 @@ class DoctorInfoController extends Controller
         }
 
         return $data;
+    }
+
+    /**
+     * ✅ تنظيف availability rows
+     * expected:
+     * [
+     *   ['day'=>'Mon','from'=>'09:00','to'=>'14:00'],
+     *   ...
+     * ]
+     */
+    private function cleanAvailabilityRows($rows): array
+    {
+        if (!is_array($rows)) return [];
+
+        $allowedDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        $clean = [];
+
+        foreach ($rows as $r) {
+            if (!is_array($r)) continue;
+
+            $day  = isset($r['day'])  ? trim((string) $r['day'])  : '';
+            $from = isset($r['from']) ? trim((string) $r['from']) : '';
+            $to   = isset($r['to'])   ? trim((string) $r['to'])   : '';
+
+            // تجاهل الصف الفاضي
+            if ($day === '' && $from === '' && $to === '') continue;
+
+            // لو ناقص أي جزء -> تجاهله (أو ممكن تسيبه وتخلي الـ Request يطلع validation error)
+            if ($day === '' || $from === '' || $to === '') continue;
+
+            if (!in_array($day, $allowedDays, true)) continue;
+
+            // تأكد صيغة الوقت HH:MM
+            if (!preg_match('/^\d{2}:\d{2}$/', $from)) continue;
+            if (!preg_match('/^\d{2}:\d{2}$/', $to)) continue;
+
+            // from < to
+            if ($from >= $to) continue;
+
+            $clean[] = [
+                'day'  => $day,
+                'from' => $from,
+                'to'   => $to,
+            ];
+        }
+
+        return array_values($clean);
     }
 
     private function cleanStringArray($arr): array

@@ -1,5 +1,5 @@
 <?php
-// app/Models/DoctorInfo.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,29 +13,31 @@ class DoctorInfo extends Model
         'user_id',
         'gender',
         'dob',
+
+        // JSON
         'Specialization',
+        'availability_schedule',
+        'activities',
+        'skills',
+
+        // other fields
         'license_number',
         'address',
-        'availability_schedule',
         'facebook',
         'instagram',
         'twitter',
-        'skills',
-        'activities',
         'image',
         'about',
     ];
 
-
-
-    // app/Models/DoctorInfo.php
     protected $casts = [
         'dob' => 'date',
-        'availability_schedule' => 'array',
+
+        // JSON casts
         'Specialization' => 'array',
+        'availability_schedule' => 'array',
         'activities' => 'array',
         'skills' => 'array',
-
     ];
 
     public function user()
@@ -43,17 +45,13 @@ class DoctorInfo extends Model
         return $this->belongsTo(User::class);
     }
 
-
-
     public function services()
     {
         return $this->belongsToMany(
             Service::class,
             'doctor_service'
         )
-            ->withPivot(['price', 'duration', 'active'])
-            ->withTimestamps();
+        ->withPivot(['price', 'duration', 'active'])
+        ->withTimestamps();
     }
 }
-
-

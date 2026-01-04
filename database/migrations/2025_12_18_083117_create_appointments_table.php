@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('doctor_name');
             $table->string('patient_number');
             $table->enum('gender', ['male', 'female']);
+            $table->enum('status', ['pending', 'cancelled','completed']);
             $table->date('appointment_date');
             $table->time('appointment_time');
             $table->string('dob');

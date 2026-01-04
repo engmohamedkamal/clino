@@ -1,91 +1,87 @@
 @extends('layouts.app')
 @section('content')
-    <link rel="stylesheet" href="{{{ asset('CSS/service.css') }}}">
-    <title>Our Services</title>
+  <link rel="stylesheet" href="{{{ asset('CSS/service.css') }}}">
+  <title>Our Services</title>
 
 
-<!-- Services Main Section -->
-<section class="container text-center Services">
-  <h1 class="fw-bold  mb-3">
-    Our Medical Services
-  </h1>
-  <p class="text-muted mx-auto mb-4" style="max-width: 640px;">
-    We offer a wide range of professional medical services to cater to all your health needs.
-    From routine check-ups to complex surgeries, our expert team is here for you.
-  </p>
+  <!-- Services Main Section -->
+  <section class="container text-center Services">
+    <h1 class="fw-bold  mb-3">
+      Our Medical Services
+    </h1>
+    <p class="text-muted mx-auto mb-4" style="max-width: 640px;">
+      We offer a wide range of professional medical services to cater to all your health needs.
+      From routine check-ups to complex surgeries, our expert team is here for you.
+    </p>
 
-  <!-- Filter Pills -->
+    <!-- Filter Pills -->
 
 
-  <!-- Services Grid -->
-  <div class="row g-4 text-start">
-    <!-- Cardiology (highlight) -->
-    @foreach ($services as $service)       
-    <div class="col-12 col-md-6 col-lg-4 service-item" data-category="surgery">
+    <!-- Services Grid -->
+    <div class="row g-4 text-start">
+      <!-- Cardiology (highlight) -->
+      @foreach ($services as $service)
+  <div class="col-12 col-md-6 col-lg-4 service-item" data-category="surgery">
+    <a href="{{ route('services.doctors', $service->id) }}" class="text-decoration-none text-reset d-block">
       <div class="service-card">
         <div class="service-icon-circle">
-  <img src="{{ asset('storage/'.$service->image)}}" alt="{{ $service->name }}">
-</div>
+          <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->name }}">
+        </div>
 
-        <h3 class="h5 fw-bold mb-2 ">{{ $service->name }}</h3>
-        <p class="small  mb-0">
-          {{ $service->description }}
-        </p>
+        <h3 class="h5 fw-bold mb-2">{{ $service->name }}</h3>
+        <p class="small mb-0">{{ $service->description }}</p>
       </div>
-    </div>
-    @endforeach
-
+    </a>
   </div>
-<div class="mt-4 custom-pagination">
-    {{ $services->links('pagination::bootstrap-5') }}
-</div>
-
-
-</section>
-<!-- Featured Service Section -->
-<section id="featured-service" class="featured-service-section">
-  <div class="container">
-    <div class="featured-card row g-4 align-items-center">
-
-      <!-- Text -->
-      <div class="col-12 col-lg-6">
-        <span class="featured-label d-inline-block mb-2">
-          FEATURED SERVICE
-        </span>
-
-        <h2 class="featured-title mb-3">
-          Advanced Cardiac Care &amp;<br />
-          Surgery Center
-        </h2>
-
-        <p class="featured-text mb-4">
-          Our cardiology department is equipped with state-of-the-art technology for
-          accurate diagnosis and effective treatment of heart conditions. We specialize
-          in minimally invasive procedures that ensure faster recovery times.
-        </p>
-
-        <div class="d-flex flex-wrap ">
-         <a href="{{ route('appointment') }}" class="btn btn-featured-primary  fw-semibold">
-          Book Consultation
-        </a>
-       
-        </div>
-      </div>
-
-      <!-- Image -->
-      <div class="col-12 col-lg-6">
-        <div class="featured-image-wrapper">
-          <img
-            src="{{asset('Images/tablet.png')}}"
-            alt="Doctor checking reports"
-            class="featured-image"
-          />
-        </div>
-      </div>
+@endforeach
 
     </div>
-  </div>
-</section>
+    <div class="mt-4 custom-pagination">
+      {{ $services->links('pagination::bootstrap-5') }}
+    </div>
+
+
+  </section>
+  <!-- Featured Service Section -->
+  <section id="featured-service" class="featured-service-section">
+    <div class="container">
+      <div class="featured-card row g-4 align-items-center">
+
+        <!-- Text -->
+        <div class="col-12 col-lg-6">
+          <span class="featured-label d-inline-block mb-2">
+            FEATURED SERVICE
+          </span>
+
+          <h2 class="featured-title mb-3">
+            Advanced Cardiac Care &amp;<br />
+            Surgery Center
+          </h2>
+
+          <p class="featured-text mb-4">
+            Our cardiology department is equipped with state-of-the-art technology for
+            accurate diagnosis and effective treatment of heart conditions. We specialize
+            in minimally invasive procedures that ensure faster recovery times.
+          </p>
+
+          <div class="d-flex flex-wrap ">
+            <a href="{{ route('appointment') }}" class="btn btn-featured-primary  fw-semibold">
+              Book Consultation
+            </a>
+
+          </div>
+        </div>
+
+        <!-- Image -->
+        <div class="col-12 col-lg-6">
+          <div class="featured-image-wrapper">
+            <img src="{{asset('Images/tablet.png')}}" alt="Doctor checking reports" class="featured-image" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
 
   <!-- How It Works -->
   <section class="container text-center Works">
@@ -169,5 +165,5 @@
     </div>
   </section>
 
- 
+
 @endsection

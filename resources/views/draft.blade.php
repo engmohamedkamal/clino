@@ -163,6 +163,7 @@
       <div class="row g-4">
         @foreach ($services as $service)
           <div class="col-md-4">
+            <a href="{{ route('services.doctors', $service->id) }}" class="text-decoration-none text-reset d-block">
             <div class="service-card text-center">
               <div class="service-img">
                 <img src="{{ asset('storage/'.$service->image) }}" alt="{{ $service->name }}">
@@ -171,6 +172,7 @@
               <h5>{{ $service->name }}</h5>
               <p>{{ \Illuminate\Support\Str::limit($service->description, 100) }}</p>
             </div>
+             </a>
           </div>
         @endforeach
       </div>

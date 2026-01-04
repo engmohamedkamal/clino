@@ -1,5 +1,6 @@
 @extends('layouts.dash')
 @section('dash-content')
+
 <link rel="stylesheet" href="{{ asset('CSS/doctorInfo.css') }}">
 <link rel="stylesheet" href="{{ asset('CSS/doctorProfile.css') }}">
 
@@ -26,7 +27,7 @@
   $skillsArr = is_array($oldSkills) ? $oldSkills : [];
 
   // ensure at least 1 row for better UX
-  if (count($availability) === 0) $availability = [''];
+  if (count($availability) === 0) $availability = [['day' => '', 'from' => '', 'to' => '']];
   if (count($specs) === 0) $specs = [''];
   if (count($activitiesArr) === 0) $activitiesArr = [''];
   if (count($skillsArr) === 0) $skillsArr = [['name' => '', 'value' => 0]];
@@ -36,10 +37,8 @@
 
   <!-- Topbar -->
   <header class="dp-topbar" style="height: 175px;">
-      <h1 class="dp-title">Doctor Info</h1>
-
-     
-    </header>
+    <h1 class="dp-title">Doctor Info</h1>
+  </header>
 
   <!-- Content -->
   <section class="content-area">
@@ -182,7 +181,7 @@
               </div>
             </div>
 
-            <!-- ✅ Availability Multi -->
+            <!-- ✅ Availability Multi (3 inputs) -->
             <div class="col-12">
               <div class="mb-3">
                 <div class="di-label-row">
@@ -194,24 +193,62 @@
 
                 <div id="availWrap" class="di-repeat-wrap">
                   @foreach($availability as $i => $item)
-                    <div class="di-repeat-item">
-                      <input
-                        type="text"
-                        name="availability_schedule[]"
-                        value="{{ $item }}"
-                        class="form-control di-control @error('availability_schedule.'.$i) is-invalid @enderror"
-                        placeholder="e.g. Mon 9AM-2PM"
-                      >
-                      <button type="button" class="btn di-x-btn remove-item" aria-label="Remove">
-                        <i class="fa-solid fa-xmark"></i>
-                      </button>
-                    </div>
+                    @php
+                      $dayVal  = is_array($item) ? ($item['day']  ?? '') : '';
+                      $fromVal = is_array($item) ? ($item['from'] ?? '') : '';
+                      $toVal   = is_array($item) ? ($item['to']   ?? '') : '';
+                    @endphp
 
-                    @error('availability_schedule.'.$i)
-                      <div class="text-danger small mt-1">{{ $message }}</div>
-                    @enderror
+                    <div class="di-repeat-item row g-2 align-items-center">
+                      <!-- Day -->
+                      <div class="col-md-4">
+                        <select
+                          name="availability_schedule[{{ $i }}][day]"
+                          class="form-select di-control @error('availability_schedule.'.$i.'.day') is-invalid @enderror">
+                          <option value="">Day</option>
+                          @foreach(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as $day)
+                            <option value="{{ $day }}" @selected($dayVal === $day)>{{ $day }}</option>
+                          @endforeach
+                        </select>
+                        @error('availability_schedule.'.$i.'.day')
+                          <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                      </div>
+
+                      <!-- From -->
+                      <div class="col-md-3">
+                        <input
+                          type="time"
+                          name="availability_schedule[{{ $i }}][from]"
+                          value="{{ $fromVal }}"
+                          class="form-control di-control @error('availability_schedule.'.$i.'.from') is-invalid @enderror">
+                        @error('availability_schedule.'.$i.'.from')
+                          <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                      </div>
+
+                      <!-- To -->
+                      <div class="col-md-3">
+                        <input
+                          type="time"
+                          name="availability_schedule[{{ $i }}][to]"
+                          value="{{ $toVal }}"
+                          class="form-control di-control @error('availability_schedule.'.$i.'.to') is-invalid @enderror">
+                        @error('availability_schedule.'.$i.'.to')
+                          <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                      </div>
+
+                      <!-- Remove -->
+                      <div class="col-md-2 text-end">
+                        <button type="button" class="btn di-x-btn remove-avail" aria-label="Remove">
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                      </div>
+                    </div>
                   @endforeach
                 </div>
+
               </div>
             </div>
 
@@ -277,7 +314,7 @@
                         type="text"
                         name="skills[{{ $i }}][name]"
                         value="{{ $skName }}"
-                        class="form-control di-control @error('skills.'.$i.'.name') is-invalid @enderror"
+                        class="form-control di-control skill-name @error('skills.'.$i.'.name') is-invalid @enderror"
                         placeholder="Skill name"
                       >
 
@@ -286,7 +323,7 @@
                         name="skills[{{ $i }}][value]"
                         value="{{ $skVal }}"
                         min="0" max="100"
-                        class="form-control di-control di-skill-val @error('skills.'.$i.'.value') is-invalid @enderror"
+                        class="form-control di-control di-skill-val skill-value @error('skills.'.$i.'.value') is-invalid @enderror"
                         placeholder="%"
                       >
 
@@ -390,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* =========================
-     Helpers for repeatable text rows
+     Helpers for repeatable text rows (spec + activities)
   ========================== */
   const makeRepeatItem = (name, placeholder = '', value = '') => {
     const wrap = document.createElement('div');
@@ -420,17 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* =========================
-     4) Availability add/remove
-  ========================== */
-  const availWrap = document.getElementById('availWrap');
-  const addAvailBtn = document.getElementById('addAvailBtn');
-
-  addAvailBtn?.addEventListener('click', () => {
-    availWrap.appendChild(makeRepeatItem('availability_schedule[]', 'e.g. Mon 9AM-2PM'));
-  });
-
-  /* =========================
-     5) Activities add/remove
+     4) Activities add/remove
   ========================== */
   const actWrap = document.getElementById('actWrap');
   const addActBtn = document.getElementById('addActBtn');
@@ -440,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* =========================
-     6) Delegated remove for repeat items
+     5) Delegated remove for repeat items (spec + activities فقط)
   ========================== */
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.remove-item');
@@ -452,12 +479,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const parent = item.parentElement;
     item.remove();
 
-    // keep at least one row in each group
     if (parent?.id === 'specWrap') {
       ensureOneRow(parent, () => makeRepeatItem('Specialization[]', 'Enter specialization'));
-    }
-    if (parent?.id === 'availWrap') {
-      ensureOneRow(parent, () => makeRepeatItem('availability_schedule[]', 'e.g. Mon 9AM-2PM'));
     }
     if (parent?.id === 'actWrap') {
       ensureOneRow(parent, () => makeRepeatItem('activities[]', 'Enter activity'));
@@ -465,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* =========================
-     7) Skills (name + value) add/remove + renumber (IMPORTANT)
+     6) Skills add/remove + renumber
   ========================== */
   const skillsWrap = document.getElementById('skillsWrap');
   const addSkillBtn = document.getElementById('addSkillBtn');
@@ -523,7 +546,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     row.remove();
 
-    // keep at least 1 row
     if (skillsWrap && skillsWrap.querySelectorAll('.di-skill-row').length === 0) {
       skillsWrap.appendChild(makeSkillRow('', 0));
     }
@@ -531,10 +553,91 @@ document.addEventListener('DOMContentLoaded', () => {
     renumberSkills();
   });
 
-  // Ensure all existing skill rows (from Blade) have correct names
   renumberSkills();
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  /* =========================
+     Availability (3 inputs) add/remove + renumber
+  ========================== */
+  const wrap = document.getElementById('availWrap');
+  const addBtn = document.getElementById('addAvailBtn');
+  if (!wrap || !addBtn) return;
+
+  const makeAvailRow = (i, day = '', from = '', to = '') => {
+    const row = document.createElement('div');
+    row.className = 'di-repeat-item row g-2 align-items-center';
+    row.innerHTML = `
+      <div class="col-md-4">
+        <select name="availability_schedule[${i}][day]" class="form-select di-control">
+          <option value="">Day</option>
+          ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => `
+            <option value="${d}" ${d === day ? 'selected' : ''}>${d}</option>
+          `).join('')}
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <input type="time" name="availability_schedule[${i}][from]" class="form-control di-control" value="${from}">
+      </div>
+
+      <div class="col-md-3">
+        <input type="time" name="availability_schedule[${i}][to]" class="form-control di-control" value="${to}">
+      </div>
+
+      <div class="col-md-2 text-end">
+        <button type="button" class="btn di-x-btn remove-avail" aria-label="Remove">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    `;
+    return row;
+  };
+
+  const renumberAvail = () => {
+    const rows = wrap.querySelectorAll('.di-repeat-item');
+    rows.forEach((row, idx) => {
+      const day  = row.querySelector('select');
+      const times = row.querySelectorAll('input[type="time"]');
+      const from = times[0];
+      const to   = times[1];
+
+      if (day)  day.name  = `availability_schedule[${idx}][day]`;
+      if (from) from.name = `availability_schedule[${idx}][from]`;
+      if (to)   to.name   = `availability_schedule[${idx}][to]`;
+    });
+  };
+
+  const ensureOneAvailRow = () => {
+    if (wrap.querySelectorAll('.di-repeat-item').length === 0) {
+      wrap.appendChild(makeAvailRow(0));
+      renumberAvail();
+    }
+  };
+
+  addBtn.addEventListener('click', () => {
+    const i = wrap.querySelectorAll('.di-repeat-item').length;
+    wrap.appendChild(makeAvailRow(i));
+    renumberAvail();
+  });
+
+  wrap.addEventListener('click', (e) => {
+    const btn = e.target.closest('.remove-avail');
+    if (!btn) return;
+
+    const row = btn.closest('.di-repeat-item');
+    if (!row) return;
+
+    row.remove();
+    ensureOneAvailRow();
+    renumberAvail();
+  });
+
+  ensureOneAvailRow();
+  renumberAvail();
+});
+</script>
 
 @endsection
