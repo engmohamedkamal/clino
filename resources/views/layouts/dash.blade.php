@@ -56,13 +56,13 @@
             <i class="fa-solid fa-users"></i>
             Patient
           </a>
+          <a href="{{ route('admin.doctors.services.bulkEdit') }}"
+             class="side-link {{ request()->routeIs('admin.doctors.services.*') ? 'active' : '' }}">
+            <i class="fa-solid fa-stethoscope"></i>
+            Doctor Services
+          </a>
         @endif
 
-        <a href="{{ route('admin.doctors.services.bulkEdit') }}"
-           class="side-link {{ request()->routeIs('admin.doctors.services.*') ? 'active' : '' }}">
-          <i class="fa-solid fa-stethoscope"></i>
-          Doctor Services
-        </a>
 
         @if(auth()->user()->role === 'patient')
           <a href="{{ route('patient-info.my') }}"
@@ -111,6 +111,11 @@
              class="side-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
             <i class="fa-solid fa-users"></i>
             Users
+          </a>
+          <a href="{{ route('messages.index') }}"
+             class="side-link {{ request()->routeIs('messages.*') ? 'active' : '' }}">
+            <i class="fa-solid fa-message"></i>
+            Messages
           </a>
         @endif
       </nav>

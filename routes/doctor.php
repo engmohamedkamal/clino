@@ -32,8 +32,6 @@ Route::middleware(['auth','admin_or_doctor'])->group(function () {
 
     Route::put('/doctor-info/{doctorInfo}', [DoctorInfoController::class, 'update'])
         ->name('doctor-info.update');
-
-  
 });
 
   

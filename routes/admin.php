@@ -6,9 +6,13 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DoctorServicesBulkController;
 
 Route::middleware(['auth', 'admin.area'])->group(function () {
+  Route::get('/messages', [ContactController::class, 'show'])->name('messages.index');
+  Route::delete('/messages/bulk-destroy', [ContactController::class, 'bulkDestroy'])
+    ->name('messages.bulkDestroy');
   Route::get('/service', [ServiceController::class, 'index'])->name('service.index');
 
   Route::get('/service/create', [ServiceController::class, 'create'])->name('service.create');

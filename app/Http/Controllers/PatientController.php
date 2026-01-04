@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PatientRequest;
+use App\Http\Requests\NewPatientRequest;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 
@@ -42,7 +42,7 @@ class PatientController extends Controller
         return view('dashboard.patient.add');
     }
 
-    public function store(PatientRequest $request)
+    public function store(NewPatientRequest $request)
     {
         Patient::create($request->validated());
 
@@ -57,7 +57,7 @@ class PatientController extends Controller
         return view('dashboard.patient.edit', compact('patient'));
     }
 
-    public function update(PatientRequest $request, Patient $patient)
+    public function update(NewPatientRequest $request, Patient $patient)
     {
         $patient->update($request->validated());
 

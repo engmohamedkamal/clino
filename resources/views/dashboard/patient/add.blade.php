@@ -16,9 +16,6 @@
           <h3 class="appointment-title mt-2 mb-0">Add New Patient</h3>
         </div>
       </div>
-
-       {{-- <a href="{{ route('patients.create') }}" class="dp-btn">Patients List</a> --}}
-
     </header>
 
     <!-- Content -->
@@ -32,16 +29,10 @@
               {{ session('success') }}
             </div>
           @endif
-
-
           <form method="POST" action="{{ route('patients.store') }}">
             @csrf
-
             <div class="row g-3">
-
-
               <div class="col-md-6">
-
                 <!-- Patient Name -->
                 <div class="mb-3">
                   <label class="form-label appointment-label" for="patientName">Patient Name</label>
@@ -154,7 +145,6 @@
               </button>
             </div>
           </form>
-
         </div>
       </div>
     </section>
