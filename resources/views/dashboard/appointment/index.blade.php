@@ -2,16 +2,7 @@
 
 @section('dash-content')
 <main class="main">
-  <!-- Topbar -->
-  <header class="topbar">
-    <div class="d-flex align-items-center gap-2">
-      <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
-        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-      <div class="page-title">Dashboard</div>
-    </div>
-  </header>
+  
 
   <!-- Content -->
   <section class="content-area">
@@ -23,17 +14,6 @@
         @if (session('success'))
           <div id="successAlert" class="alert alert-success mb-3">
             {{ session('success') }}
-          </div>
-        @endif
-
-        {{-- ERRORS --}}
-        @if ($errors->any())
-          <div class="alert alert-danger mb-3">
-            <ul class="mb-0">
-              @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
           </div>
         @endif
 

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorInfoController;
@@ -61,6 +62,39 @@ Route::get('lang/{locale}', action: function ($locale) {
   return redirect()->back();
 })->name('lang.switch');
 
+Route::middleware(['auth'])->group(function () {
+
+    // Products CRUD
+    Route::get('/products', [ProductController::class, 'index'])
+        ->name('products.index');
+
+    Route::get('/products/create', [ProductController::class, 'create'])
+        ->name('products.create');
+
+    Route::post('/products', [ProductController::class, 'store'])
+        ->name('products.store');
+
+    Route::get('/products/{product}', [ProductController::class, 'show'])
+        ->name('products.show');
+
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
+        ->name('products.edit');
+
+    Route::put('/products/{product}', [ProductController::class, 'update'])
+        ->name('products.update');
+
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+        ->name('products.destroy');
+
+    // Optional – generate SKU
+    Route::get('/products-generate-sku', [ProductController::class, 'generateSku'])
+        ->name('products.generateSku');
+
+    Route::post('/products/{product}/decrease', [ProductController::class, 'decreaseQty'])
+    ->name('products.decrease');
+
+
+});
 require_once('auth.php');
 require_once('admin.php');
 require_once('doctor.php');

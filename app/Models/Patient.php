@@ -23,4 +23,19 @@ class Patient extends Model
     protected $casts = [
         'dob' => 'date',
     ];
+
+
+// App\Models\Patient.php
+
+public function reports()
+{
+    return $this->hasMany(Report::class);
+}
+// App\Models\Patient.php
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
+
 }

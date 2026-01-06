@@ -117,7 +117,19 @@
             <i class="fa-solid fa-message"></i>
             Messages
           </a>
-        @endif
+       <a href="{{ route('products.index') }}"
+   class="side-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+  <i class="fa-solid fa-boxes-stacked"></i>
+  <span>Products</span>
+</a>
+
+@endif
+<a href="{{ route('reports.index') }}"
+   class="side-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+  <i class="fa-solid fa-boxes-stacked"></i>
+  <span>Reports</span>
+</a>
+
       </nav>
 
       <!-- Logout (ثابت تحت) -->

@@ -54,4 +54,12 @@ class DoctorInfo extends Model
         ->withPivot(['price', 'duration', 'active'])
         ->withTimestamps();
     }
+
+    // App\Models\User.php
+
+public function reports()
+{
+    return $this->hasMany(Report::class, 'doctor_id');
+}
+
 }

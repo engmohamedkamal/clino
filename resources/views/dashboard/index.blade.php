@@ -155,59 +155,82 @@
           </div>
 
           <!-- Latest Patients Table -->
-          <div class="cardx table-card">
-            <div class="cardx-head">
-              <div class="cardx-title">Latest Patients</div>
-              <a href="{{ route('patients.index') }}" class="btn icon-btn icon-btn-sm" aria-label="more">
-                <i class="fa-solid fa-ellipsis"></i>
-              </a>
-            </div>
+       <div class="cardx table-card">
+  <div class="cardx-head">
+    <div class="cardx-title">Latest Patients</div>
+    <a href="{{ route('patients.index') }}" class="btn icon-btn icon-btn-sm" aria-label="more">
+      <i class="fa-solid fa-ellipsis"></i>
+    </a>
+  </div>
 
-            <div class="table-responsive table-wrap">
-              <table class="table table-borderless align-middle mb-0 table-soft">
-                <thead>
-                  <tr>
-                    <th>Patient Name</th>
-                    <th>Email</th>
-                    <th>Gender</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th class="text-end">Actions</th>
-                  </tr>
-                </thead>
+  <div class="table-responsive table-wrap">
+    <table class="table table-borderless align-middle mb-0 table-soft">
+      <thead>
+        <tr>
+          <th>Patient Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Source</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
 
-                <tbody>
-                  @forelse($latestPatients as $p)
-                    <tr>
-                      <td>{{ $p->patient_name }}</td>
-                      <td class="text-muted">{{ $p->patient_email ?? '-' }}</td>
-                      <td class="text-muted">{{ $p->gender ?? '-' }}</td>
-                      <td class="text-muted">{{ $p->patient_number ?? '-' }}</td>
-                      <td class="text-muted">{{ \Illuminate\Support\Str::limit($p->address ?? '-', 20) }}</td>
-                      <td class="text-end">
-                        <a class="btn action-ico" href="{{ url('/patients/'.$p->id.'/edit') }}">
-                          <i class="fa-regular fa-pen-to-square"></i>
-                        </a>
+      <tbody>
+        @forelse($latestPatients as $p)
+          <tr>
+            {{-- Name --}}
+            <td>
+              {{ $p->name }}
+              @if($p->source === 'users')
+                <span class="badge bg-secondary ms-1">User</span>
+              @endif
+            </td>
 
-                        <form action="{{ route('patients.destroy', $p->id) }}" method="POST" class="d-inline">
-                          @csrf
-                          @method('DELETE')
-                          <button class="btn action-ico" type="submit"
-                            onclick="return confirm('Delete this patient?')">
-                            <i class="fa-regular fa-trash-can"></i>
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  @empty
-                    <tr>
-                      <td colspan="6" class="text-center text-muted py-4">No patients found.</td>
-                    </tr>
-                  @endforelse
-                </tbody>
-              </table>
-            </div>
-          </div>
+            {{-- Email --}}
+            <td class="text-muted">{{ $p->email ?? '-' }}</td>
+
+            {{-- Phone --}}
+            <td class="text-muted">{{ $p->phone ?? '-' }}</td>
+
+            {{-- Source --}}
+            <td class="text-muted text-capitalize">{{ $p->source }}</td>
+
+            {{-- Actions --}}
+            <td class="text-end">
+              @if($p->source === 'patients')
+                {{-- Edit Patient --}}
+                <a class="btn action-ico" href="{{ url('/patients/'.$p->id.'/edit') }}">
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </a>
+
+                {{-- Delete Patient --}}
+                <form action="{{ route('patients.destroy', $p->id) }}" method="POST" class="d-inline">
+                  @csrf
+                  @method('DELETE')
+                  <button class="btn action-ico" type="submit"
+                          onclick="return confirm('Delete this patient?')">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                </form>
+              @else
+                {{-- Edit User --}}
+                <a class="btn action-ico" href="{{ url('/users/'.$p->id.'/edit') }}">
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </a>
+              @endif
+            </td>
+          </tr>
+        @empty
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">
+              No patients found.
+            </td>
+          </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
+</div>
 
         </div>
       </div>
