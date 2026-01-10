@@ -19,11 +19,11 @@ return new class extends Migration
             $table->foreignId('doctor_id')
                   ->constrained('doctor_infos')
                   ->cascadeOnDelete();
-            $table->string('medicine_name');
-            $table->string('dosage');     
-            $table->string('duration');   
+            $table->json('medicine_name');
+            $table->json('dosage');
+            $table->json('duration');
+            $table->json('notes')->nullable();
             $table->string('diagnosis');   
-            $table->text('notes')->nullable();
 
             $table->timestamps();
         });

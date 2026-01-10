@@ -19,9 +19,13 @@ class Prescription extends Model
         'notes',
     ];
 
-    /* ================= Relations ================= */
+    protected $casts = [
+    'medicine_name' => 'array',
+    'dosage'        => 'array',
+    'duration'      => 'array',
+    'notes'         => 'array',
+];
 
-    // المريض = User (role patient)
     public function patientUser()
     {
         return $this->belongsTo(User::class, 'patient_id');

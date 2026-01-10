@@ -102,69 +102,106 @@ class PrescriptionController extends Controller
 
 
     /* ================= Create ================= */
+public function create()
+{
+    if (!$this->canManage()) {
+        abort(403);
+    }
 
-    public function create()
-    {
-        if (!$this->canManage()) {
-            abort(403);
-        }
+    $doctorId = $this->currentDoctorId();
 
+    // المرضى فقط
+    $patients = User::where('role', 'patient')->latest()->get();
+
+    // Admin فقط يختار doctor_id
+    $doctors = $this->isAdmin()
+        ? DoctorInfo::with('user')->latest()->get()
+        : collect();
+
+    return view('dashboard.prescriptions.create', compact('patients', 'doctors', 'doctorId'));
+}
+
+public function store(Request $request)
+{
+    if (!$this->canManage()) {
+        abort(403);
+    }
+
+    $rules = [
+        'patient_id' => ['required', 'integer', 'exists:users,id'],
+
+        // ✅ Arrays
+        'medicine_name'   => ['required', 'array', 'min:1'],
+        'medicine_name.*' => ['required', 'string', 'max:255'],
+
+        'dosage'   => ['required', 'array', 'min:1'],
+        'dosage.*' => ['required', 'string', 'max:255'],
+
+        'duration'   => ['required', 'array', 'min:1'],
+        'duration.*' => ['required', 'string', 'max:255'],
+
+        // ✅ notes ممكن تبقى array (اختياري لكل دواء)
+        'notes'   => ['nullable', 'array'],
+        'notes.*' => ['nullable', 'string'],
+        
+        'diagnosis' => ['required', 'string', 'max:255'],
+    ];
+
+    if ($this->isAdmin()) {
+        $rules['doctor_id'] = ['required', 'integer', 'exists:doctor_infos,id'];
+    }
+
+    $data = $request->validate($rules);
+
+    // ✅ تأكد إن المختار فعلاً patient
+    $patientUser = User::where('role', 'patient')->find($data['patient_id']);
+    if (!$patientUser) {
+        return back()->withErrors(['patient_id' => 'Selected user is not a patient.'])->withInput();
+    }
+
+    // ✅ Doctor: doctor_id تلقائي
+    if ($this->isDoctor()) {
         $doctorId = $this->currentDoctorId();
-
-        // ✅ المرضى = users where role = patient
-        $patients = User::where('role', 'patient')->latest()->get();
-
-        // ✅ Admin فقط يختار doctor_id
-        $doctors = $this->isAdmin()
-            ? DoctorInfo::with('user')->latest()->get()
-            : collect();
-
-        return view('dashboard.prescriptions.create', compact('patients', 'doctors', 'doctorId'));
+        if (!$doctorId) {
+            return back()->withErrors(['doctor_id' => 'Doctor profile not found.'])->withInput();
+        }
+        $data['doctor_id'] = $doctorId;
     }
 
-    /* ================= Store ================= */
+    // ✅ تنظيف القيم الفاضية (خصوصًا لو عندك dynamic rows)
+    $medicine = collect($data['medicine_name'])->map(fn($v) => trim($v))->filter()->values()->all();
+    $dosage   = collect($data['dosage'])->map(fn($v) => trim($v))->filter()->values()->all();
+    $duration = collect($data['duration'])->map(fn($v) => trim($v))->filter()->values()->all();
 
-    public function store(Request $request)
-    {
-        if (!$this->canManage()) {
-            abort(403);
-        }
+    $notes = collect($data['notes'] ?? [])
+        ->map(fn($v) => is_null($v) ? null : trim($v))
+        ->values()
+        ->all();
 
-        $rules = [
-            'patient_id'    => ['required', 'integer', 'exists:users,id'],
-            'medicine_name' => ['required', 'string', 'max:255'],
-            'dosage'        => ['required', 'string', 'max:255'],
-            'duration'      => ['required', 'string', 'max:255'],
-            'diagnosis'     => ['required', 'string', 'max:255'],
-            'notes'         => ['nullable', 'string'],
-        ];
-
-        if ($this->isAdmin()) {
-            $rules['doctor_id'] = ['required', 'integer', 'exists:doctor_infos,id'];
-        }
-
-        $data = $request->validate($rules);
-
-        // ✅ تأكد إن المختار فعلاً patient
-        $patientUser = User::where('role', 'patient')->find($data['patient_id']);
-        if (!$patientUser) {
-            return back()->withErrors(['patient_id' => 'Selected user is not a patient.'])->withInput();
-        }
-
-        // ✅ Doctor: doctor_id تلقائي
-        if ($this->isDoctor()) {
-            $doctorId = $this->currentDoctorId();
-            if (!$doctorId) {
-                return back()->withErrors(['doctor_id' => 'Doctor profile not found.'])->withInput();
-            }
-            $data['doctor_id'] = $doctorId;
-        }
-
-        $rx = Prescription::create($data);
-
-        return redirect()->route('prescriptions.show', $rx->id)
-            ->with('success', 'Prescription created successfully.');
+    // ✅ لازم نفس عدد العناصر (عشان مايحصلش mismatch)
+    $count = count($medicine);
+    if ($count === 0 || count($dosage) !== $count || count($duration) !== $count) {
+        return back()
+            ->withErrors(['medicine_name' => 'Please fill medicine, dosage and duration for each row.'])
+            ->withInput();
     }
+
+    // لو notes أقل من العدد، كمّلها null
+    if (count($notes) < $count) {
+        $notes = array_pad($notes, $count, null);
+    }
+
+    $data['medicine_name'] = $medicine;
+    $data['dosage']        = $dosage;
+    $data['duration']      = $duration;
+    $data['notes']         = $notes;
+
+    $rx = Prescription::create($data);
+
+    return redirect()->route('prescriptions.show', $rx->id)
+        ->with('success', 'Prescription created successfully.');
+}
+
 
     /* ================= Edit ================= */
 

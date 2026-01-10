@@ -102,7 +102,7 @@
 
       <div class="rx-box">
         {{-- لو diagnosis نص واحد --}}
-        <div class="rx-item">1- {{ $diagnosis }}</div>
+        <div class="rx-item">{{ $diagnosis }}</div>
       </div>
 
       {{-- Medications --}}
@@ -121,12 +121,26 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td class="td-castom">{{ $medicine }}</td>
-              <td>{{ $dosage }}</td>
-              <td>{{ $duration }}</td>
-              <td>{{ $notes }}</td>
-            </tr>
+         @foreach($rx->medicine_name as $index => $medicine)
+  <tr>
+    <td class="td-castom">
+      {{ $medicine }}
+    </td>
+
+    <td>
+      {{ $rx->dosage[$index] ?? '-' }}
+    </td>
+
+    <td>
+      {{ $rx->duration[$index] ?? '-' }}
+    </td>
+
+    <td>
+      {{ $rx->notes[$index] ?? '-' }}
+    </td>
+  </tr>
+@endforeach
+
           </tbody>
         </table>
       </div>
