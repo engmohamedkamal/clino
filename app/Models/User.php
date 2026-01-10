@@ -32,7 +32,19 @@ public function doctorInfo()
 {
     return $this->hasOne(\App\Models\DoctorInfo::class);
 }
+// public function patient()
+// {
+//     return $this->hasOne(\App\Models\Patient::class);
+// }
+public function patient()
+{
+    return $this->hasOne(\App\Models\Patient::class, 'user_id');
+}
 
+public function patientProfile()
+{
+    return $this->hasOne(\App\Models\Patient::class, 'user_id');
+}
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;

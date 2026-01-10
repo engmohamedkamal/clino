@@ -37,5 +37,15 @@ public function user()
     return $this->belongsTo(User::class);
 }
 
+// public function prescriptions()
+// {
+//     return $this->hasMany(Prescription::class);
+// }
+public function prescriptions()
+{
+    return $this->hasMany(\App\Models\Prescription::class, 'patient_id');
+}
+
+
 
 }

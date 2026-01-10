@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserInfoController;
 use App\Http\Controllers\DoctorInfoController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PrescriptionController;
 
 
 Route::middleware(['auth', 'doctor.area'])->group(function () {
@@ -60,3 +61,42 @@ Route::middleware(['auth'])->group(function () {
         ->name('reports.show');
 });
 
+
+
+Route::middleware(['auth'])->group(function () {
+
+    // ================= Patient (View only) =================
+    Route::get('/prescriptions', [PrescriptionController::class, 'index'])
+        ->name('prescriptions.index');
+
+    Route::get('/prescriptions/{prescription}', [PrescriptionController::class, 'show'])
+        ->name('prescriptions.show')
+        ->whereNumber('prescription');
+
+    // ================= Admin/Doctor (Manage) =================
+    Route::middleware(['admin_or_doctor'])->group(function () {
+
+        Route::get('/prescriptions/create', [PrescriptionController::class, 'create'])
+            ->name('prescriptions.create');
+
+        Route::post('/prescriptions', [PrescriptionController::class, 'store'])
+            ->name('prescriptions.store');
+
+        Route::get('/prescriptions/{prescription}/edit', [PrescriptionController::class, 'edit'])
+            ->name('prescriptions.edit')
+            ->whereNumber('prescription');
+
+        Route::put('/prescriptions/{prescription}', [PrescriptionController::class, 'update'])
+            ->name('prescriptions.update')
+            ->whereNumber('prescription');
+
+        Route::delete('/prescriptions/{prescription}', [PrescriptionController::class, 'destroy'])
+            ->name('prescriptions.destroy')
+            ->whereNumber('prescription');
+
+        // (اختياري) bulk delete
+        Route::delete('/prescriptions/bulk-destroy', [PrescriptionController::class, 'bulkDestroy'])
+            ->name('prescriptions.bulkDestroy');
+        // مهم: bulk-destroy قبل {prescription} لو هتستخدمها
+    });
+});

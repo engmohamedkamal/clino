@@ -130,6 +130,14 @@
   <span>Reports</span>
 </a>
 
+
+<a href="{{ route('prescriptions.index') }}"
+  class="side-link {{ request()->routeIs('prescriptions.*') ? 'active' : '' }}">
+  <i class="fa-solid fa-prescription-bottle-medical"></i>
+  <span>Prescription</span>
+</a>
+
+
       </nav>
 
       <!-- Logout (ثابت تحت) -->

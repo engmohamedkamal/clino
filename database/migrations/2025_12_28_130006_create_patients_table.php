@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
 
             $table->string('patient_name');
-            $table->string('patient_number'); // phone
+            $table->string('patient_number')->nullable();
             $table->date('dob')->nullable();
 
             $table->string('patient_email')->nullable();
