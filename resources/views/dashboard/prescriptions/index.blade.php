@@ -46,10 +46,20 @@
               $durations = is_array($rx->duration) ? $rx->duration : (json_decode($rx->duration, true) ?: []);
               $notesArr  = is_array($rx->notes) ? $rx->notes : (json_decode($rx->notes, true) ?: []);
 
+              // ✅ NEW: Radiology + Analysis
+              $rumors    = is_array($rx->rumor) ? $rx->rumor : (json_decode($rx->rumor, true) ?: []);
+              $analyses  = is_array($rx->analysis) ? $rx->analysis : (json_decode($rx->analysis, true) ?: []);
+
               $firstMed  = $medicines[0] ?? '-';
               $firstDos  = $dosages[0]   ?? '-';
               $firstDur  = $durations[0] ?? '-';
               $moreCount = max(count($medicines) - 1, 0);
+
+              $firstRumor = $rumors[0] ?? null;
+              $moreRumor  = max(count($rumors) - 1, 0);
+
+              $firstAna   = $analyses[0] ?? null;
+              $moreAna    = max(count($analyses) - 1, 0);
             @endphp
 
             <div class="col-12 col-md-6 col-lg-4">
@@ -72,6 +82,7 @@
                     {{ $rx->patientUser->name ?? 'Patient' }}
                   </div>
 
+                  {{-- Medicines Preview --}}
                   <div class="mb-3">
                     <div class="fw-semibold">
                       {{ $firstMed }}
@@ -86,6 +97,40 @@
                       {{ $firstDos }} • {{ $firstDur }}
                     </div>
                   </div>
+
+                  {{-- ✅ Radiology --}}
+                  @if($firstRumor)
+                    <div class="mb-2">
+                      <div class="small text-muted">
+                        <i class="fa-solid fa-x-ray me-1"></i> Radiology:
+                      </div>
+                      <div class="fw-semibold">
+                        {{ $firstRumor }}
+                        @if($moreRumor > 0)
+                          <span class="badge bg-warning-subtle text-warning ms-2">
+                            +{{ $moreRumor }} more
+                          </span>
+                        @endif
+                      </div>
+                    </div>
+                  @endif
+
+                  {{-- ✅ Analysis --}}
+                  @if($firstAna)
+                    <div class="mb-3">
+                      <div class="small text-muted">
+                        <i class="fa-solid fa-vials me-1"></i> Analysis:
+                      </div>
+                      <div class="fw-semibold">
+                        {{ $firstAna }}
+                        @if($moreAna > 0)
+                          <span class="badge bg-success-subtle text-success ms-2">
+                            +{{ $moreAna }} more
+                          </span>
+                        @endif
+                      </div>
+                    </div>
+                  @endif
 
                   <div class="d-flex justify-content-between align-items-center">
                     <a href="{{ route('prescriptions.show', $rx->id) }}"
@@ -119,7 +164,6 @@
 
   @endif
 
-
   {{-- ================= Patient ================= --}}
   @if(auth()->user()->role === 'patient')
 
@@ -133,13 +177,22 @@
           $durations = is_array($rx->duration) ? $rx->duration : (json_decode($rx->duration, true) ?: []);
           $notesArr  = is_array($rx->notes) ? $rx->notes : (json_decode($rx->notes, true) ?: []);
 
+          // ✅ NEW
+          $rumors    = is_array($rx->rumor) ? $rx->rumor : (json_decode($rx->rumor, true) ?: []);
+          $analyses  = is_array($rx->analysis) ? $rx->analysis : (json_decode($rx->analysis, true) ?: []);
+
           $firstMed  = $medicines[0] ?? '-';
           $firstDos  = $dosages[0]   ?? '-';
           $firstDur  = $durations[0] ?? '-';
           $moreCount = max(count($medicines) - 1, 0);
 
-          // notes: لو في notes لكل دواء، هنعرض أول واحدة، ولو فاضية نعرض -
           $firstNote = $notesArr[0] ?? null;
+
+          $firstRumor = $rumors[0] ?? null;
+          $moreRumor  = max(count($rumors) - 1, 0);
+
+          $firstAna   = $analyses[0] ?? null;
+          $moreAna    = max(count($analyses) - 1, 0);
         @endphp
 
         <div class="card border-0 shadow-sm mb-3">
@@ -159,6 +212,32 @@
                 <div class="text-muted small mb-2">
                   Dosage: {{ $firstDos }} · Duration: {{ $firstDur }}
                 </div>
+
+                {{-- ✅ Radiology --}}
+                @if($firstRumor)
+                  <div class="small text-muted mb-1">
+                    <i class="fa-solid fa-x-ray me-1"></i>
+                    {{ $firstRumor }}
+                    @if($moreRumor > 0)
+                      <span class="badge bg-warning-subtle text-warning ms-2">
+                        +{{ $moreRumor }} more
+                      </span>
+                    @endif
+                  </div>
+                @endif
+
+                {{-- ✅ Analysis --}}
+                @if($firstAna)
+                  <div class="small text-muted mb-1">
+                    <i class="fa-solid fa-vials me-1"></i>
+                    {{ $firstAna }}
+                    @if($moreAna > 0)
+                      <span class="badge bg-success-subtle text-success ms-2">
+                        +{{ $moreAna }} more
+                      </span>
+                    @endif
+                  </div>
+                @endif
 
                 @if($firstNote)
                   <p class="mb-0 text-muted">{{ $firstNote }}</p>

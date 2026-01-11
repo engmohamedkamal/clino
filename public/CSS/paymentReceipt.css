@@ -1,0 +1,204 @@
+body {
+      background: #eef5ff;
+      color: #0f172a;
+    }
+
+    /* Header buttons */
+    .hdr-btn {
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .2s ease;
+      margin-top: 18px;
+
+    }
+
+    .hdr-btn i {
+      font-size: 16px;
+    }
+
+    .hdr-btn:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+
+    /* Primary (Email) */
+    .hdr-btn-main {
+      background: #2563eb;
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .hdr-btn-main:hover {
+      background: #1d4ed8;
+    }
+
+
+    /* نفس عرض الكارد */
+    .page-width {
+      max-width: 980px;
+      margin: auto;
+    }
+
+    /* Header */
+    .page-header {
+      padding: 28px 0;
+    }
+
+    /* Card */
+    .receipt {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 16px 45px rgba(16, 24, 40, .08);
+    }
+
+    .sec {
+      padding: 24px 26px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .sec {
+      font-size: 14px;
+      color: #475569;
+    }
+
+    .text-green {
+      color: #16a34a !important;
+    }
+
+    /* Section Title */
+    .sec-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      color: #64748b;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* Info lines */
+    .info-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .info-line span {
+      color: #94a3b8;
+    }
+
+    .info-line strong {
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .info-line span {
+      font-weight: 600;
+    }
+
+   .payment-method{
+  color: #0f172a; /* نفس الأسود المستخدم في باقي الصفحة */
+}
+
+
+    /* Table box */
+    .box {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-ico {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #f7fbff;
+      border: 2px solid #cfe2ff;
+      color: #1f6feb;
+    }
+
+    .meta {
+      text-align: right;
+    }
+
+    .box {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .amt {
+      text-align: right;
+    }
+
+    .amt-neg {
+      text-align: right;
+      color: #16a34a;
+    }
+
+    .total {
+      background: #f0f7ff;
+      font-weight: 800;
+    }
+
+    .soft {
+      background: #f6f7f9;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .send {
+      background: #1f6feb;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: .75rem 1.4rem;
+      font-weight: 700;
+    }
+
+    .footer {
+      padding: 24px;
+      text-align: center;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .footer p {
+      font-size: 12px;
+    }
+
+    .footer h5 {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    @media (max-width:576px) {
+      .meta {
+        text-align: left;
+        margin-top: 10px;
+      }
+
+      .sec {
+        padding: 18px;
+      }
+    }

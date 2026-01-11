@@ -4,27 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\DoctorInfo;
 
 class Prescription extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'patient_id',     // users.id (role = patient)
-        'doctor_id',      // doctor_infos.id
+        'patient_id',     
+        'doctor_id',     
         'medicine_name',
         'dosage',
         'duration',
         'diagnosis',
         'notes',
+        'rumor',
+        'analysis',
     ];
 
     protected $casts = [
-    'medicine_name' => 'array',
-    'dosage'        => 'array',
-    'duration'      => 'array',
-    'notes'         => 'array',
-];
+        'medicine_name' => 'array',
+        'dosage'        => 'array',
+        'duration'      => 'array',
+        'notes'         => 'array',
+        'rumor'         => 'array',
+        'analysis'      => 'array',
+    ];
 
     public function patientUser()
     {

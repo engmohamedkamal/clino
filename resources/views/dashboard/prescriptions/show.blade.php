@@ -1,12 +1,13 @@
 @extends('layouts.dash')
 @section('dash-content')
-
+<title>Prescription</title>
 @php
   // ===== Clinic Info (ممكن تستبدلها بـ $setting من DB) =====
- $clinicName  = $setting->name   ?? 'Helper Clinic';
+  $clinicName  = $setting->name   ?? 'Helper Clinic';
   $clinicAddr  = $setting->address ?? 'Nazer, Eltar3a Street';
   $clinicPhone = $setting->phone  ?? '01221604325';
   $clinicEmail = $setting->email  ?? 'memamo0338@helperclinic.com';
+
   // ===== Prescription Data =====
   $patientName = $rx->patientUser->name ?? '-';
   $patientId   = $rx->patientUser->id ?? '-';
@@ -16,12 +17,20 @@
   $rxCode      = 'RX-' . str_pad($rx->id, 6, '0', STR_PAD_LEFT);
 
   $diagnosis   = $rx->diagnosis ?? '-';
-  $medicine    = $rx->medicine_name ?? '-';
-  $dosage      = $rx->dosage ?? '-';
-  $duration    = $rx->duration ?? '-';
-  $notes       = $rx->notes ?? '-';
 
-  $printUrl = route('prescriptions.show', $rx->id) . '?print=1';
+  // ===== Arrays (Safe decode) =====
+  $medicines = is_array($rx->medicine_name) ? $rx->medicine_name : (json_decode($rx->medicine_name, true) ?: []);
+  $dosages   = is_array($rx->dosage)        ? $rx->dosage        : (json_decode($rx->dosage, true) ?: []);
+  $durations = is_array($rx->duration)      ? $rx->duration      : (json_decode($rx->duration, true) ?: []);
+  $notesArr  = is_array($rx->notes)         ? $rx->notes         : (json_decode($rx->notes, true) ?: []);
+
+  $rumors    = is_array($rx->rumor)         ? $rx->rumor         : (json_decode($rx->rumor, true) ?: []);
+  $analyses  = is_array($rx->analysis)      ? $rx->analysis      : (json_decode($rx->analysis, true) ?: []);
+
+  // تنظيف أي قيم فاضية
+  $medicines = array_values(array_filter($medicines, fn($v) => trim((string)$v) !== ''));
+  $rumors    = array_values(array_filter($rumors, fn($v) => trim((string)$v) !== ''));
+  $analyses  = array_values(array_filter($analyses, fn($v) => trim((string)$v) !== ''));
 @endphp
 
 <link rel="stylesheet" href="{{ asset('CSS/Prescription.css') }}">
@@ -29,16 +38,16 @@
 <div class="rx-body">
 
   {{-- Top Actions --}}
- <div class="rx-actions container py-3">
-  <div class="d-flex align-items-center justify-content-center">
-    <button type="button"
-            class="btn rx-btn rx-btn-primary"
-            onclick="window.print()">
-      <i class="bi bi-printer"></i>
-      Print Prescription
-    </button>
+  <div class="rx-actions container py-3">
+    <div class="d-flex align-items-center justify-content-center">
+      <button type="button"
+              class="btn rx-btn rx-btn-primary"
+              onclick="window.print()">
+        <i class="bi bi-printer"></i>
+        Print Prescription
+      </button>
+    </div>
   </div>
-</div>
 
   {{-- Prescription Card --}}
   <div class="container pb-4">
@@ -101,51 +110,74 @@
       </h6>
 
       <div class="rx-box">
-        {{-- لو diagnosis نص واحد --}}
         <div class="rx-item">{{ $diagnosis }}</div>
       </div>
 
-      {{-- Medications --}}
-      <h6 class="rx-section-title mt-4">
-        <i class="bi bi-capsule"></i> Rx Medications
-      </h6>
+      {{-- ================= Rx Medications (Hide if empty) ================= --}}
+      @if(count($medicines))
+        <h6 class="rx-section-title mt-4">
+          <i class="bi bi-capsule"></i> Rx Medications
+        </h6>
 
-      <div class="table-responsive">
-        <table class="table rx-table">
-          <thead>
-            <tr>
-              <th>MEDICINE NAME</th>
-              <th>DOSAGE</th>
-              <th>DURATION</th>
-              <th>NOTES</th>
-            </tr>
-          </thead>
-          <tbody>
-         @foreach($rx->medicine_name as $index => $medicine)
-  <tr>
-    <td class="td-castom">
-      {{ $medicine }}
-    </td>
+        <div class="table-responsive">
+          <table class="table rx-table">
+            <thead>
+              <tr>
+                <th>MEDICINE NAME</th>
+                <th>DOSAGE</th>
+                <th>DURATION</th>
+                <th>NOTES</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach($medicines as $index => $medicine)
+                <tr>
+                  <td class="td-castom">{{ $medicine }}</td>
+                  <td>{{ $dosages[$index] ?? '-' }}</td>
+                  <td>{{ $durations[$index] ?? '-' }}</td>
+                  <td>{{ $notesArr[$index] ?? '-' }}</td>
+                </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
 
-    <td>
-      {{ $rx->dosage[$index] ?? '-' }}
-    </td>
+        <hr>
+      @endif
 
-    <td>
-      {{ $rx->duration[$index] ?? '-' }}
-    </td>
+      {{-- ================= Radiology (rumor) (Hide if empty) ================= --}}
+      @if(count($rumors))
+        <h6 class="rx-section-title mt-4">
+          <i class="bi bi-x-ray"></i> Radiology
+        </h6>
 
-    <td>
-      {{ $rx->notes[$index] ?? '-' }}
-    </td>
-  </tr>
-@endforeach
+        <div class="rx-box">
+          <ul class="mb-0 ps-3">
+            @foreach($rumors as $item)
+              <li class="rx-item">{{ $item }}</li>
+            @endforeach
+          </ul>
+        </div>
 
-          </tbody>
-        </table>
-      </div>
+        <hr>
+      @endif
 
-      <hr>
+      {{-- ================= Analysis (Hide if empty) ================= --}}
+      @if(count($analyses))
+        <h6 class="rx-section-title mt-4">
+          <i class="bi bi-droplet-half"></i> Lab Analysis
+        </h6>
+
+        <div class="rx-box">
+          <ul class="mb-0 ps-3">
+            @foreach($analyses as $item)
+              <li class="rx-item">{{ $item }}</li>
+            @endforeach
+          </ul>
+        </div>
+
+        <hr>
+      @endif
 
       {{-- Footer --}}
       <div class="text-center mt-4">

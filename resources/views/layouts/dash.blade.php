@@ -61,6 +61,17 @@
             <i class="fa-solid fa-stethoscope"></i>
             Doctor Services
           </a>
+          <a href="{{ route('medical-orders.index') }}"
+            class="side-link {{ request()->routeIs('medical-orders.*') ? 'active' : '' }}">
+            <i class="fa-solid fa-notes-medical"></i>
+            Medical Orders
+          </a>
+<a href="{{ route('invoices.index') }}"
+   class="side-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
+  <i class="fa-solid fa-circle-plus"></i>
+  Invoices
+</a>
+
         @endif
 
 

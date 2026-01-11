@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MedicineController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PatientController;
@@ -71,6 +72,11 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
     ->name('patients.bulkDestroy');
 
   Route::resource('patients', PatientController::class);
+
+  Route::delete('/medical-orders/bulk-destroy', [MedicineController::class, 'bulkDestroy'])
+    ->name('medical-orders.bulkDestroy');
+
+  Route::resource('medical-orders', MedicineController::class);
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\DoctorInfo;
 use App\Models\Prescription;
+use App\Models\Medicine as MedicalOrder; // ✅ جدول medical orders (name,type)
 use Illuminate\Http\Request;
 
 class PrescriptionController extends Controller
 {
-    /* ================= Helpers ================= */
-
     private function userRole(): string
     {
         return (string) (auth()->user()->role ?? '');
@@ -38,25 +37,22 @@ class PrescriptionController extends Controller
 
     private function currentDoctorId(): ?int
     {
-        // ✅ عدّل اسم العلاقة لو عندك مختلفة
         return auth()->user()->doctorInfo->id ?? null;
     }
 
     private function scopeByRole($query)
     {
-        // ✅ Patient: يشوف روشتته فقط (patient_id = users.id)
         if ($this->isPatient()) {
             return $query->where('patient_id', auth()->id());
         }
 
-        // ✅ Doctor: يشوف اللي هو كاتبه فقط
         if ($this->isDoctor()) {
             $did = $this->currentDoctorId();
+
             return $query->when($did, fn ($q) => $q->where('doctor_id', $did))
                          ->when(!$did, fn ($q) => $q->whereRaw('1=0'));
         }
 
-        // ✅ Admin: الكل
         return $query;
     }
 
@@ -65,6 +61,19 @@ class PrescriptionController extends Controller
         return $this->scopeByRole(
             Prescription::with(['patientUser', 'doctor.user'])
         )->findOrFail($id);
+    }
+
+    /**
+     * ✅ helper: يرجّع lists من جدول medical orders حسب النوع
+     * (بنستخدمها في create/edit عشان الـ selects)
+     */
+    private function getOrdersLists(): array
+    {
+        $medicinesList = MedicalOrder::where('type', 'medicine')->orderBy('name')->get();
+        $rumorsList    = MedicalOrder::where('type', 'rumor')->orderBy('name')->get();
+        $analysesList  = MedicalOrder::where('type', 'analysis')->orderBy('name')->get();
+
+        return compact('medicinesList', 'rumorsList', 'analysesList');
     }
 
     /* ================= Index ================= */
@@ -78,9 +87,12 @@ class PrescriptionController extends Controller
         $prescriptions = $this->scopeByRole($baseQuery)
             ->when($q, function ($query) use ($q) {
                 $query->where(function ($w) use ($q) {
+                    // ملاحظة: الحقول json ممكن تنبحث كـ string لأن cast->array بيترجع json
                     $w->where('medicine_name', 'like', "%{$q}%")
                       ->orWhere('dosage', 'like', "%{$q}%")
                       ->orWhere('duration', 'like', "%{$q}%")
+                      ->orWhere('rumor', 'like', "%{$q}%")
+                      ->orWhere('analysis', 'like', "%{$q}%")
                       ->orWhere('diagnosis', 'like', "%{$q}%");
                 });
             })
@@ -94,114 +106,140 @@ class PrescriptionController extends Controller
 
     /* ================= Show ================= */
 
-  public function show($id)
-{
-    $rx = Prescription::with(['patientUser', 'doctor.user'])->findOrFail($id);
-    return view('dashboard.prescriptions.show', compact('rx'));
-}
+    public function show($id)
+    {
+        // لو عايز تطبق نفس صلاحيات الرول في show استخدم findAllowedOrFail بدل findOrFail
+        $rx = $this->findAllowedOrFail((int) $id);
 
+        return view('dashboard.prescriptions.show', compact('rx'));
+    }
 
     /* ================= Create ================= */
-public function create()
-{
-    if (!$this->canManage()) {
-        abort(403);
-    }
 
-    $doctorId = $this->currentDoctorId();
-
-    // المرضى فقط
-    $patients = User::where('role', 'patient')->latest()->get();
-
-    // Admin فقط يختار doctor_id
-    $doctors = $this->isAdmin()
-        ? DoctorInfo::with('user')->latest()->get()
-        : collect();
-
-    return view('dashboard.prescriptions.create', compact('patients', 'doctors', 'doctorId'));
-}
-
-public function store(Request $request)
-{
-    if (!$this->canManage()) {
-        abort(403);
-    }
-
-    $rules = [
-        'patient_id' => ['required', 'integer', 'exists:users,id'],
-
-        // ✅ Arrays
-        'medicine_name'   => ['required', 'array', 'min:1'],
-        'medicine_name.*' => ['required', 'string', 'max:255'],
-
-        'dosage'   => ['required', 'array', 'min:1'],
-        'dosage.*' => ['required', 'string', 'max:255'],
-
-        'duration'   => ['required', 'array', 'min:1'],
-        'duration.*' => ['required', 'string', 'max:255'],
-
-        // ✅ notes ممكن تبقى array (اختياري لكل دواء)
-        'notes'   => ['nullable', 'array'],
-        'notes.*' => ['nullable', 'string'],
-        
-        'diagnosis' => ['required', 'string', 'max:255'],
-    ];
-
-    if ($this->isAdmin()) {
-        $rules['doctor_id'] = ['required', 'integer', 'exists:doctor_infos,id'];
-    }
-
-    $data = $request->validate($rules);
-
-    // ✅ تأكد إن المختار فعلاً patient
-    $patientUser = User::where('role', 'patient')->find($data['patient_id']);
-    if (!$patientUser) {
-        return back()->withErrors(['patient_id' => 'Selected user is not a patient.'])->withInput();
-    }
-
-    // ✅ Doctor: doctor_id تلقائي
-    if ($this->isDoctor()) {
-        $doctorId = $this->currentDoctorId();
-        if (!$doctorId) {
-            return back()->withErrors(['doctor_id' => 'Doctor profile not found.'])->withInput();
+    public function create()
+    {
+        if (!$this->canManage()) {
+            abort(403);
         }
-        $data['doctor_id'] = $doctorId;
+
+        $doctorId = $this->currentDoctorId();
+
+        $patients = User::where('role', 'patient')->latest()->get();
+
+        $doctors = $this->isAdmin()
+            ? DoctorInfo::with('user')->latest()->get()
+            : collect();
+
+        // ✅ NEW: القوائم من جدول medical orders
+        $lists = $this->getOrdersLists();
+
+        return view('dashboard.prescriptions.create', array_merge(
+            compact('patients', 'doctors', 'doctorId'),
+            $lists
+        ));
     }
 
-    // ✅ تنظيف القيم الفاضية (خصوصًا لو عندك dynamic rows)
-    $medicine = collect($data['medicine_name'])->map(fn($v) => trim($v))->filter()->values()->all();
-    $dosage   = collect($data['dosage'])->map(fn($v) => trim($v))->filter()->values()->all();
-    $duration = collect($data['duration'])->map(fn($v) => trim($v))->filter()->values()->all();
+    /* ================= Store ================= */
 
-    $notes = collect($data['notes'] ?? [])
-        ->map(fn($v) => is_null($v) ? null : trim($v))
-        ->values()
-        ->all();
+    public function store(Request $request)
+    {
+        if (!$this->canManage()) {
+            abort(403);
+        }
 
-    // ✅ لازم نفس عدد العناصر (عشان مايحصلش mismatch)
-    $count = count($medicine);
-    if ($count === 0 || count($dosage) !== $count || count($duration) !== $count) {
-        return back()
-            ->withErrors(['medicine_name' => 'Please fill medicine, dosage and duration for each row.'])
-            ->withInput();
+        $rules = [
+            'patient_id' => ['required', 'integer', 'exists:users,id'],
+
+            // ✅ Medicines (required)
+            'medicine_name'   => ['required', 'array', 'min:1'],
+            'medicine_name.*' => ['required', 'string', 'max:255'],
+
+            'dosage'   => ['required', 'array', 'min:1'],
+            'dosage.*' => ['required', 'string', 'max:255'],
+
+            'duration'   => ['required', 'array', 'min:1'],
+            'duration.*' => ['required', 'string', 'max:255'],
+
+            'notes'   => ['nullable', 'array'],
+            'notes.*' => ['nullable', 'string'],
+
+            // ✅ NEW: Radiology + Analysis (optional)
+            'rumor_name'   => ['nullable', 'array'],
+            'rumor_name.*' => ['nullable', 'string', 'max:255'],
+
+            'analysis_name'   => ['nullable', 'array'],
+            'analysis_name.*' => ['nullable', 'string', 'max:255'],
+
+            'diagnosis' => ['required', 'string', 'max:255'],
+        ];
+
+        if ($this->isAdmin()) {
+            $rules['doctor_id'] = ['required', 'integer', 'exists:doctor_infos,id'];
+        }
+
+        $data = $request->validate($rules);
+
+        // ✅ تأكد إن المختار patient فعلاً
+        $patientUser = User::where('role', 'patient')->find($data['patient_id']);
+        if (!$patientUser) {
+            return back()->withErrors(['patient_id' => 'Selected user is not a patient.'])->withInput();
+        }
+
+        // ✅ Doctor: doctor_id تلقائي
+        if ($this->isDoctor()) {
+            $doctorId = $this->currentDoctorId();
+            if (!$doctorId) {
+                return back()->withErrors(['doctor_id' => 'Doctor profile not found.'])->withInput();
+            }
+            $data['doctor_id'] = $doctorId;
+        }
+
+        // ✅ تنظيف medicines rows
+        $medicine = collect($data['medicine_name'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
+        $dosage   = collect($data['dosage'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
+        $duration = collect($data['duration'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
+
+        $notes = collect($data['notes'] ?? [])
+            ->map(fn($v) => is_null($v) ? null : trim((string)$v))
+            ->values()
+            ->all();
+
+        $count = count($medicine);
+        if ($count === 0 || count($dosage) !== $count || count($duration) !== $count) {
+            return back()
+                ->withErrors(['medicine_name' => 'Please fill medicine, dosage and duration for each row.'])
+                ->withInput();
+        }
+
+        if (count($notes) < $count) {
+            $notes = array_pad($notes, $count, null);
+        }
+
+        $data['medicine_name'] = $medicine;
+        $data['dosage']        = $dosage;
+        $data['duration']      = $duration;
+        $data['notes']         = $notes;
+
+        // ✅ NEW: rumor + analysis (json arrays)
+        $data['rumor'] = collect($data['rumor_name'] ?? [])
+            ->map(fn($v) => trim((string)$v))
+            ->filter()
+            ->values()
+            ->all();
+
+        $data['analysis'] = collect($data['analysis_name'] ?? [])
+            ->map(fn($v) => trim((string)$v))
+            ->filter()
+            ->values()
+            ->all();
+
+        unset($data['rumor_name'], $data['analysis_name']);
+
+        $rx = Prescription::create($data);
+
+        return redirect()->route('prescriptions.show', $rx->id)
+            ->with('success', 'Prescription created successfully.');
     }
-
-    // لو notes أقل من العدد، كمّلها null
-    if (count($notes) < $count) {
-        $notes = array_pad($notes, $count, null);
-    }
-
-    $data['medicine_name'] = $medicine;
-    $data['dosage']        = $dosage;
-    $data['duration']      = $duration;
-    $data['notes']         = $notes;
-
-    $rx = Prescription::create($data);
-
-    return redirect()->route('prescriptions.show', $rx->id)
-        ->with('success', 'Prescription created successfully.');
-}
-
 
     /* ================= Edit ================= */
 
@@ -219,7 +257,13 @@ public function store(Request $request)
             ? DoctorInfo::with('user')->latest()->get()
             : collect();
 
-        return view('dashboard.prescriptions.edit', compact('rx', 'patients', 'doctors'));
+        // ✅ NEW: القوائم من جدول medical orders
+        $lists = $this->getOrdersLists();
+
+        return view('dashboard.prescriptions.edit', array_merge(
+            compact('rx', 'patients', 'doctors'),
+            $lists
+        ));
     }
 
     /* ================= Update ================= */
@@ -232,13 +276,30 @@ public function store(Request $request)
 
         $rx = $this->findAllowedOrFail((int) $prescription);
 
+        // ✅ مهم: هنا كان عندك غلط (string بدل array) — اتصلح
         $rules = [
-            'patient_id'    => ['required', 'integer', 'exists:users,id'],
-            'medicine_name' => ['required', 'string', 'max:255'],
-            'dosage'        => ['required', 'string', 'max:255'],
-            'duration'      => ['required', 'string', 'max:255'],
-            'diagnosis'     => ['required', 'string', 'max:255'],
-            'notes'         => ['nullable', 'string'],
+            'patient_id' => ['required', 'integer', 'exists:users,id'],
+
+            'medicine_name'   => ['required', 'array', 'min:1'],
+            'medicine_name.*' => ['required', 'string', 'max:255'],
+
+            'dosage'   => ['required', 'array', 'min:1'],
+            'dosage.*' => ['required', 'string', 'max:255'],
+
+            'duration'   => ['required', 'array', 'min:1'],
+            'duration.*' => ['required', 'string', 'max:255'],
+
+            'notes'   => ['nullable', 'array'],
+            'notes.*' => ['nullable', 'string'],
+
+            // ✅ NEW
+            'rumor_name'   => ['nullable', 'array'],
+            'rumor_name.*' => ['nullable', 'string', 'max:255'],
+
+            'analysis_name'   => ['nullable', 'array'],
+            'analysis_name.*' => ['nullable', 'string', 'max:255'],
+
+            'diagnosis' => ['required', 'string', 'max:255'],
         ];
 
         if ($this->isAdmin()) {
@@ -247,7 +308,6 @@ public function store(Request $request)
 
         $data = $request->validate($rules);
 
-        // ✅ تأكد إن patient_id المختار فعلاً role=patient
         $patientUser = User::where('role', 'patient')->find($data['patient_id']);
         if (!$patientUser) {
             return back()->withErrors(['patient_id' => 'Selected user is not a patient.'])->withInput();
@@ -257,6 +317,47 @@ public function store(Request $request)
         if ($this->isDoctor()) {
             $data['doctor_id'] = $rx->doctor_id;
         }
+
+        // تنظيف medicines
+        $medicine = collect($data['medicine_name'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
+        $dosage   = collect($data['dosage'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
+        $duration = collect($data['duration'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
+
+        $notes = collect($data['notes'] ?? [])
+            ->map(fn($v) => is_null($v) ? null : trim((string)$v))
+            ->values()
+            ->all();
+
+        $count = count($medicine);
+        if ($count === 0 || count($dosage) !== $count || count($duration) !== $count) {
+            return back()
+                ->withErrors(['medicine_name' => 'Please fill medicine, dosage and duration for each row.'])
+                ->withInput();
+        }
+
+        if (count($notes) < $count) {
+            $notes = array_pad($notes, $count, null);
+        }
+
+        $data['medicine_name'] = $medicine;
+        $data['dosage']        = $dosage;
+        $data['duration']      = $duration;
+        $data['notes']         = $notes;
+
+        // ✅ NEW: rumor + analysis
+        $data['rumor'] = collect($data['rumor_name'] ?? [])
+            ->map(fn($v) => trim((string)$v))
+            ->filter()
+            ->values()
+            ->all();
+
+        $data['analysis'] = collect($data['analysis_name'] ?? [])
+            ->map(fn($v) => trim((string)$v))
+            ->filter()
+            ->values()
+            ->all();
+
+        unset($data['rumor_name'], $data['analysis_name']);
 
         $rx->update($data);
 

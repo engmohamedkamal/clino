@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DashboardController;
@@ -95,6 +96,11 @@ Route::middleware(['auth'])->group(function () {
 
 
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('invoices', InvoiceController::class);
+});
+
 require_once('auth.php');
 require_once('admin.php');
 require_once('doctor.php');

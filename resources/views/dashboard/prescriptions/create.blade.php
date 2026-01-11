@@ -2,6 +2,19 @@
 
 @section('dash-content')
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
+
+@php
+  // ===== OLD ARRAYS (علشان نرسم نفس عدد الصفوف بعد validation error) =====
+  $oldMeds      = old('medicine_name', ['']);
+  $oldDosages   = old('dosage', ['']);
+  $oldDurations = old('duration', ['']);
+  $oldNotes     = old('notes', ['']);
+
+  $oldRumors    = old('rumor_name', ['']);
+  $oldAnalyses  = old('analysis_name', ['']);
+@endphp
+
 <div class="container-fluid">
 
   <div class="row justify-content-center">
@@ -17,33 +30,18 @@
             <p class="text-muted mb-0">Fill in the prescription details carefully</p>
           </div>
 
-          {{-- Errors --}}
-          @if ($errors->any())
-            <div class="alert alert-danger">
-              <h6 class="alert-heading mb-2">
-                <i class="fa-solid fa-triangle-exclamation me-1"></i>
-                Please fix the following errors:
-              </h6>
-              <ul class="mb-0 ps-3">
-                @foreach ($errors->all() as $error)
-                  <li>{{ $error }}</li>
-                @endforeach
-              </ul>
-            </div>
-          @endif
-
           <form method="POST" action="{{ route('prescriptions.store') }}" novalidate>
             @csrf
 
             <div class="row g-3">
 
-              {{-- ================= Patient ================= --}}
+              {{-- Patient --}}
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Patient</label>
                 <select name="patient_id" class="form-select @error('patient_id') is-invalid @enderror" required>
                   <option value="">-- Select Patient --</option>
                   @foreach($patients as $p)
-                    <option value="{{ $p->id }}" {{ old('patient_id') == $p->id ? 'selected' : '' }}>
+                    <option value="{{ $p->id }}" @selected(old('patient_id') == $p->id)>
                       {{ $p->name }}
                     </option>
                   @endforeach
@@ -53,14 +51,14 @@
                 @enderror
               </div>
 
-              {{-- ================= Doctor (Admin only) ================= --}}
+              {{-- Doctor (Admin only) --}}
               @if(auth()->user()->role === 'admin')
                 <div class="col-md-6">
                   <label class="form-label fw-semibold">Doctor</label>
                   <select name="doctor_id" class="form-select @error('doctor_id') is-invalid @enderror" required>
                     <option value="">-- Select Doctor --</option>
                     @foreach($doctors as $doctor)
-                      <option value="{{ $doctor->id }}" {{ old('doctor_id') == $doctor->id ? 'selected' : '' }}>
+                      <option value="{{ $doctor->id }}" @selected(old('doctor_id') == $doctor->id)>
                         Dr. {{ $doctor->user->name ?? ('Doctor #' . $doctor->id) }}
                       </option>
                     @endforeach
@@ -76,33 +74,49 @@
                 <label class="form-label fw-semibold mb-2">Medicines</label>
 
                 <div id="medicinesWrapper">
+                  @foreach($oldMeds as $i => $val)
+                    <div class="row g-2 align-items-end medicine-row mb-2">
 
-                  {{-- Medicine Row --}}
-                  <div class="row g-2 align-items-end medicine-row mb-2">
+                      <div class="col-md-3">
+                        <select name="medicine_name[]" class="form-select ts-select ts-medicine" required>
+                          <option value="">Select medicine...</option>
+                          @foreach($medicinesList as $m)
+                            <option value="{{ $m->name }}" @selected(($oldMeds[$i] ?? '') == $m->name)>
+                              {{ $m->name }}
+                            </option>
+                          @endforeach
+                        </select>
+                      </div>
 
-                    <div class="col-md-3">
-                      <input type="text" name="medicine_name[]" class="form-control" placeholder="Medicine name" required>
+                      <div class="col-md-3">
+                        <input type="text" name="dosage[]" class="form-control" placeholder="Dosage"
+                               value="{{ $oldDosages[$i] ?? '' }}" required>
+                      </div>
+
+                      <div class="col-md-3">
+                        <input type="text" name="duration[]" class="form-control" placeholder="Duration"
+                               value="{{ $oldDurations[$i] ?? '' }}" required>
+                      </div>
+
+                      <div class="col-md-2">
+                        <input type="text" name="notes[]" class="form-control" placeholder="Notes"
+                               value="{{ $oldNotes[$i] ?? '' }}">
+                      </div>
+
+                      <div class="col-md-1 text-center">
+                        @if($i == 0)
+                          <button type="button" class="btn btn-outline-primary add-row" data-target="medicinesWrapper" data-template="medicineTemplate">
+                            <i class="fa-solid fa-plus"></i>
+                          </button>
+                        @else
+                          <button type="button" class="btn btn-outline-danger remove-row">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        @endif
+                      </div>
+
                     </div>
-
-                    <div class="col-md-3">
-                      <input type="text" name="dosage[]" class="form-control" placeholder="Dosage" required>
-                    </div>
-
-                    <div class="col-md-3">
-                      <input type="text" name="duration[]" class="form-control" placeholder="Duration" required>
-                    </div>
-
-                    <div class="col-md-2">
-                      <input type="text" name="notes[]" class="form-control" placeholder="Notes">
-                    </div>
-
-                    <div class="col-md-1 text-center">
-                      <button type="button" class="btn btn-outline-primary add-row">
-                        <i class="fa-solid fa-plus"></i>
-                      </button>
-                    </div>
-
-                  </div>
+                  @endforeach
                 </div>
 
                 @error('medicine_name')
@@ -110,7 +124,87 @@
                 @enderror
               </div>
 
-              {{-- ================= Diagnosis ================= --}}
+              {{-- ================= Radiology ================= --}}
+              <div class="col-12">
+                <label class="form-label fw-semibold mb-2">Radiology (X-Ray / Scan)</label>
+
+                <div id="rumorWrapper">
+                  @foreach($oldRumors as $i => $val)
+                    <div class="row g-2 align-items-end rumor-row mb-2">
+
+                      <div class="col-md-11">
+                        <select name="rumor_name[]" class="form-select ts-select ts-rumor">
+                          <option value="">Select radiology...</option>
+                          @foreach($rumorsList as $r)
+                            <option value="{{ $r->name }}" @selected(($oldRumors[$i] ?? '') == $r->name)>
+                              {{ $r->name }}
+                            </option>
+                          @endforeach
+                        </select>
+                      </div>
+
+                      <div class="col-md-1 text-center">
+                        @if($i == 0)
+                          <button type="button" class="btn btn-outline-primary add-row" data-target="rumorWrapper" data-template="rumorTemplate">
+                            <i class="fa-solid fa-plus"></i>
+                          </button>
+                        @else
+                          <button type="button" class="btn btn-outline-danger remove-row">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        @endif
+                      </div>
+
+                    </div>
+                  @endforeach
+                </div>
+
+                @error('rumor_name')
+                  <div class="text-danger small mt-1">{{ $message }}</div>
+                @enderror
+              </div>
+
+              {{-- ================= Analysis ================= --}}
+              <div class="col-12">
+                <label class="form-label fw-semibold mb-2">Analysis (Lab Tests)</label>
+
+                <div id="analysisWrapper">
+                  @foreach($oldAnalyses as $i => $val)
+                    <div class="row g-2 align-items-end analysis-row mb-2">
+
+                      <div class="col-md-11">
+                        <select name="analysis_name[]" class="form-select ts-select ts-analysis">
+                          <option value="">Select analysis...</option>
+                          @foreach($analysesList as $a)
+                            <option value="{{ $a->name }}" @selected(($oldAnalyses[$i] ?? '') == $a->name)>
+                              {{ $a->name }}
+                            </option>
+                          @endforeach
+                        </select>
+                      </div>
+
+                      <div class="col-md-1 text-center">
+                        @if($i == 0)
+                          <button type="button" class="btn btn-outline-primary add-row" data-target="analysisWrapper" data-template="analysisTemplate">
+                            <i class="fa-solid fa-plus"></i>
+                          </button>
+                        @else
+                          <button type="button" class="btn btn-outline-danger remove-row">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        @endif
+                      </div>
+
+                    </div>
+                  @endforeach
+                </div>
+
+                @error('analysis_name')
+                  <div class="text-danger small mt-1">{{ $message }}</div>
+                @enderror
+              </div>
+
+              {{-- Diagnosis --}}
               <div class="col-12">
                 <label class="form-label fw-semibold">Diagnosis</label>
                 <input type="text"
@@ -124,7 +218,7 @@
                 @enderror
               </div>
 
-              {{-- ================= Actions ================= --}}
+              {{-- Actions --}}
               <div class="col-12 d-flex justify-content-between pt-3">
                 <a href="{{ route('prescriptions.index') }}" class="btn btn-light">
                   <i class="fa-solid fa-arrow-left me-1"></i>
@@ -147,38 +241,126 @@
   </div>
 
 </div>
+
+{{-- ✅ Templates (نظيفة بدون TomSelect wrappers) --}}
+<template id="medicineTemplate">
+  <div class="row g-2 align-items-end medicine-row mb-2">
+    <div class="col-md-3">
+      <select name="medicine_name[]" class="form-select ts-select ts-medicine" required>
+        <option value="">Select medicine...</option>
+        @foreach($medicinesList as $m)
+          <option value="{{ $m->name }}">{{ $m->name }}</option>
+        @endforeach
+      </select>
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="dosage[]" class="form-control" placeholder="Dosage" required>
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="duration[]" class="form-control" placeholder="Duration" required>
+    </div>
+    <div class="col-md-2">
+      <input type="text" name="notes[]" class="form-control" placeholder="Notes">
+    </div>
+    <div class="col-md-1 text-center">
+      <button type="button" class="btn btn-outline-danger remove-row">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>
+  </div>
+</template>
+
+<template id="rumorTemplate">
+  <div class="row g-2 align-items-end rumor-row mb-2">
+    <div class="col-md-11">
+      <select name="rumor_name[]" class="form-select ts-select ts-rumor">
+        <option value="">Select radiology...</option>
+        @foreach($rumorsList as $r)
+          <option value="{{ $r->name }}">{{ $r->name }}</option>
+        @endforeach
+      </select>
+    </div>
+    <div class="col-md-1 text-center">
+      <button type="button" class="btn btn-outline-danger remove-row">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>
+  </div>
+</template>
+
+<template id="analysisTemplate">
+  <div class="row g-2 align-items-end analysis-row mb-2">
+    <div class="col-md-11">
+      <select name="analysis_name[]" class="form-select ts-select ts-analysis">
+        <option value="">Select analysis...</option>
+        @foreach($analysesList as $a)
+          <option value="{{ $a->name }}">{{ $a->name }}</option>
+        @endforeach
+      </select>
+    </div>
+    <div class="col-md-1 text-center">
+      <button type="button" class="btn btn-outline-danger remove-row">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>
+  </div>
+</template>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-  const wrapper = document.getElementById('medicinesWrapper');
+  function initTomSelect(container) {
+    container.querySelectorAll('select.ts-select').forEach((sel) => {
+      if (sel.tomselect) return;
 
-  wrapper.addEventListener('click', function (e) {
+      new TomSelect(sel, {
+        create: false,
+        allowEmptyOption: true,
+        maxItems: 1,
+        placeholder: sel.querySelector('option')?.textContent || 'Select...',
+      });
+    });
+  }
 
-    // Add Row
-    if (e.target.closest('.add-row')) {
-      const row = e.target.closest('.medicine-row');
-      const clone = row.cloneNode(true);
+  // init for initial rows
+  initTomSelect(document);
 
-      clone.querySelectorAll('input').forEach(input => input.value = '');
+  document.addEventListener('click', function (e) {
+    const addBtn = e.target.closest('.add-row');
+    if (addBtn) {
+      const wrapperId = addBtn.getAttribute('data-target');
+      const templateId = addBtn.getAttribute('data-template');
 
-      const btn = clone.querySelector('button');
-      btn.classList.remove('btn-outline-primary', 'add-row');
-      btn.classList.add('btn-outline-danger', 'remove-row');
-      btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+      const wrapper = document.getElementById(wrapperId);
+      const template = document.getElementById(templateId);
 
-      wrapper.appendChild(clone);
+      if (!wrapper || !template) return;
+
+      const node = template.content.cloneNode(true);
+      wrapper.appendChild(node);
+
+      // init tomselect for newly added row (آخر row)
+      initTomSelect(wrapper);
+
+      return;
     }
 
-    // Remove Row
-    if (e.target.closest('.remove-row')) {
-      e.target.closest('.medicine-row').remove();
+    const removeBtn = e.target.closest('.remove-row');
+    if (removeBtn) {
+      const row = removeBtn.closest('.row');
+
+      // destroy tomselect instances before removing
+      row.querySelectorAll('select.ts-select').forEach(sel => {
+        if (sel.tomselect) sel.tomselect.destroy();
+      });
+
+      row.remove();
+      return;
     }
   });
 
 });
 </script>
 @endsection
-
-
-
-

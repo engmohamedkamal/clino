@@ -1,0 +1,403 @@
+/* Base */
+.ie-body {
+  background: #f6f9fe;
+  color: #0f172a;
+}
+
+.ie-container {
+  max-width: 1180px;
+}
+
+/* Sidebar */
+.ie-sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #eef2f7;
+}
+
+.ie-brand {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ie-brand-ico {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #eef6ff;
+  color: #2563eb;
+}
+
+.ie-nav .ie-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #64748b;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.ie-nav .ie-link:hover {
+  background: #f3f7ff;
+  color: #1d4ed8;
+}
+
+.ie-nav .ie-link.active {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+/* Header */
+.ie-title {
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.ie-subtitle {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.ie-pill-online {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #0f766e;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.ie-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+/* Cards */
+.ie-card {
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
+
+.ie-soft-border {
+  border-color: #eef2f7 !important;
+}
+
+.ie-sec-ico {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #eef6ff;
+  color: #2563eb;
+}
+
+.ie-sec-title {
+  font-weight: 600;
+}
+
+/* Tabs */
+.ie-tabs {
+  background: #f3f6fb;
+  padding: 6px;
+  border-radius: 14px;
+  display: inline-flex;
+}
+
+.ie-tab-btn {
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  padding: 10px 14px;
+  font-weight: 600;
+}
+
+.ie-tab-btn:hover {
+  background: #ffffff;
+  border-color: #e6edf7;
+  color: #1d4ed8;
+}
+
+.ie-tab-btn.active {
+  background: #ffffff;
+  border-color: #e6edf7;
+  color: #1d4ed8;
+}
+
+/* Labels & Inputs */
+.ie-label {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.ie-input {
+  border-radius: 12px;
+  border-color: #e6edf7;
+}
+
+.ie-input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.12);
+}
+
+.ie-input-ico {
+  border-radius: 12px;
+  border-color: #e6edf7;
+  background: #f8fbff;
+  color: #64748b;
+}
+
+/* Plus button inside input */
+.ie-plus-btn {
+  border: 1px solid #e6edf7;
+  background: #ffffff;
+  color: #1d4ed8;
+  border-radius: 12px;
+}
+
+.ie-plus-btn:hover {
+  background: #eef6ff;
+  border-color: #93c5fd;
+}
+
+/* Table */
+.ie-table {
+  margin-bottom: 0;
+}
+
+.ie-th {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.ie-item-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ie-item-sub {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.ie-sku {
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: #f3f6fb;
+  color: #64748b;
+}
+
+.ie-stock {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* Unit price small input */
+.ie-price-wrap {
+  width: 120px;
+  position: relative;
+}
+
+.ie-dollar {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.ie-price-input {
+  border-radius: 12px;
+  border: 1px solid #e6edf7;
+  padding-left: 28px;
+  text-align: center;
+}
+
+.ie-price-input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.12);
+}
+
+/* Quantity */
+.ie-qty {
+  border: 1px solid #e6edf7;
+  border-radius: 12px;
+  padding: 6px;
+  gap: 6px;
+  background: #ffffff;
+}
+
+.ie-qty-btn {
+  border-radius: 10px;
+  border: 1px solid #eef2f7;
+  background: #ffffff;
+  color: #64748b;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+}
+
+.ie-qty-btn:hover {
+  background: #eef6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.ie-qty-num {
+  width: 30px;
+  text-align: center;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ie-line-total {
+  font-weight: 700;
+}
+
+/* Trash icon */
+.ie-icon-danger {
+  border-radius: 12px;
+  border: 1px solid #eef2f7;
+  color: #94a3b8;
+}
+
+.ie-icon-danger:hover {
+  color: #ef4444;
+  border-color: #fee2e2;
+  background: #fff5f5;
+}
+
+/* Footer */
+.ie-footer-left {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ie-clear {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ie-clear:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Summary */
+.ie-sum-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.ie-sum-label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ie-sum-val {
+  font-weight: 700;
+}
+
+.ie-muted {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.ie-hr {
+  border-color: #eef2f7;
+  opacity: 1;
+}
+
+.ie-grand-label {
+  font-weight: 700;
+  color: #334155;
+}
+
+.ie-grand-val {
+  font-weight: 400;
+  font-size: 34px;
+  color: #0570fd;
+  letter-spacing: -0.5px;
+}
+
+.ie-mini-title {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.ie-paid-box {
+  border: 1px solid #e6edf7;
+  border-radius: 14px;
+  background: #f8fbff;
+}
+
+.ie-balance {
+  color: #16a34a;
+  font-weight: 800;
+}
+
+/* Buttons */
+.ie-btn-primary {
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.ie-btn-soft {
+  border-radius: 12px;
+  border: 1px solid #e6edf7;
+  background: #ffffff;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ie-btn-soft:hover {
+  background: #eef6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.ie-btn-danger {
+  border-radius: 12px;
+  border: 1px solid #fecaca;
+  background: #ffffff;
+  color: #ef4444;
+  font-weight: 800;
+}
+
+.ie-btn-danger:hover {
+  background: #fff5f5;
+  border-color: #fca5a5;
+}
+
+.ie-mini-icon {
+  border: 1px solid transparent;
+  padding: 2px 6px;
+  border-radius: 10px;
+  color: #64748b;
+}
+
+.ie-mini-icon:hover {
+  background: #f3f6fb;
+  color: #0f172a;
+}
