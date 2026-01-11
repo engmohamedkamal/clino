@@ -74,7 +74,7 @@ class SettingController extends Controller
                 'email'     => 'required|email|max:255',
                 'address'   => 'required|string|max:255',
 
-                'logo'      => 'required|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
+                'logo'      => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
             ],
             [
                 'name.required'   => 'Name is required.',

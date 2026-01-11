@@ -147,7 +147,7 @@
       <hr class="my-4 footer-hr">
 
       <p class="text-center mb-0 footer-copy">
-        Copyright 2024 Favorite Doctor, All Rights Reserved
+        Copyright 2026 Helper 10, All Rights Reserved
       </p>
     </div>
   </footer>
