@@ -27,14 +27,7 @@
       <div class="page-title">Dashboard</div>
     </div>
 
-    <div class="search-wrap">
-      <input class="form-control search-input" type="text" placeholder="Search type of keywords" />
-      <i class="fa-solid fa-magnifying-glass search-ico"></i>
-    </div>
-
-    <button class="btn icon-btn" type="button" aria-label="notifications">
-      <i class="fa-regular fa-bell"></i>
-    </button>
+    
   </header>
 
   <section class="content-area">

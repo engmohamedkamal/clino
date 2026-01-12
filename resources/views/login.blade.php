@@ -19,27 +19,27 @@
 </head>
 
 <body>
-    <div class="lang-fixed {{ app()->getLocale() == 'ar' ? 'lang-left' : 'lang-right' }}">
-        <div class="dropdown">
-         <a class="lang-btn dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                {{ strtoupper(app()->getLocale()) }}
-            </a>
+        {{-- <div class="lang-fixed {{ app()->getLocale() == 'ar' ? 'lang-left' : 'lang-right' }}">
+            <div class="dropdown">
+            <a class="lang-btn dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                    {{ strtoupper(app()->getLocale()) }}
+                </a>
 
-            <ul class="dropdown-menu {{ app()->getLocale() == 'ar' ? 'dropdown-menu-start' : 'dropdown-menu-end' }}">
-                <li>
+                <ul class="dropdown-menu {{ app()->getLocale() == 'ar' ? 'dropdown-menu-start' : 'dropdown-menu-end' }}">
+                    <li>
 
-                    <a class="dropdown-item" href="{{ route('lang.switch', 'en') }}">
-                        {{ __('login.lang_en') }}
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="{{ route('lang.switch', 'ar') }}">
-                        {{ __('login.lang_ar') }}
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
+                        <a class="dropdown-item" href="{{ route('lang.switch', 'en') }}">
+                            {{ __('login.lang_en') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('lang.switch', 'ar') }}">
+                            {{ __('login.lang_ar') }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div> --}}
 
     <div class="container-fluid auth-wrap">
         <div class="row auth-wrap">

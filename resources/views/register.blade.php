@@ -17,7 +17,7 @@
 </head>
 
 <body>
-       <div class="lang-fixed {{ app()->getLocale() == 'ar' ? 'lang-left' : 'lang-right' }}">
+       {{-- <div class="lang-fixed {{ app()->getLocale() == 'ar' ? 'lang-left' : 'lang-right' }}">
         <div class="dropdown">
          <a class="lang-btn dropdown-toggle" data-bs-toggle="dropdown" href="#">
                 {{ strtoupper(app()->getLocale()) }}
@@ -37,7 +37,7 @@
                 </li>
             </ul>
         </div>
-    </div>
+    </div> --}}
 <div class="container-fluid auth-wrap">
     <div class="row auth-wrap">
 

@@ -19,6 +19,7 @@
   $oldProductIds = old('product_id', []);
   $oldQtys       = old('qty', []);
   $oldPrices     = old('unit_price', []);
+  $oldNames      = old('item_name', []); // ✅ NEW for manual items
 @endphp
 
 <main class="flex-grow-1">
@@ -115,29 +116,42 @@
                     </div>
                   </div>
 
+                  {{-- ✅ Client / Supplier (dynamic) --}}
                   <div class="col-12 col-md-6">
-                    <label class="form-label ie-label">CLIENT (PATIENT / DEPT)</label>
-                    <div class="input-group">
+                    <label class="form-label ie-label" id="clientLabel">CLIENT (PATIENT / DEPT)</label>
+
+                    {{-- Sale: select from clients --}}
+                    <div class="input-group" id="clientSelectWrap">
                       <span class="input-group-text ie-input-ico"><i class="bi bi-person"></i></span>
-                      <select class="form-select ie-input @error('client_id') is-invalid @enderror" name="client_id">
+
+                      <select class="form-select ie-input @error('client_id') is-invalid @enderror" name="client_id" id="clientSelect">
                         <option value="">-- Select Patient (Optional) --</option>
                         @foreach($clients as $c)
                           <option value="{{ $c->id }}" @selected(old('client_id') == $c->id)>{{ $c->name }}</option>
                         @endforeach
                       </select>
 
-                      <button class="btn ie-plus-btn" type="button" id="toggleClientName" aria-label="add client name">
+                      <button class="btn ie-plus-btn" type="button" id="toggleClientName" aria-label="add name">
                         <i class="bi bi-plus-circle"></i>
                       </button>
+
                       @error('client_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
-                    {{-- Optional free text client name --}}
+                    {{-- Purchase OR optional free text --}}
                     <div class="mt-2 d-none" id="clientNameWrap">
-                      <input class="form-control ie-input @error('client_name') is-invalid @enderror"
-                        name="client_name" value="{{ old('client_name') }}"
-                        placeholder="Or type client / department name...">
-                      @error('client_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                      <div class="input-group">
+                        <span class="input-group-text ie-input-ico"><i class="bi bi-building"></i></span>
+                        <input class="form-control ie-input @error('client_name') is-invalid @enderror"
+                          name="client_name" id="clientNameInput"
+                          value="{{ old('client_name') }}"
+                          placeholder="Type supplier / client name...">
+                        @error('client_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                      </div>
+
+                      <div class="small text-muted mt-1" id="clientHint">
+                        Optional: you can type a name without selecting from the list.
+                      </div>
                     </div>
                   </div>
 
@@ -181,11 +195,10 @@
                     <div class="input-group">
                       <span class="input-group-text ie-input-ico"><i class="bi bi-upc-scan"></i></span>
 
-                      {{-- ✅ datalist search --}}
+                      {{-- ✅ datalist search (works for sale + can still type anything for purchase) --}}
                       <input class="form-control ie-input" id="productSearch" list="productsDatalist"
-                        placeholder="Scan barcode or search item by name/SKU..." />
+                        placeholder="Scan barcode or search item by name/SKU... (Purchase: you can type new item name)" />
 
-                      {{-- ✅ هنا بقى suggestions بالاسم وبالـ SKU وبالـ SKU - Name --}}
                       <datalist id="productsDatalist">
                         @foreach($products as $p)
                           <option value="{{ $p->sku }}"></option>
@@ -201,7 +214,7 @@
                       </button>
                     </div>
 
-                    <div class="small text-muted mt-1">
+                    <div class="small text-muted mt-1" id="searchTip">
                       Tip: اكتب SKU أو الاسم (أو اختر من القائمة) ثم Add — أو اضغط Enter
                     </div>
                   </div>
@@ -231,23 +244,72 @@
                     {{-- old --}}
                     @foreach($oldProductIds as $i => $pid)
                       @php
-                        $prod = $products->firstWhere('id', (int)$pid);
+                        $pidInt = (int)$pid;
+                        $prod = $products->firstWhere('id', $pidInt);
                         $qty  = (int)($oldQtys[$i] ?? 1);
                         $price= (float)($oldPrices[$i] ?? ($prod ? ($prod->selling_price) : 0));
                         $line = $qty * $price;
+
+                        $manualName = $oldNames[$i] ?? null;
                       @endphp
 
                       @if($prod)
-                      <tr class="ie-row" data-product-id="{{ $prod->id }}">
+                      <tr class="ie-row" data-product-id="{{ $prod->id }}" data-manual="0">
                         <td>
-                          <div class="ie-item-title">{{ $prod->name }}</div>
+                          <div class="ie-item-title js-title">{{ $prod->name }}</div>
                           <div class="ie-item-sub d-flex flex-wrap align-items-center gap-2">
                             <span class="ie-sku">SKU: {{ $prod->sku }}</span>
                             <span class="ie-stock"><span class="text-muted">Stock:</span>
                               <span class="js-stock">{{ $prod->quantity }}</span>
                             </span>
                           </div>
+
                           <input type="hidden" name="product_id[]" value="{{ $prod->id }}">
+                          <input type="hidden" name="item_name[]" value="{{ $prod->name }}" class="js-item-name">
+                        </td>
+
+                        <td class="text-center">
+                          <div class="ie-price-wrap mx-auto">
+                            <span class="ie-dollar">$</span>
+                            <input class="form-control ie-price-input js-price"
+                                   name="unit_price[]"
+                                   value="{{ number_format($price,2,'.','') }}"
+                                   inputmode="decimal">
+                          </div>
+                        </td>
+
+                        <td class="text-center">
+                          <div class="ie-qty d-inline-flex align-items-center">
+                            <button class="btn ie-qty-btn js-minus" type="button" aria-label="minus">
+                              <i class="bi bi-dash"></i>
+                            </button>
+                            <input class="form-control js-qty text-center" name="qty[]" value="{{ $qty }}" style="width:64px;">
+                            <button class="btn ie-qty-btn js-plus" type="button" aria-label="plus">
+                              <i class="bi bi-plus"></i>
+                            </button>
+                          </div>
+                        </td>
+
+                        <td class="text-end ie-line-total js-line">$ {{ number_format($line,2,'.','') }}</td>
+
+                        <td class="text-end">
+                          <button class="btn ie-icon-danger js-remove" type="button" aria-label="delete">
+                            <i class="bi bi-trash3"></i>
+                          </button>
+                        </td>
+                      </tr>
+
+                      @else
+                      <tr class="ie-row" data-product-id="" data-manual="1">
+                        <td>
+                          <div class="ie-item-title js-title">{{ $manualName ?: 'Manual Item' }}</div>
+                          <div class="ie-item-sub d-flex flex-wrap align-items-center gap-2">
+                            <span class="ie-sku">Manual</span>
+                            <span class="ie-stock text-muted">Not linked to products</span>
+                          </div>
+
+                          <input type="hidden" name="product_id[]" value="">
+                          <input type="hidden" name="item_name[]" value="{{ $manualName ?: '' }}" class="js-item-name">
                         </td>
 
                         <td class="text-center">
@@ -436,6 +498,14 @@
   const toggleClientName = document.getElementById('toggleClientName');
   const clientNameWrap = document.getElementById('clientNameWrap');
 
+  const clientLabel = document.getElementById('clientLabel');
+  const clientSelectWrap = document.getElementById('clientSelectWrap');
+  const clientSelect = document.getElementById('clientSelect');
+  const clientNameInput = document.getElementById('clientNameInput');
+  const clientHint = document.getElementById('clientHint');
+
+  const searchTip = document.getElementById('searchTip');
+
   // modal
   const browseBtn = document.getElementById('browseProductsBtn');
   const modalEl = document.getElementById('productsModal');
@@ -462,8 +532,8 @@
   }
 
   function getTaxRate() {
-    const r = Number(taxRateInput.value || 0.10);
-    return isFinite(r) ? r : 0.10;
+    const r = Number(taxRateInput.value || 0);
+    return isFinite(r) ? r : 0;
   }
 
   function currentType() {
@@ -475,9 +545,42 @@
     tabSale.classList.toggle('active', type === 'sale');
     tabPurchase.classList.toggle('active', type === 'purchase');
 
+    // ✅ VAT: Purchases = 0
+    if (type === 'purchase') {
+      taxRateInput.value = '0';
+    } else {
+      if (Number(taxRateInput.value || 0) === 0) taxRateInput.value = '0.10';
+    }
+
+    // ✅ Client/Supplier UI
+    if (type === 'purchase') {
+      if (clientLabel) clientLabel.textContent = 'SUPPLIER (VENDOR)';
+      clientSelectWrap?.classList.add('d-none');
+      clientNameWrap?.classList.remove('d-none');
+      if (clientHint) clientHint.textContent = 'Enter supplier name (not required from any table).';
+      if (clientSelect) clientSelect.value = '';
+      setTimeout(() => clientNameInput?.focus(), 0);
+
+      if (searchTip) searchTip.textContent = 'Purchase: اكتب اسم المنتج الجديد أو SKU/Name ثم Add — أو اضغط Enter';
+    } else {
+      if (clientLabel) clientLabel.textContent = 'CLIENT (PATIENT / DEPT)';
+      clientSelectWrap?.classList.remove('d-none');
+
+      // ✅ FIX: اخفي حقل اسم المورد عند الرجوع للمبيعات
+      clientNameWrap?.classList.add('d-none');
+      // (اختياري) امسح القيمة:
+      // if (clientNameInput) clientNameInput.value = '';
+
+      if (clientHint) clientHint.textContent = 'Optional: you can type a name without selecting from the list.';
+      if (searchTip) searchTip.textContent = 'Tip: اكتب SKU أو الاسم (أو اختر من القائمة) ثم Add — أو اضغط Enter';
+    }
+
     // update default prices if user didn't customize
     itemsTbody.querySelectorAll('tr.ie-row').forEach(tr => {
-      const pid = Number(tr.dataset.productId);
+      const pid = Number(tr.dataset.productId || 0);
+      const isManual = tr.dataset.manual === '1';
+      if (isManual) return;
+
       const p = products.find(x => x.id === pid);
       if (!p) return;
 
@@ -503,31 +606,28 @@
   // init tabs based on old
   setType("{{ old('type', 'sale') }}");
 
-  // Toggle client name input
   toggleClientName?.addEventListener('click', () => {
     clientNameWrap?.classList.toggle('d-none');
+    if (!clientNameWrap?.classList.contains('d-none')) {
+      setTimeout(() => clientNameInput?.focus(), 0);
+    }
   });
 
-  // ✅ NEW: supports SKU / Name / "SKU - Name"
   function findProductBySearchValue(v) {
     v = normalize(v);
     if (!v) return null;
 
     const skuCandidate = normalize(v.split('-')[0]);
 
-    // SKU exact
     let p = products.find(x => normalize(x.sku) === skuCandidate);
     if (p) return p;
 
-    // SKU exact by full text
     p = products.find(x => normalize(x.sku) === v);
     if (p) return p;
 
-    // Name exact
     p = products.find(x => normalize(x.name) === v);
     if (p) return p;
 
-    // contains
     p = products.find(x =>
       normalize(x.name).includes(v) || normalize(x.sku).includes(v)
     );
@@ -546,15 +646,17 @@
     const tr = document.createElement('tr');
     tr.className = 'ie-row';
     tr.dataset.productId = p.id;
+    tr.dataset.manual = '0';
 
     tr.innerHTML = `
       <td>
-        <div class="ie-item-title">${escapeHtml(p.name)}</div>
+        <div class="ie-item-title js-title">${escapeHtml(p.name)}</div>
         <div class="ie-item-sub d-flex flex-wrap align-items-center gap-2">
           <span class="ie-sku">SKU: ${escapeHtml(p.sku || '-')}</span>
           <span class="ie-stock"><span class="text-muted">Stock:</span> <span class="js-stock">${p.qty}</span></span>
         </div>
         <input type="hidden" name="product_id[]" value="${p.id}">
+        <input type="hidden" name="item_name[]" value="${escapeHtml(p.name)}" class="js-item-name">
       </td>
 
       <td class="text-center">
@@ -562,6 +664,53 @@
           <span class="ie-dollar">$</span>
           <input class="form-control ie-price-input js-price" name="unit_price[]"
                  value="${Number(unitPrice).toFixed(2)}" inputmode="decimal">
+        </div>
+      </td>
+
+      <td class="text-center">
+        <div class="ie-qty d-inline-flex align-items-center">
+          <button class="btn ie-qty-btn js-minus" type="button" aria-label="minus"><i class="bi bi-dash"></i></button>
+          <input class="form-control js-qty text-center" name="qty[]" value="${qty}" style="width:64px;">
+          <button class="btn ie-qty-btn js-plus" type="button" aria-label="plus"><i class="bi bi-plus"></i></button>
+        </div>
+      </td>
+
+      <td class="text-end ie-line-total js-line">$0.00</td>
+
+      <td class="text-end">
+        <button class="btn ie-icon-danger js-remove" type="button" aria-label="delete">
+          <i class="bi bi-trash3"></i>
+        </button>
+      </td>
+    `;
+
+    itemsTbody.appendChild(tr);
+    recalcRow(tr);
+    return tr;
+  }
+
+  function buildManualRow(name, qty = 1) {
+    const tr = document.createElement('tr');
+    tr.className = 'ie-row';
+    tr.dataset.productId = '';
+    tr.dataset.manual = '1';
+
+    tr.innerHTML = `
+      <td>
+        <div class="ie-item-title js-title">${escapeHtml(name)}</div>
+        <div class="ie-item-sub d-flex flex-wrap align-items-center gap-2">
+          <span class="ie-sku">Manual</span>
+          <span class="ie-stock text-muted">Not linked to products</span>
+        </div>
+        <input type="hidden" name="product_id[]" value="">
+        <input type="hidden" name="item_name[]" value="${escapeHtml(name)}" class="js-item-name">
+      </td>
+
+      <td class="text-center">
+        <div class="ie-price-wrap mx-auto">
+          <span class="ie-dollar">$</span>
+          <input class="form-control ie-price-input js-price" name="unit_price[]"
+                 value="0.00" inputmode="decimal">
         </div>
       </td>
 
@@ -635,26 +784,32 @@
     itemsMobile.innerHTML = '';
 
     itemsTbody.querySelectorAll('tr.ie-row').forEach(tr => {
-      const pid = Number(tr.dataset.productId);
-      const p = products.find(x => x.id === pid);
-      if (!p) return;
+      const pidRaw = tr.dataset.productId || '';
+      const isManual = tr.dataset.manual === '1';
+      const pid = Number(pidRaw || 0);
+      const p = isManual ? null : products.find(x => x.id === pid);
 
+      const title = tr.querySelector('.js-title')?.textContent || (p ? p.name : 'Manual Item');
       const price = tr.querySelector('.js-price')?.value || '0.00';
       const qty = tr.querySelector('.js-qty')?.value || '1';
       const line = tr.querySelector('.js-line')?.textContent || '$0.00';
 
       const card = document.createElement('article');
       card.className = 'card ie-card mb-3';
-      card.dataset.productId = pid;
+      card.dataset.productId = pidRaw;
+      card.dataset.manual = isManual ? '1' : '0';
+
+      const skuText = isManual ? 'Manual' : `SKU: ${escapeHtml(p?.sku || '-')}`;
+      const stockText = isManual ? 'Not linked' : `${p?.qty ?? 0} in stock`;
 
       card.innerHTML = `
         <div class="card-body p-3">
           <div class="d-flex align-items-start justify-content-between gap-2">
             <div>
-              <div class="ie-item-title">${escapeHtml(p.name)}</div>
+              <div class="ie-item-title">${escapeHtml(title)}</div>
               <div class="ie-item-sub d-flex flex-wrap align-items-center gap-2 mt-1">
-                <span class="ie-sku">SKU: ${escapeHtml(p.sku || '-')}</span>
-                <span class="ie-stock">${p.qty} in stock</span>
+                <span class="ie-sku">${skuText}</span>
+                <span class="ie-stock">${stockText}</span>
               </div>
             </div>
 
@@ -699,31 +854,57 @@
     });
   }
 
-  // ✅ Add by search button
   function addFromSearch() {
-    const p = findProductBySearchValue(productSearch.value);
-    if (!p) {
-      alert('Product not found. Try SKU or name.');
+    const raw = productSearch.value;
+    const type = currentType();
+
+    const p = findProductBySearchValue(raw);
+
+    if (type === 'sale') {
+      if (!p) {
+        alert('Product not found. Try SKU or name.');
+        return;
+      }
+
+      const existing = rowExists(p.id);
+      if (existing) {
+        const q = existing.querySelector('.js-qty');
+        q.value = Math.max(1, Number(q.value || 1)) + 1;
+      } else {
+        buildRow(p, 1);
+      }
+
+      recalcAll(); renderMobile();
+      productSearch.value = '';
+      productSearch.focus();
       return;
     }
 
-    const existing = rowExists(p.id);
-    if (existing) {
-      const q = existing.querySelector('.js-qty');
-      q.value = Math.max(1, Number(q.value || 1)) + 1;
-    } else {
-      buildRow(p, 1);
+    const manualName = (raw || '').trim();
+    if (!manualName) {
+      alert('Type item name or SKU first.');
+      return;
     }
 
-    recalcAll();
-    renderMobile();
+    if (p) {
+      const existing = rowExists(p.id);
+      if (existing) {
+        const q = existing.querySelector('.js-qty');
+        q.value = Math.max(1, Number(q.value || 1)) + 1;
+      } else {
+        buildRow(p, 1);
+      }
+    } else {
+      buildManualRow(manualName, 1);
+    }
+
+    recalcAll(); renderMobile();
     productSearch.value = '';
     productSearch.focus();
   }
 
   addBySearch.addEventListener('click', addFromSearch);
 
-  // ✅ Enter = Add
   productSearch.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -731,7 +912,6 @@
     }
   });
 
-  // events on table
   itemsTbody.addEventListener('click', (e) => {
     const tr = e.target.closest('tr.ie-row');
     if (!tr) return;
@@ -773,52 +953,12 @@
     recalcAll(); renderMobile();
   });
 
-  // mobile actions
-  itemsMobile.addEventListener('click', (e) => {
-    const card = e.target.closest('article[data-product-id]');
-    if (!card) return;
-
-    const pid = Number(card.dataset.productId);
-    const tr = rowExists(pid);
-    if (!tr) return;
-
-    if (e.target.closest('.js-remove-mobile')) {
-      tr.remove();
-      recalcAll(); renderMobile();
-      return;
-    }
-
-    if (e.target.closest('.js-minus-mobile')) {
-      const q = tr.querySelector('.js-qty');
-      q.value = Math.max(1, Number(q.value || 1) - 1);
-      recalcAll(); renderMobile();
-      return;
-    }
-
-    if (e.target.closest('.js-plus-mobile')) {
-      const q = tr.querySelector('.js-qty');
-      q.value = Math.max(1, Number(q.value || 1) + 1);
-      recalcAll(); renderMobile();
-      return;
-    }
-  });
-
-  itemsMobile.addEventListener('input', (e) => {
-    const card = e.target.closest('article[data-product-id]');
-    if (!card) return;
-
-    const pid = Number(card.dataset.productId);
-    const tr = rowExists(pid);
-    if (!tr) return;
-
-    if (e.target.closest('.js-price-mobile')) tr.querySelector('.js-price').value = e.target.value;
-    if (e.target.closest('.js-qty-mobile')) tr.querySelector('.js-qty').value = e.target.value;
-
-    recalcAll(); renderMobile();
-  });
-
-  // Browse modal
   function openModal() {
+    if (currentType() === 'purchase') {
+      alert('Browse is for products list (Sales). For Purchases, type item name and press Add.');
+      return;
+    }
+
     if (!modalEl) return;
     bsModal = bsModal || new bootstrap.Modal(modalEl);
     bsModal.show();
@@ -868,17 +1008,21 @@
     renderMobile();
   });
 
-  // initial
   recalcAll();
   renderMobile();
 
-  // submit guard
   form.addEventListener('submit', (e) => {
     const count = itemsTbody.querySelectorAll('tr.ie-row').length;
     if (count === 0) {
       e.preventDefault();
       alert('Please add at least 1 item.');
     }
+
+    itemsTbody.querySelectorAll('tr.ie-row').forEach(tr => {
+      const title = tr.querySelector('.js-title')?.textContent || '';
+      const hiddenName = tr.querySelector('.js-item-name');
+      if (hiddenName && title) hiddenName.value = title;
+    });
   });
 })();
 </script>

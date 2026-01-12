@@ -107,121 +107,129 @@ class InvoiceController extends Controller
 
     /* ================= Store ================= */
 
-    public function store(Request $request)
-    {
-        if (!$this->canManage()) abort(403);
+  public function store(Request $request)
+{
+    if (!$this->canManage()) abort(403);
 
-        $rules = [
-            'type'           => ['required', 'in:sale,purchase'],
-            'issued_at'      => ['nullable', 'date'],
-            'client_id'      => ['nullable', 'integer', 'exists:users,id'],
-            'client_name'    => ['nullable', 'string', 'max:255'],
+    $rules = [
+        'type'           => ['required', 'in:sale,purchase'],
+        'issued_at'      => ['nullable', 'date'],
 
-            'payment_method' => ['required', 'in:cash,card,wallet,insurance'],
-            'status'         => ['required', 'in:paid,pending,partially_paid'],
+        'client_id'      => ['nullable', 'integer', 'exists:users,id'],
+        'client_name'    => ['nullable', 'string', 'max:255'],
 
-            // totals inputs (اختياري/أغلبه بيتحسب)
-            'discount'       => ['nullable', 'numeric', 'min:0'],
-            'tax_rate'       => ['nullable', 'numeric', 'min:0', 'max:1'], // مثال 0.10
+        'payment_method' => ['required', 'in:cash,card,wallet,insurance'],
+        'status'         => ['required', 'in:paid,pending,partially_paid'],
 
-            'paid_amount'    => ['nullable', 'numeric', 'min:0'],
+        'discount'       => ['nullable', 'numeric', 'min:0'],
+        'tax_rate'       => ['nullable', 'numeric', 'min:0', 'max:1'],
+        'paid_amount'    => ['nullable', 'numeric', 'min:0'],
 
-            // items arrays
-            'product_id'     => ['required', 'array', 'min:1'],
-            'product_id.*'   => ['required', 'integer', 'exists:products,id'],
+        // ✅ items arrays
+        'product_id'     => ['nullable', 'array'],
+        'product_id.*'   => ['nullable', 'integer', 'exists:products,id'],
 
-            'qty'            => ['required', 'array', 'min:1'],
-            'qty.*'          => ['required', 'integer', 'min:1'],
+        // ✅ لازم اسم لكل سطر (للمنتج الموجود أو اليدوي)
+        'item_name'      => ['required', 'array', 'min:1'],
+        'item_name.*'    => ['required', 'string', 'max:255'],
 
-            // unit_price: لو هتبعتها من الواجهة (ممكن تتساب ونحسب من DB)
-            'unit_price'     => ['nullable', 'array'],
-            'unit_price.*'   => ['nullable', 'numeric', 'min:0'],
-        ];
+        'qty'            => ['required', 'array', 'min:1'],
+        'qty.*'          => ['required', 'integer', 'min:1'],
 
-        $data = $request->validate($rules);
+        'unit_price'     => ['nullable', 'array'],
+        'unit_price.*'   => ['nullable', 'numeric', 'min:0'],
+    ];
 
-        $type = $this->normalizeType($data['type']);
-        $payment = $this->normalizePayment($data['payment_method']);
-        $status = $this->normalizeStatus($data['status']);
+    $data = $request->validate($rules);
 
-        $discount = (float) ($data['discount'] ?? 0);
-        $taxRate  = (float) ($data['tax_rate'] ?? 0.10); // افتراضي 10%
-        $paidAmount = (float) ($data['paid_amount'] ?? 0);
+    $type    = $this->normalizeType($data['type']);
+    $payment = $this->normalizePayment($data['payment_method']);
+    $status  = $this->normalizeStatus($data['status']);
 
-        // تنظيف ids و qty و prices
-        $productIds = collect($data['product_id'])->values()->all();
-        $qtys       = collect($data['qty'])->values()->all();
+    $discount   = (float) ($data['discount'] ?? 0);
+    $paidAmount = (float) ($data['paid_amount'] ?? 0);
 
-        $pricesInput = collect($data['unit_price'] ?? [])->values()->all();
+    // ✅ VAT: Purchases = 0 (إجباري)
+    $taxRate = ($type === 'purchase') ? 0.0 : (float) ($data['tax_rate'] ?? 0.10);
 
-        if (count($productIds) !== count($qtys)) {
-            return back()->withErrors(['product_id' => 'Items arrays mismatch.'])->withInput();
-        }
+    // normalize arrays
+    $productIds   = collect($data['product_id'] ?? [])->values()->all(); // may be shorter
+    $itemNames    = collect($data['item_name'] ?? [])->values()->all();
+    $qtys         = collect($data['qty'] ?? [])->values()->all();
+    $pricesInput  = collect($data['unit_price'] ?? [])->values()->all();
 
-        return DB::transaction(function () use (
-            $data, $type, $payment, $status, $discount, $taxRate, $paidAmount,
-            $productIds, $qtys, $pricesInput
-        ) {
-            // رقم فاتورة
-            $invoiceNo = $this->generateInvoiceNo();
+    // ✅ لازم item_name و qty نفس الطول
+    if (count($itemNames) !== count($qtys)) {
+        return back()->withErrors(['items' => 'Items arrays mismatch (name/qty).'])->withInput();
+    }
 
-            // Create invoice first (totals later)
-            $invoice = Invoice::create([
-                'invoice_no'     => $invoiceNo,
-                'type'           => $type,
-                'issued_at'      => $data['issued_at'] ?? now(),
+    // ✅ product_id ممكن يبقى أقل أو يساوي عدد العناصر (لأن بعضه null)
+    // هنقرأه بالـ index لو موجود وإلا null
+    return DB::transaction(function () use (
+        $data, $type, $payment, $status, $discount, $taxRate, $paidAmount,
+        $productIds, $itemNames, $qtys, $pricesInput
+    ) {
+        $invoiceNo = $this->generateInvoiceNo();
 
-                'client_id'      => $data['client_id'] ?? null,
-                'client_name'    => $data['client_name'] ?? null,
+        $invoice = Invoice::create([
+            'invoice_no'     => $invoiceNo,
+            'type'           => $type,
+            'issued_at'      => $data['issued_at'] ?? now(),
 
-                'payment_method' => $payment,
-                'status'         => $status,
+            'client_id'      => $data['client_id'] ?? null,
+            'client_name'    => $data['client_name'] ?? null,
 
-                'subtotal'       => 0,
-                'discount'       => $discount,
-                'tax'            => 0,
-                'grand_total'    => 0,
+            'payment_method' => $payment,
+            'status'         => $status,
 
-                'paid_amount'    => $paidAmount,
-                'balance_due'    => 0,
+            'subtotal'       => 0,
+            'discount'       => $discount,
+            'tax'            => 0,
+            'grand_total'    => 0,
 
-                'created_by'     => auth()->id(),
-            ]);
+            'paid_amount'    => $paidAmount,
+            'balance_due'    => 0,
 
-            $subtotal = 0.0;
+            'created_by'     => auth()->id(),
+        ]);
 
-            // loop items
-            foreach ($productIds as $i => $pid) {
-                $qty = (int) ($qtys[$i] ?? 0);
-                if ($qty <= 0) continue;
+        $subtotal = 0.0;
 
-                // lock row to prevent race conditions
+        foreach ($itemNames as $i => $name) {
+            $name = trim((string) $name);
+            $qty  = (int) ($qtys[$i] ?? 0);
+
+            if ($qty <= 0) continue;
+            if ($name === '') continue;
+
+            $pid = $productIds[$i] ?? null;
+            $pid = ($pid === '' ? null : $pid);
+
+            // ✅ unit price input (لو مش موجود هنحدد default)
+            $inputPrice = isset($pricesInput[$i]) && $pricesInput[$i] !== null && $pricesInput[$i] !== ''
+                ? (float) $pricesInput[$i]
+                : null;
+
+            // =========================
+            // ✅ SALE: لازم product_id
+            // =========================
+            if ($type === 'sale') {
+                if (!$pid) {
+                    throw new \RuntimeException("Product is required for sale items: {$name}");
+                }
+
                 $product = Product::whereKey($pid)->lockForUpdate()->firstOrFail();
 
-                // unit price:
-                // - لو purchase: غالبًا purchase_price
-                // - لو sale: selling_price
-                $defaultPrice = $type === 'purchase'
-                    ? (float) $product->purchase_price
-                    : (float) $product->selling_price;
-
-                $unitPrice = isset($pricesInput[$i]) && $pricesInput[$i] !== null && $pricesInput[$i] !== ''
-                    ? (float) $pricesInput[$i]
-                    : $defaultPrice;
+                $defaultPrice = (float) $product->selling_price;
+                $unitPrice = ($inputPrice !== null) ? $inputPrice : $defaultPrice;
 
                 $stockBefore = (int) $product->quantity;
 
-                // update stock
-                if ($type === 'sale') {
-                    if ($product->quantity < $qty) {
-                        // rollback transaction
-                        throw new \RuntimeException("Not enough stock for: {$product->name}");
-                    }
-                    $product->quantity = $product->quantity - $qty;
-                } else {
-                    $product->quantity = $product->quantity + $qty;
+                if ($product->quantity < $qty) {
+                    throw new \RuntimeException("Not enough stock for: {$product->name}");
                 }
 
+                $product->quantity = $product->quantity - $qty;
                 $product->save();
 
                 $stockAfter = (int) $product->quantity;
@@ -233,7 +241,6 @@ class InvoiceController extends Controller
                     'invoice_id'   => $invoice->id,
                     'product_id'   => $product->id,
 
-                    // snapshot
                     'item_name'    => $product->name,
                     'sku'          => $product->sku,
 
@@ -244,41 +251,106 @@ class InvoiceController extends Controller
                     'stock_before' => $stockBefore,
                     'stock_after'  => $stockAfter,
                 ]);
+
+                continue;
             }
 
-            // totals
-            $subtotal = round($subtotal, 2);
-            $discount = max(0, round($discount, 2));
-            $tax      = round(max(0, ($subtotal - $discount)) * $taxRate, 2);
-            $grand    = round(($subtotal - $discount + $tax), 2);
-
-            $paidAmount = round(max(0, $paidAmount), 2);
-            $balance    = round(max(0, $grand - $paidAmount), 2);
-
-            // status auto adjust (اختياري)
-            if ($paidAmount <= 0) {
-                $status = 'pending';
-            } elseif ($paidAmount >= $grand) {
-                $status = 'paid';
+            // =========================
+            // ✅ PURCHASE:
+            // - لو pid موجود: زود للموجود
+            // - لو pid فاضي: اعمل منتج جديد بالاسم
+            // =========================
+            if ($pid) {
+                $product = Product::whereKey($pid)->lockForUpdate()->firstOrFail();
             } else {
-                $status = 'partially_paid';
+                // ✅ create new product automatically
+                // sku auto (لتفادي unique)
+                $sku = 'NEW-' . strtoupper(substr(md5($name . microtime(true)), 0, 8));
+
+                $product = Product::create([
+                    'name'           => $name,
+                    'sku'            => $sku,
+                    'quantity'       => 0,
+                    'selling_price'  => 0,
+                    'purchase_price' => 0,
+                ]);
+
+                // lock newly created row
+                $product = Product::whereKey($product->id)->lockForUpdate()->first();
             }
 
-            $invoice->update([
-                'subtotal'     => $subtotal,
-                'discount'     => $discount,
-                'tax'          => $tax,
-                'grand_total'  => $grand,
-                'paid_amount'  => $paidAmount,
-                'balance_due'  => $balance,
-                'status'       => $status,
-            ]);
+            // default purchase price
+            $defaultPrice = (float) ($product->purchase_price ?? 0);
+            $unitPrice = ($inputPrice !== null) ? $inputPrice : $defaultPrice;
 
-            return redirect()
-                ->route('invoices.show', $invoice->id)
-                ->with('success', 'Invoice created successfully.');
-        }, 3); // retries
-    }
+            $stockBefore = (int) $product->quantity;
+
+            $product->quantity = $product->quantity + $qty;
+
+            // تحديث purchase_price من آخر سعر شراء (مفيد للمنتجات الجديدة)
+            $product->purchase_price = $unitPrice;
+
+            $product->save();
+
+            $stockAfter = (int) $product->quantity;
+
+            $lineTotal = round($unitPrice * $qty, 2);
+            $subtotal += $lineTotal;
+
+            InvoiceItem::create([
+                'invoice_id'   => $invoice->id,
+                'product_id'   => $product->id,
+
+                // snapshot
+                'item_name'    => $product->name,
+                'sku'          => $product->sku,
+
+                'unit_price'   => $unitPrice,
+                'qty'          => $qty,
+                'line_total'   => $lineTotal,
+
+                'stock_before' => $stockBefore,
+                'stock_after'  => $stockAfter,
+            ]);
+        }
+
+        // totals
+        $subtotal = round($subtotal, 2);
+        $discount = max(0, round($discount, 2));
+
+        // ✅ purchase VAT = 0 anyway
+        $taxRate = ($type === 'purchase') ? 0.0 : $taxRate;
+
+        $tax   = round(max(0, ($subtotal - $discount)) * $taxRate, 2);
+        $grand = round(($subtotal - $discount + $tax), 2);
+
+        $paidAmount = round(max(0, $paidAmount), 2);
+        $balance    = round(max(0, $grand - $paidAmount), 2);
+
+        // status auto adjust
+        if ($paidAmount <= 0) {
+            $status = 'pending';
+        } elseif ($paidAmount >= $grand) {
+            $status = 'paid';
+        } else {
+            $status = 'partially_paid';
+        }
+
+        $invoice->update([
+            'subtotal'     => $subtotal,
+            'discount'     => $discount,
+            'tax'          => $tax,
+            'grand_total'  => $grand,
+            'paid_amount'  => $paidAmount,
+            'balance_due'  => $balance,
+            'status'       => $status,
+        ]);
+
+        return redirect()
+            ->route('invoices.show', $invoice->id)
+            ->with('success', 'Invoice created successfully.');
+    }, 3);
+}
 
     /* ================= Show ================= */
 

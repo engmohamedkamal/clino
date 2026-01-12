@@ -32,10 +32,17 @@
   $subtotal   = (float) ($invoice->subtotal ?? $calcSubtotal);
   $discount   = (float) ($invoice->discount ?? 0);
 
-  $taxRate    =  '0.10' ;
-  $taxAmount  = (float) ($invoice->tax_amount ?? max(0, ($subtotal - $discount) * $taxRate));
+  // ✅ VAT / TAX: لو Purchase يبقى 0
+  $taxRate    = $type === 'purchase' ? 0 : 0.10;
 
-  $grandTotal = (float) ($invoice->grand_total ?? max(0, ($subtotal - $discount) + $taxAmount));
+  // tax amount (force 0 for purchase)
+  $taxAmount  = $type === 'purchase'
+    ? 0
+    : (float) ($invoice->tax_amount ?? max(0, ($subtotal - $discount) * $taxRate));
+
+  $grandTotal = $type === 'purchase'
+    ? (float) ($invoice->grand_total ?? max(0, ($subtotal - $discount))) // بدون ضريبة
+    : (float) ($invoice->grand_total ?? max(0, ($subtotal - $discount) + $taxAmount));
 
   $paidAmount = (float) ($invoice->paid_amount ?? 0);
   $balance    = (float) ($invoice->balance_due ?? max(0, $grandTotal - $paidAmount));
@@ -157,7 +164,7 @@
 
               <div class="info-line">
                 <span>Paid Amount</span>
-                <strong>${{ number_format($paidAmount, 2) }}</strong>
+                <strong>EGP {{ number_format($paidAmount, 2) }}</strong>
               </div>
             </div>
 
@@ -193,9 +200,9 @@
                         @endif
                       </td>
 
-                      <td class="text-center">${{ number_format($price, 2) }}</td>
+                      <td class="text-center">EGP {{ number_format($price, 2) }}</td>
                       <td class="text-center">{{ $qty }}</td>
-                      <td class="text-end">${{ number_format($line, 2) }}</td>
+                      <td class="text-end">EGP {{ number_format($line, 2) }}</td>
                     </tr>
                   @endforeach
                 </tbody>
@@ -211,36 +218,36 @@
 
               <div class="col-md-4">
                 <small class="text-secondary">Subtotal</small>
-                <div class="fw-bold text-black">${{ number_format($subtotal, 2) }}</div>
+                <div class="fw-bold text-black">EGP {{ number_format($subtotal, 2) }}</div>
               </div>
 
               <div class="col-md-4">
                 <small class="text-secondary">Discount</small>
                 <div class="fw-bold text-black">
-                  ${{ number_format($discount, 2) }}
+                  EGP {{ number_format($discount, 2) }}
                 </div>
               </div>
 
               <div class="col-md-4">
                 <small class="text-secondary">Tax</small>
-                <div class="fw-bold text-black">${{ number_format($taxAmount, 2) }}</div>
+                <div class="fw-bold text-black">EGP {{ number_format($taxAmount, 2) }}</div>
               </div>
 
               <div class="col-12"><hr class="my-2"></div>
 
               <div class="col-md-4">
                 <small class="text-secondary">Grand Total</small>
-                <div class="fw-bold text-primary">${{ number_format($grandTotal, 2) }}</div>
+                <div class="fw-bold text-primary">EGP {{ number_format($grandTotal, 2) }}</div>
               </div>
 
               <div class="col-md-4">
                 <small class="text-secondary">Paid</small>
-                <div class="fw-bold text-primary">${{ number_format($paidAmount, 2) }}</div>
+                <div class="fw-bold text-primary">EGP {{ number_format($paidAmount, 2) }}</div>
               </div>
 
               <div class="col-md-4">
                 <small class="text-secondary">Balance Due</small>
-                <div class="fw-bold text-black">${{ number_format($balance, 2) }}</div>
+                <div class="fw-bold text-black">EGP {{ number_format($balance, 2) }}</div>
               </div>
 
             </div>
