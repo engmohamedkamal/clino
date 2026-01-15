@@ -113,12 +113,15 @@ class DoctorInfoController extends Controller
         // ✅ activities: ["Clinic rounds", "Research"]
         $data['activities'] = $this->cleanStringArray($data['activities'] ?? null);
 
+        // ✅ NEW: visit_types: [{type:"كشف", price:300}, ...]
+        $data['visit_types'] = $this->cleanVisitTypes($data['visit_types'] ?? null);
+
         // ✅ skills: [{name:"Operations", value:45}, ...]
         $skills = $data['skills'] ?? null;
         if (is_array($skills)) {
             $clean = [];
             foreach ($skills as $s) {
-                $name = isset($s['name']) ? trim((string) $s['name']) : '';
+                $name  = isset($s['name']) ? trim((string) $s['name']) : '';
                 $value = isset($s['value']) ? (int) $s['value'] : null;
 
                 if ($name === '' || $value === null) continue;
@@ -135,12 +138,49 @@ class DoctorInfoController extends Controller
     }
 
     /**
-     * ✅ تنظيف availability rows
+     * ✅ تنظيف visit types
      * expected:
      * [
-     *   ['day'=>'Mon','from'=>'09:00','to'=>'14:00'],
-     *   ...
+     *   ['type'=>'كشف عادي','price'=>300],
+     *   ['type'=>'استشارة','price'=>500],
      * ]
+     */
+    private function cleanVisitTypes($rows): array
+    {
+        if (!is_array($rows)) return [];
+
+        $clean = [];
+
+        foreach ($rows as $r) {
+            if (!is_array($r)) continue;
+
+            $type  = isset($r['type']) ? trim((string) $r['type']) : '';
+            $price = isset($r['price']) ? $r['price'] : null;
+
+            // تجاهل الصف الفاضي
+            if ($type === '' && ($price === null || $price === '')) continue;
+
+            // لازم الاتنين موجودين
+            if ($type === '') continue;
+
+            // price رقم
+            if ($price === null || $price === '') continue;
+            $price = (float) $price;
+
+            // يمنع قيم سالبة
+            if ($price < 0) continue;
+
+            $clean[] = [
+                'type'  => $type,
+                'price' => $price,
+            ];
+        }
+
+        return array_values($clean);
+    }
+
+    /**
+     * ✅ تنظيف availability rows
      */
     private function cleanAvailabilityRows($rows): array
     {
@@ -156,19 +196,14 @@ class DoctorInfoController extends Controller
             $from = isset($r['from']) ? trim((string) $r['from']) : '';
             $to   = isset($r['to'])   ? trim((string) $r['to'])   : '';
 
-            // تجاهل الصف الفاضي
             if ($day === '' && $from === '' && $to === '') continue;
-
-            // لو ناقص أي جزء -> تجاهله (أو ممكن تسيبه وتخلي الـ Request يطلع validation error)
             if ($day === '' || $from === '' || $to === '') continue;
 
             if (!in_array($day, $allowedDays, true)) continue;
 
-            // تأكد صيغة الوقت HH:MM
             if (!preg_match('/^\d{2}:\d{2}$/', $from)) continue;
             if (!preg_match('/^\d{2}:\d{2}$/', $to)) continue;
 
-            // from < to
             if ($from >= $to) continue;
 
             $clean[] = [

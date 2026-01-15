@@ -35,6 +35,10 @@
           $oldDate = old('appointment_date', $appointment->appointment_date);
           $oldTime = old('appointment_time', $appointment->appointment_time);
 
+          // ✅ new fields (edit)
+          $oldVisitType  = old('visit_type', $appointment->visit_type ?? '');
+          $oldVisitPrice = old('visit_price', $appointment->visit_price ?? '');
+
           $preDoctor = request('doctor'); // اختياري
           $isDoctorRole = auth()->check() && auth()->user()->role === 'doctor';
         @endphp
@@ -117,9 +121,15 @@
                   <option value="" disabled {{ $oldDoctorName ? '' : 'selected' }}>Select Doctor</option>
 
                   @foreach ($doctors as $doctor)
+                    @php
+                      // ✅ visit types list (from doctorInfo)
+                      $vts = $doctor->doctorInfo->visit_types ?? $doctor->visit_types ?? [];
+                      $vts = is_array($vts) ? $vts : (json_decode($vts, true) ?: []);
+                    @endphp
                     <option
                       value="{{ $doctor->name }}"
                       data-id="{{ $doctor->id }}"
+                      data-visit-types='@json($vts)'
                       @selected($oldDoctorName === $doctor->name || (string)$preDoctor === (string)$doctor->id)
                     >
                       {{ $doctor->name }}
@@ -133,6 +143,47 @@
                 @endif
 
                 @error('doctor_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+              </div>
+
+              <!-- ✅ Visit Type + Price -->
+              <div class="mb-3">
+                <label class="form-label appointment-label" for="visit_type">Visit Type</label>
+
+                <div class="row g-2 align-items-center">
+                  <div class="col-7">
+                    <select
+                      id="visit_type"
+                      name="visit_type"
+                      class="form-select appointment-control @error('visit_type') is-invalid @enderror"
+                      disabled
+                    >
+                      <option value="" selected>Select doctor first</option>
+                    </select>
+                    @error('visit_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                  </div>
+
+                  <div class="col-5">
+                    <div class="input-group">
+                      <input
+                        id="visit_price"
+                        name="visit_price"
+                        type="text"
+                        class="form-control appointment-control @error('visit_price') is-invalid @enderror"
+                        value="{{ $oldVisitPrice }}"
+                        placeholder="Price"
+                        readonly
+                      >
+                      <span class="input-group-text">EGP</span>
+                      @error('visit_price') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                  </div>
+                </div>
+
+                {{-- ✅ لو select disabled (doctor role)، نضمن الإرسال --}}
+                @if($isDoctorRole)
+                  <input type="hidden" name="visit_type" value="{{ $oldVisitType }}">
+                  <input type="hidden" name="visit_price" value="{{ $oldVisitPrice }}">
+                @endif
               </div>
 
               <!-- Appointment Date (dynamic select) -->
@@ -195,10 +246,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const dateSel   = document.getElementById('appointment_date');
   const timeSel   = document.getElementById('appointment_time');
 
+  const visitSel  = document.getElementById('visit_type');
+  const priceInp  = document.getElementById('visit_price');
+
   const oldDate = @json($oldDate);
   const oldTime = @json($oldTime);
 
+  const oldVisitType  = @json($oldVisitType);
+  const oldVisitPrice = @json($oldVisitPrice);
+
   let timesByDate = {};
+
+  function escapeHtml(str){
+    return String(str ?? '')
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'",'&#039;');
+  }
+
+  function resetVisit() {
+    if (!visitSel) return;
+    visitSel.innerHTML = `<option value="" selected>Select doctor first</option>`;
+    visitSel.disabled = true;
+    if (priceInp) priceInp.value = '';
+  }
 
   function resetDateTime() {
     dateSel.innerHTML = `<option value="" selected>Select doctor first</option>`;
@@ -207,6 +280,69 @@ document.addEventListener('DOMContentLoaded', () => {
     timeSel.disabled = true;
     timesByDate = {};
   }
+
+  function resetAll() {
+    resetDateTime();
+    resetVisit();
+  }
+
+  function fillVisitTypesFromDoctorOption(opt) {
+    resetVisit();
+
+    // ✅ لو مفيش option (مثلاً select فاضي)
+    if (!opt) return;
+
+    let vts = [];
+    try {
+      vts = JSON.parse(opt.dataset.visitTypes || '[]');
+    } catch (e) {
+      vts = [];
+    }
+
+    // ✅ لو الدكتور ملوش أنواع كشف
+    if (!Array.isArray(vts) || vts.length === 0) {
+      // لو edit وعندنا old value → اعرضه وخليه enabled
+      if (oldVisitType) {
+        visitSel.disabled = false;
+        visitSel.innerHTML =
+          `<option value="" selected>Select visit type</option>` +
+          `<option value="${escapeHtml(oldVisitType)}" selected data-price="${escapeHtml(oldVisitPrice)}">${escapeHtml(oldVisitType)} (Current)</option>`;
+        if (priceInp) priceInp.value = oldVisitPrice || '';
+      } else {
+        visitSel.innerHTML = `<option value="" selected>No visit types</option>`;
+        visitSel.disabled = true;
+        if (priceInp) priceInp.value = '';
+      }
+      return;
+    }
+
+    visitSel.innerHTML =
+      `<option value="" selected>Select visit type</option>` +
+      vts.map(v => {
+        const type  = (v?.type ?? '').toString();
+        const price = (v?.price ?? '').toString();
+        return `<option value="${escapeHtml(type)}" data-price="${escapeHtml(price)}">${escapeHtml(type)}</option>`;
+      }).join('');
+
+    visitSel.disabled = false;
+
+    // ✅ اختار old لو موجود وإلا أول عنصر
+    const hasOld = oldVisitType && [...visitSel.options].some(o => o.value === oldVisitType);
+    if (hasOld) {
+      visitSel.value = oldVisitType;
+    } else if (visitSel.options.length > 1) {
+      visitSel.selectedIndex = 1;
+    }
+
+    // حدث السعر
+    visitSel.dispatchEvent(new Event('change'));
+  }
+
+  visitSel?.addEventListener('change', () => {
+    const opt = visitSel.options[visitSel.selectedIndex];
+    const price = opt?.dataset?.price || '';
+    if (priceInp) priceInp.value = price;
+  });
 
   function formatTimeLabel(t) {
     try {
@@ -239,7 +375,6 @@ document.addEventListener('DOMContentLoaded', () => {
       timeSel.innerHTML = `<option value="" selected>No available times</option>`;
       timeSel.disabled = true;
 
-      // حتى لو مفيش times، نخلي الوقت الحالي يظهر ويتحدد (edit)
       if (oldDate && dateValue === oldDate && oldTime) {
         timeSel.disabled = false;
         timeSel.innerHTML = `<option value="" selected>Select time</option>`;
@@ -254,7 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     timeSel.disabled = false;
 
-    // ✅ خلي الوقت القديم selected حتى لو مش موجود في الداتا (أو اتشال لأي سبب)
     if (oldDate && dateValue === oldDate && oldTime) {
       ensureCurrentTimeOptionSelected();
     }
@@ -279,7 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
         timeSel.innerHTML = `<option value="" selected>No available times</option>`;
         timeSel.disabled = true;
 
-        // لو مفيش dates من API بس احنا في edit عندنا date/time قديم → نعرضهم
         if (oldDate) {
           dateSel.disabled = false;
           dateSel.innerHTML = `<option value="${oldDate}" selected>${oldDate} (Current)</option>`;
@@ -287,7 +420,6 @@ document.addEventListener('DOMContentLoaded', () => {
           timeSel.innerHTML = `<option value="" selected>Select time</option>`;
           ensureCurrentTimeOptionSelected();
         }
-
         return;
       }
 
@@ -300,7 +432,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       dateSel.disabled = false;
 
-      // ✅ اختار التاريخ القديم لو موجود، وإلا أول تاريخ
       const dateValues = dates.map(d => d.value);
       const chosenDate = (oldDate && dateValues.includes(oldDate)) ? oldDate : dates[0].value;
 
@@ -315,6 +446,11 @@ document.addEventListener('DOMContentLoaded', () => {
   doctorSel?.addEventListener('change', () => {
     const opt = doctorSel.options[doctorSel.selectedIndex];
     const doctorId = opt?.dataset?.id;
+
+    // ✅ fill visit types
+    fillVisitTypesFromDoctorOption(opt);
+
+    // ✅ fill availability
     loadAvailabilityByDoctorId(doctorId);
   });
 
@@ -323,16 +459,27 @@ document.addEventListener('DOMContentLoaded', () => {
     fillTimesForDate(dateSel.value);
   });
 
-  // init
-  resetDateTime();
+  // ✅ init
+  resetAll();
 
-  // ✅ في edit: حتى لو select disabled (Doctor role) هنحمّل availability بالـ doctorId المختار
-  if (doctorSel) {
+  // ✅ في edit: شغّل fill من الدكتور المختار حتى لو select disabled
+  if (doctorSel && doctorSel.selectedIndex >= 0) {
     const opt = doctorSel.options[doctorSel.selectedIndex];
     const doctorId = opt?.dataset?.id;
 
+    fillVisitTypesFromDoctorOption(opt);
+
     if (doctorId) {
       loadAvailabilityByDoctorId(doctorId);
+    } else {
+      // fallback لو مفيش doctorId بس عندنا old visit
+      if (oldVisitType && visitSel) {
+        visitSel.disabled = false;
+        visitSel.innerHTML =
+          `<option value="" selected>Select visit type</option>` +
+          `<option value="${escapeHtml(oldVisitType)}" selected data-price="${escapeHtml(oldVisitPrice)}">${escapeHtml(oldVisitType)} (Current)</option>`;
+        if (priceInp) priceInp.value = oldVisitPrice || '';
+      }
     }
   }
 });

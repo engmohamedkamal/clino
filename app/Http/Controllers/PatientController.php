@@ -27,8 +27,6 @@ public function index(Request $request)
         ->latest()
         ->paginate(10)
         ->withQueryString();
-
-    // ✅ Query 2: search in users table (role = patient)
     $users = User::query()
         ->where('role', 'patient')
         ->when($q, function ($query) use ($q) {

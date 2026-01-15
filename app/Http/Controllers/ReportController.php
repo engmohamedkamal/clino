@@ -77,7 +77,11 @@ public function create()
         ->sortBy('name')
         ->values();
 
-    return view('dashboard.reports.create', compact('patients'));
+    return view('dashboard.reports.create', [
+    'patients'   => $patients,
+    'patient_id' => request('patient_id'), // أو اللي جاي من الراوت
+]);
+
 }
 
 public function store(Request $request)

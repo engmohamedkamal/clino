@@ -26,11 +26,17 @@
   $oldSkills = old('skills', $info->skills ?? []);
   $skillsArr = is_array($oldSkills) ? $oldSkills : [];
 
+  // ✅ NEW: visit types (array of objects)
+  // expected: [ ['type'=>'كشف', 'price'=>300], ... ]
+  $oldVisitTypes = old('visit_types', $info->visit_types ?? []);
+  $visitTypesArr = is_array($oldVisitTypes) ? $oldVisitTypes : [];
+
   // ensure at least 1 row for better UX
   if (count($availability) === 0) $availability = [['day' => '', 'from' => '', 'to' => '']];
   if (count($specs) === 0) $specs = [''];
   if (count($activitiesArr) === 0) $activitiesArr = [''];
   if (count($skillsArr) === 0) $skillsArr = [['name' => '', 'value' => 0]];
+  if (count($visitTypesArr) === 0) $visitTypesArr = [['type' => '', 'price' => 0]];
 @endphp
 
 <main class="dp-main">
@@ -177,6 +183,66 @@
                   placeholder="Enter Address">
                 @error('address')
                   <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+            </div>
+
+            <!-- ✅ NEW: Visit Types (نوع الكشف + السعر) -->
+            <div class="col-12">
+              <div class="mb-3">
+                <div class="di-label-row">
+                  <label class="form-label appointment-label mb-0">Visit Types</label>
+                  <button type="button" class="btn di-mini-btn" id="addVisitTypeBtn">
+                    <i class="fa-solid fa-plus"></i> Add
+                  </button>
+                </div>
+
+                <div id="visitTypesWrap" class="di-repeat-wrap">
+                  @foreach($visitTypesArr as $i => $vt)
+                    @php
+                      $vtType  = is_array($vt) ? ($vt['type'] ?? '') : '';
+                      $vtPrice = is_array($vt) ? ($vt['price'] ?? 0) : 0;
+                    @endphp
+
+                    <div class="di-repeat-item row g-2 align-items-center visit-type-row">
+                      <div class="col-md-7">
+                        <input
+                          type="text"
+                          name="visit_types[{{ $i }}][type]"
+                          value="{{ $vtType }}"
+                          class="form-control di-control vt-type @error('visit_types.'.$i.'.type') is-invalid @enderror"
+                          placeholder="Type (e.g. Consultation, Follow-up)"
+                        >
+                        @error('visit_types.'.$i.'.type')
+                          <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                      </div>
+
+                      <div class="col-md-3">
+                        <input
+                          type="number"
+                          name="visit_types[{{ $i }}][price]"
+                          value="{{ $vtPrice }}"
+                          min="0" step="0.01"
+                          class="form-control di-control vt-price @error('visit_types.'.$i.'.price') is-invalid @enderror"
+                          placeholder="Price"
+                        >
+                        @error('visit_types.'.$i.'.price')
+                          <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                      </div>
+
+                      <div class="col-md-2 text-end">
+                        <button type="button" class="btn di-x-btn remove-visit-type" aria-label="Remove">
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                      </div>
+                    </div>
+                  @endforeach
+                </div>
+
+                @error('visit_types')
+                  <div class="text-danger small mt-2">{{ $message }}</div>
                 @enderror
               </div>
             </div>
@@ -486,6 +552,78 @@ document.addEventListener('DOMContentLoaded', () => {
       ensureOneRow(parent, () => makeRepeatItem('activities[]', 'Enter activity'));
     }
   });
+
+  /* =========================
+     ✅ NEW) Visit Types add/remove + renumber
+  ========================== */
+  const visitWrap = document.getElementById('visitTypesWrap');
+  const addVisitBtn = document.getElementById('addVisitTypeBtn');
+
+  const makeVisitRow = (type = '', price = 0) => {
+    const row = document.createElement('div');
+    row.className = 'di-repeat-item row g-2 align-items-center visit-type-row';
+    row.innerHTML = `
+      <div class="col-md-7">
+        <input type="text" class="form-control di-control vt-type"
+               placeholder="Type (e.g. Consultation, Follow-up)"
+               value="${String(type).replace(/"/g, '&quot;')}">
+      </div>
+
+      <div class="col-md-3">
+        <input type="number" class="form-control di-control vt-price"
+               placeholder="Price" min="0" step="0.01"
+               value="${Number(price) || 0}">
+      </div>
+
+      <div class="col-md-2 text-end">
+        <button type="button" class="btn di-x-btn remove-visit-type" aria-label="Remove">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    `;
+    return row;
+  };
+
+  const renumberVisitTypes = () => {
+    const rows = visitWrap?.querySelectorAll('.visit-type-row') || [];
+    rows.forEach((row, idx) => {
+      const typeInput  = row.querySelector('.vt-type');
+      const priceInput = row.querySelector('.vt-price');
+
+      if (typeInput)  typeInput.name  = `visit_types[${idx}][type]`;
+      if (priceInput) priceInput.name = `visit_types[${idx}][price]`;
+    });
+  };
+
+  const ensureOneVisitRow = () => {
+    if (!visitWrap) return;
+    if (visitWrap.querySelectorAll('.visit-type-row').length === 0) {
+      visitWrap.appendChild(makeVisitRow('', 0));
+      renumberVisitTypes();
+    }
+  };
+
+  addVisitBtn?.addEventListener('click', () => {
+    if (!visitWrap) return;
+    visitWrap.appendChild(makeVisitRow('', 0));
+    renumberVisitTypes();
+  });
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.remove-visit-type');
+    if (!btn) return;
+
+    const row = btn.closest('.visit-type-row');
+    if (!row) return;
+
+    row.remove();
+    ensureOneVisitRow();
+    renumberVisitTypes();
+  });
+
+  // Initial
+  renumberVisitTypes();
+  ensureOneVisitRow();
 
   /* =========================
      6) Skills add/remove + renumber

@@ -2,7 +2,6 @@
 
 @section('dash-content')
 <main class="main">
-  
 
   <!-- Content -->
   <section class="content-area">
@@ -21,8 +20,6 @@
           @csrf
 
           <div class="row g-3">
-
-            {{-- LEFT COLUMN (Admin/Doctor فقط) --}}
             @if (auth()->user()->role !== 'patient')
               <div class="col-md-6">
 
@@ -81,26 +78,68 @@
             {{-- RIGHT COLUMN --}}
             <div class="{{ auth()->user()->role !== 'patient' ? 'col-md-6' : 'col-md-12' }}">
 
-              <!-- Doctor (doctor_name فقط) -->
+              <!-- Doctor -->
               <div class="mb-3">
                 <label class="form-label appointment-label" for="doctor_name">Doctor Name</label>
                 @php $preDoctor = request('doctor'); @endphp
 
-<select id="doctor_name" name="doctor_name" class="form-select appointment-control @error('doctor_name') is-invalid @enderror">
-  <option value="" disabled {{ old('doctor_name') ? '' : 'selected' }}>Select Doctor</option>
+                <select id="doctor_name" name="doctor_name"
+                  class="form-select appointment-control @error('doctor_name') is-invalid @enderror">
+                  <option value="" disabled {{ old('doctor_name') ? '' : 'selected' }}>Select Doctor</option>
 
-  @foreach ($doctors as $doctor)
-    <option
-      value="{{ $doctor->name }}"
-      data-id="{{ $doctor->id }}"
-      @selected(old('doctor_name') === $doctor->name || (string)$preDoctor === (string)$doctor->id)
-    >
-      {{ $doctor->name }}
-    </option>
-  @endforeach
-</select>
+                  @foreach ($doctors as $doctor)
+                    @php
+                      // ✅ visit types coming from doctorInfo OR direct on doctor
+                      $vts = $doctor->doctorInfo->visit_types ?? $doctor->visit_types ?? [];
+                      $vts = is_array($vts) ? $vts : [];
+                    @endphp
+
+                    <option
+                      value="{{ $doctor->name }}"
+                      data-id="{{ $doctor->id }}"
+                      data-visit-types='@json($vts)'
+                      @selected(old('doctor_name') === $doctor->name || (string)$preDoctor === (string)$doctor->id)
+                    >
+                      {{ $doctor->name }}
+                    </option>
+                  @endforeach
+                </select>
 
                 @error('doctor_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+              </div>
+
+              <!-- ✅ Visit Type + Price -->
+              <div class="mb-3">
+                <label class="form-label appointment-label" for="visit_type">Visit Type</label>
+
+                <div class="row g-2 align-items-center">
+                  <div class="col-7">
+                    <select
+                      id="visit_type"
+                      name="visit_type"
+                      class="form-select appointment-control @error('visit_type') is-invalid @enderror"
+                      disabled
+                    >
+                      <option value="" selected>Select doctor first</option>
+                    </select>
+                    @error('visit_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                  </div>
+
+                  <div class="col-5">
+                    <div class="input-group">
+                      <input
+                        id="visit_price"
+                        name="visit_price"
+                        type="text"
+                        class="form-control appointment-control"
+                        value="{{ old('visit_price') }}"
+                        placeholder="Price"
+                        readonly
+                      >
+                      <span class="input-group-text">EGP</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- Appointment Date -->
@@ -165,11 +204,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (success) setTimeout(() => (success.style.display = 'none'), 3000);
 
   const doctorSel = document.getElementById('doctor_name');
+  const visitSel  = document.getElementById('visit_type');
+  const priceInp  = document.getElementById('visit_price');
+
   const dateSel   = document.getElementById('appointment_date');
   const timeSel   = document.getElementById('appointment_time');
 
   // ✅ map: date => times[]
   let timesByDate = {};
+
+  function resetVisit() {
+    if (!visitSel) return;
+    visitSel.innerHTML = `<option value="" selected>Select doctor first</option>`;
+    visitSel.disabled = true;
+    if (priceInp) priceInp.value = '';
+  }
 
   function resetDateTime() {
     dateSel.innerHTML = `<option value="" selected>Select doctor first</option>`;
@@ -177,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dateSel.disabled = true;
     timeSel.disabled = true;
     timesByDate = {};
+    resetVisit();
   }
 
   function formatTimeLabel(t) {
@@ -207,12 +257,57 @@ document.addEventListener('DOMContentLoaded', () => {
     timeSel.disabled = false;
   }
 
+  function fillVisitTypesFromDoctorOption(opt) {
+    resetVisit();
+
+    let vts = [];
+    try {
+      vts = JSON.parse(opt?.dataset?.visitTypes || "[]");
+    } catch (e) { vts = []; }
+
+    if (!Array.isArray(vts) || vts.length === 0) {
+      visitSel.innerHTML = `<option value="" selected>No visit types</option>`;
+      visitSel.disabled = true;
+      return;
+    }
+
+    visitSel.innerHTML =
+      `<option value="" selected>Select visit type</option>` +
+      vts.map(v => {
+        const type = (v?.type ?? '').toString();
+        const price = (v?.price ?? '').toString();
+        return `<option value="${type}" data-price="${price}">${type}</option>`;
+      }).join('');
+
+    visitSel.disabled = false;
+
+    // ✅ old selected visit_type
+    const oldType = @json(old('visit_type'));
+    if (oldType) {
+      visitSel.value = oldType;
+    } else {
+      // auto select first type
+      if (visitSel.options.length > 1) visitSel.selectedIndex = 1;
+    }
+
+    visitSel.dispatchEvent(new Event('change'));
+  }
+
+  visitSel?.addEventListener('change', () => {
+    const opt = visitSel.options[visitSel.selectedIndex];
+    const price = opt?.dataset?.price || '';
+    if (priceInp) priceInp.value = price ? price : '';
+  });
+
   doctorSel?.addEventListener('change', async () => {
     const opt = doctorSel.options[doctorSel.selectedIndex];
     const doctorId = opt?.dataset?.id;
 
     resetDateTime();
     if (!doctorId) return;
+
+    // ✅ fill visit types + price
+    fillVisitTypesFromDoctorOption(opt);
 
     try {
       const url = `{{ url('/doctors') }}/${doctorId}/availability`;
@@ -268,6 +363,5 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
-
 
 @endsection

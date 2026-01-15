@@ -19,9 +19,9 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->date('dob')->nullable();
 
-            // ✅ arrays
-            $table->json('Specialization')->nullable();         // بدل string
-            $table->json('availability_schedule')->nullable();  // ✅ day/from/to rows (array)
+        
+            $table->json('Specialization')->nullable();        
+            $table->json('availability_schedule')->nullable();  
 
             $table->string('license_number')->nullable();
             $table->string('address')->nullable();
@@ -32,7 +32,7 @@ return new class extends Migration
 
             $table->json('activities')->nullable();
             $table->json('skills')->nullable();
-
+            $table->json('visit_types')->nullable(); 
             $table->string('image')->nullable();
             $table->text('about')->nullable();
 

@@ -223,3 +223,94 @@
     .pl-main{ padding:16px; }
     .pl-search{ min-width:100%; }
   }
+/* =================== Responsive Table Patch =================== */
+/* put this at END of patientList.css */
+
+.pl-table-card{
+  overflow: hidden; /* يحافظ على الكارد */
+}
+
+/* خلي الجدول يعمل scroll افقي على الموبايل فقط */
+.pl-table-card .table-responsive{
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* خلي الجدول له min-width عشان الأعمدة ماتدخلش فوق بعض */
+.pl-table{
+  min-width: 980px; /* يضمن الأعمدة متتكدسش */
+}
+
+/* تقليل الحشو على الشاشات الصغيرة */
+@media (max-width: 992px){
+  .pl-main{ padding: 16px !important; }
+  .pl-title{ font-size: 22px; }
+}
+
+@media (max-width: 768px){
+  .pl-topbar{
+    gap: 12px;
+  }
+
+  .pl-actions{
+    width: 100%;
+    gap: 8px;
+  }
+
+  /* search ياخد سطر كامل */
+  .pl-search{
+    min-width: 100% !important;
+    flex: 1 1 100%;
+  }
+
+  /* filter كذلك */
+  .pl-filter{
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .pl-filter input[type="date"]{
+    flex: 1 1 auto;
+    min-width: 180px;
+  }
+}
+
+/* تحسين عرض النصوص داخل الخلايا */
+.pl-table td, .pl-table th{
+  vertical-align: middle;
+}
+
+/* قص النص الطويل بدل ما يكسر الجدول */
+.pl-table td{
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Visit Type ممكن يطول */
+.pl-table td:nth-child(5){
+  max-width: 260px;
+}
+
+/* View column ضيق */
+.view-col{
+  width: 70px;
+  min-width: 70px;
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+/* زر العين أصغر على الموبايل */
+@media (max-width: 576px){
+  .view-col .pl-icon-btn{
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+}
+
+/* status column خليها ثابتة */
+.status-col{
+  width: 140px;
+  min-width: 140px;
+}

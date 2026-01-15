@@ -15,11 +15,13 @@ class Appointment extends Model
         'patient_number',
         'dob',
         'reason',
+        'visit_types',
         'status'
     ];
 
 protected $casts = [
   'dob' => 'date',
+  'visit_types' => 'array',
 ];
 
 }

@@ -7,7 +7,7 @@ use App\Models\DoctorInfo;
 use App\Models\Prescription;
 use App\Models\Medicine as MedicalOrder; // ✅ جدول medical orders (name,type)
 use Illuminate\Http\Request;
-
+use App\Models\PatientInfo;
 class PrescriptionController extends Controller
 {
     private function userRole(): string
@@ -106,13 +106,36 @@ class PrescriptionController extends Controller
 
     /* ================= Show ================= */
 
-    public function show($id)
-    {
-        // لو عايز تطبق نفس صلاحيات الرول في show استخدم findAllowedOrFail بدل findOrFail
-        $rx = $this->findAllowedOrFail((int) $id);
+ 
 
-        return view('dashboard.prescriptions.show', compact('rx'));
-    }
+public function show($id)
+{
+    $rx = $this->findAllowedOrFail((int) $id);
+
+    // ================= Patient URL =================
+    $patientId = $rx->patient_id ?? null;
+
+    $patientInfo = $patientId
+        ? PatientInfo::where('user_id', $patientId)->first()
+        : null;
+
+    $patientUrl = $patientInfo
+        ? route('patient-info.show', $patientInfo->id)
+        : '#';
+
+    // ================= Doctor URL =================
+    $doctorId = $rx->doctor_id ?? null;
+
+    $doctorUrl = $doctorId
+        ? route('doctor-info.show', $doctorId)
+        : '#';
+
+    return view(
+        'dashboard.prescriptions.show',
+        compact('rx', 'patientUrl', 'doctorUrl')
+    );
+}
+
 
     /* ================= Create ================= */
 

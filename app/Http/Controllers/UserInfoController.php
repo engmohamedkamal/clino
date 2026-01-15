@@ -61,8 +61,6 @@ class UserInfoController extends Controller
      */
     public function show(PatientInfo $patient_info)
     {
-        abort_if($patient_info->user_id !== Auth::id(), 403);
-
         $info = $patient_info;
         return view('patient-info.show', compact('info'));
     }

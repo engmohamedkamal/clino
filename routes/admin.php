@@ -77,6 +77,10 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
     ->name('medical-orders.bulkDestroy');
 
   Route::resource('medical-orders', MedicineController::class);
+ Route::get('/appointments/{id}', [AppointmentController::class, 'singleShow'])
+  ->whereNumber('id')
+  ->name('appointments.singleShow');
+
 });
 
 Route::middleware(['auth'])->group(function () {

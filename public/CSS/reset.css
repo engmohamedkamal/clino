@@ -1,0 +1,185 @@
+:root{
+  --bg:#ffffff;
+  --paper:#ffffff;
+  --text:#0f172a;
+  --muted:#6b7280;
+  --shadow: 0 26px 60px rgba(2,6,23,.18);
+  --border:#e5e7eb;
+  --r: 0px; /* التذكرة في الصورة زواياها حادة */
+}
+
+*{ box-sizing:border-box; }
+
+.tk-body{
+  margin:0;
+  font-family:"Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1200px 800px at 50% 30%, #ffffff 0%, #f3f4f6 70%, #eef2f7 100%);
+  color:var(--text);
+}
+
+.tk-wrap{ max-width: 520px; }
+
+.tk-print-btn{
+  background:#0b0b0b;
+  color:#fff;
+  border:0;
+  border-radius:0;
+  padding:10px 22px;
+  font-weight:500;
+  letter-spacing:.2px;
+}
+.tk-print-btn:hover{ background:#111; color:#fff; }
+
+/* Ticket */
+.tk-ticket{
+  width: 410px;
+  max-width: 100%;
+  background:var(--paper);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  box-shadow: var(--shadow);
+  padding: 28px 30px 22px;
+}
+
+/* Top */
+.tk-top{ padding-top: 8px; }
+
+.tk-logo{
+  width:56px; height:56px;
+  margin:0 auto 12px;
+  display:grid; place-items:center;
+  color:#000;
+  font-size:36px;
+}
+
+.tk-brand{
+  font-weight:900;
+  letter-spacing:.6px;
+  font-size:22px;
+  margin-top:2px;
+}
+
+.tk-slogan{
+  font-size:10px;
+  letter-spacing:2.6px;
+  font-weight:600;
+  color:#111;
+  margin-top:2px;
+}
+
+.tk-divider{
+  height:1px;
+  background:#111;
+  margin: 18px 0;
+  opacity:.85;
+}
+
+.tk-section-title{
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:2.6px;
+  color:#111;
+}
+
+/* Number */
+.tk-number-wrap{ padding: 18px 0 10px; }
+.tk-number{
+  font-size:130px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-6px;
+  color:#000;
+}
+.tk-number-label{
+  margin-top:6px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:1.6px;
+  color:#111;
+}
+
+/* Dotted separator */
+.tk-dots{
+  border-top: 2px dashed #111;
+  opacity:.8;
+  margin: 14px 0;
+}
+
+/* Message */
+.tk-msg{
+  font-size:14px;
+  color:#111;
+  font-weight:500;
+  line-height:1.35;
+}
+
+/* Key/Value rows */
+.tk-kv{
+  margin-top: 12px;
+}
+.tk-row{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  padding: 9px 0;
+  border-bottom: 1px solid #111;
+  opacity:.95;
+}
+.tk-row:last-child{ border-bottom: 1px solid #111; }
+
+.tk-key{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.4px;
+}
+.tk-val{
+  font-size:13px;
+  font-weight:600;
+}
+
+/* Thanks */
+.tk-thanks{
+  margin-top: 18px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.3px;
+  line-height:1.25;
+}
+
+/* Barcode (CSS visual) */
+.tk-barcode{
+  width: 56%;
+  height: 42px;
+  margin: 14px auto 8px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #000 0px, #000 2px,
+      transparent 2px, transparent 4px,
+      #000 4px, #000 5px,
+      transparent 5px, transparent 7px,
+      #000 7px, #000 10px,
+      transparent 10px, transparent 12px
+    );
+  opacity:.95;
+}
+
+.tk-code{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.8px;
+  color:#111;
+}
+
+/* Print styles */
+@media print{
+  body{ background:#fff !important; }
+  .tk-no-print{ display:none !important; }
+  .tk-wrap{ max-width: unset !important; padding:0 !important; }
+  .tk-ticket{
+    box-shadow:none !important;
+    border:1px solid #ddd !important;
+    margin:0 auto !important;
+  }
+}

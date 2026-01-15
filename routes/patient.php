@@ -4,7 +4,7 @@ use App\Http\Controllers\Patient\FeedbackController;
 use App\Http\Controllers\Patient\PatientInfoController;
 use App\Http\Controllers\UserInfoController;
 
-Route::middleware(['auth','patient.area'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/feedback', [FeedbackController::class, "index"])->name('feedback.form');
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
     Route::resource('patient-info', UserInfoController::class);

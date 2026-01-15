@@ -255,36 +255,48 @@
           <section class="row g-4 dp-section">
 
             <!-- Speciality -->
-            <div class="col-12 col-lg-4">
-              <div class="dp-card dp-box">
-                <h2 class="dp-h2">Speciality</h2>
+          <div class="col-12 col-lg-4">
+  <div class="dp-card dp-box">
+    <h2 class="dp-h2">Visit Types</h2>
 
-                <div class="dp-list">
-                  @forelse($specializations as $sp)
-                    <div class="dp-li">
-                      <div class="dp-badge b-blue">
-                        <span class="material-icons-round">verified</span>
-                      </div>
-                      <div>
-                        <div class="dp-li-title">Specialization</div>
-                        <div class="dp-li-sub">{{ $sp }}</div>
-                      </div>
-                    </div>
-                  @empty
-                    <div class="dp-li">
-                      <div class="dp-badge b-blue">
-                        <span class="material-icons-round">info</span>
-                      </div>
-                      <div>
-                        <div class="dp-li-title">Not Set</div>
-                        <div class="dp-li-sub">No specialization added</div>
-                      </div>
-                    </div>
-                  @endforelse
-                </div>
+    <div class="dp-list">
+      @forelse(($info->visit_types ?? []) as $vt)
+        @php
+          $type  = is_array($vt) ? ($vt['type'] ?? '') : '';
+          $price = is_array($vt) ? ($vt['price'] ?? null) : null;
+        @endphp
 
-              </div>
+        <div class="dp-li">
+          <div class="dp-badge b-blue">
+            <span class="material-icons-round">payments</span>
+          </div>
+
+          <div class="flex-grow-1">
+            <div class="dp-li-title">{{ $type ?: 'Visit Type' }}</div>
+            <div class="dp-li-sub d-flex align-items-center justify-content-between gap-2">
+              {{-- <span>{{ $type ?: '-' }}</span> --}}
+              <span class="fw-bold">
+                {{ $price !== null ? number_format((float)$price, 2) . ' EGP' : '-' }}
+              </span>
             </div>
+          </div>
+        </div>
+
+      @empty
+        <div class="dp-li">
+          <div class="dp-badge b-blue">
+            <span class="material-icons-round">info</span>
+          </div>
+          <div>
+            <div class="dp-li-title">Not Set</div>
+            <div class="dp-li-sub">No visit types added</div>
+          </div>
+        </div>
+      @endforelse
+    </div>
+
+  </div>
+</div>
 
             <!-- Activities -->
             <div class="col-12 col-lg-4">

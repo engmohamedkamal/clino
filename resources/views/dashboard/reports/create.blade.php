@@ -48,20 +48,35 @@
             {{-- ✅ Patient --}}
             <div class="col-12 col-md-6">
               <label class="rp-label">Patient</label>
+@php
+  $selectedPatient = old('patient_ref') 
+      ?? (isset($patient_id) ? 'patient:'.$patient_id : null);
+@endphp
 
-              <div class="rp-field">
-                <select name="patient_ref" class="rp-control @error('patient_ref') is-invalid @enderror" required>
-                  <option value="" disabled {{ old('patient_ref') ? '' : 'selected' }}>Select Patient</option>
+<div class="rp-field">
+  <select
+    name="patient_ref"
+    class="rp-control @error('patient_ref') is-invalid @enderror"
+    required
+  >
+    <option value="" disabled {{ $selectedPatient ? '' : 'selected' }}>
+      Select Patient
+    </option>
 
-                  @foreach($patients as $p)
-                    <option value="{{ $p->source }}:{{ $p->id }}"
-                      {{ old('patient_ref') == ($p->source.':'.$p->id) ? 'selected' : '' }}>
-                      {{ $p->name }} {{ $p->phone ? ' - '.$p->phone : '' }}
-                    </option>
-                  @endforeach
-                </select>
-                <i class="bi bi-chevron-down rp-sfx"></i>
-              </div>
+    @foreach($patients as $p)
+      @php
+        $value = $p->source . ':' . $p->id;
+      @endphp
+
+      <option value="{{ $value }}"
+        {{ $selectedPatient === $value ? 'selected' : '' }}>
+        {{ $p->name }} {{ $p->phone ? ' - '.$p->phone : '' }}
+      </option>
+    @endforeach
+  </select>
+
+  <i class="bi bi-chevron-down rp-sfx"></i>
+</div>
 
               @error('patient_ref')
                 <div class="invalid-feedback d-block">{{ $message }}</div>

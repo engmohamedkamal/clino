@@ -1,0 +1,223 @@
+.ad-main{
+  padding:24px;
+  background:#f2f8ff;
+  min-height:100vh;
+}
+
+/* Topbar */
+.ad-topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.ad-left{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.ad-title{
+  font-size:26px;
+  font-weight:800;
+  margin:0;
+}
+
+.ad-sub{
+  color:#64748b;
+  font-weight:600;
+  margin-top:4px;
+  font-size:13px;
+}
+
+.ad-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.ad-icon-btn{
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  border:1px solid #e2e8f0;
+  background:#fff;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:.2s ease;
+  text-decoration:none;
+  color:#0f172a;
+}
+
+.ad-icon-btn:hover{ transform: translateY(-1px); }
+
+.ad-danger{
+  border-color: rgba(220,53,69,.25);
+  color:#dc2626;
+}
+
+/* Status badge */
+.ad-status{
+  min-width:120px;
+  height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  font-weight:800;
+}
+
+/* Card */
+.ad-card{
+  background:#fff;
+  border-radius:22px;
+  box-shadow:0 18px 40px rgba(0,0,0,.06);
+  border:1px solid rgba(15,23,42,.06);
+  padding:16px;
+}
+
+/* grid */
+.ad-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:14px;
+}
+
+@media (max-width: 992px){
+  .ad-grid{ grid-template-columns: 1fr; }
+}
+
+/* box */
+.ad-box{
+  background:#f3f8ff;
+  border:1px solid rgba(30,79,145,.16);
+  border-radius:18px;
+  padding:14px;
+}
+
+.ad-box-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:900;
+  color:#1e4f91;
+  margin-bottom:10px;
+}
+
+.ad-box-title .material-icons-round{
+  font-size:20px;
+}
+
+/* rows */
+.ad-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 0;
+  border-top:1px solid rgba(30,79,145,.12);
+}
+
+.ad-row:first-of-type{ border-top:0; padding-top:0; }
+
+.ad-label{
+  color:#64748b;
+  font-weight:800;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.ad-value{
+  color:#0f172a;
+  font-weight:800;
+  text-align:right;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* status quick actions */
+.ad-status-actions{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.ad-mini{
+  font-size:12px;
+  font-weight:900;
+  color:#64748b;
+  margin-right:4px;
+}
+
+.ad-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px;
+  padding:8px 10px;
+  border:1px solid rgba(15,23,42,.10);
+  background:rgba(255,255,255,.85);
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  transition:.15s ease;
+}
+
+.ad-chip:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(0,0,0,.10);
+}
+
+.ad-chip .material-icons-round{ font-size:16px; }
+
+.ad-chip-pending{ color:#8a6d00; }
+.ad-chip-cancelled{ color:#dc2626; }
+.ad-chip-completed{ color:#16a34a; }
+.ad-box-actions{
+  flex-wrap: wrap;
+}
+
+.ad-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 12px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:800;
+  border:1px solid rgba(15,23,42,.12);
+  text-decoration:none;
+  transition:.15s ease;
+  white-space:nowrap;
+}
+
+.ad-btn .material-icons-round{
+  font-size:16px;
+}
+
+/* soft */
+.ad-btn-soft{
+  background:#fff;
+  color:#1e4f91;
+}
+.ad-btn-soft:hover{
+  background:#eef4ff;
+  transform: translateY(-1px);
+}
+
+/* primary */
+.ad-btn-primary{
+  background:#2563eb;
+  color:#fff;
+  border-color:#2563eb;
+}
+.ad-btn-primary:hover{
+  background:#1e4f91;
+  transform: translateY(-1px);
+}

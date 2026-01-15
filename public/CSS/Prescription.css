@@ -71,7 +71,7 @@
 .rx-title {
   color: #1C5197;
   margin: 0;
-  font-weight: 600; /* بدل bolder */
+  font-weight: 600; 
 }
 
 .rx-contact div {
@@ -179,56 +179,98 @@
 .td-castom{
   font-weight: 600;
 }
-/* Print Button */
-.rx-btn-primary {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  padding: 10px 20px;
-  font-weight: 600;
+
+.rx-terms{
+  font-size: 16px;
+}
+.rx-terms-title{
+  font-weight: 800;
+  font-size: 18px;
+}
+
+/* ===== QR ===== */
+.rx-qr-top,
+.rx-qr-bottom {
+  width: 72px;
+  height: 72px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.rx-qr-bottom{
+  margin: 12px;
+}
+
+.qr-img.qr-patient,
+.qr-img.qr-doctor{
+  width: 64px;
+  height: 64px;
+}
+
+@media (max-width: 576px){
+  .qr-img.qr-patient,
+  .qr-img.qr-doctor{
+    width: 56px;
+    height: 56px;
+  }
+}
+/* ===== Print Button ===== */
+.rx-print-btn{
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+  gap: 10px;
+  padding: 12px 22px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1c51a3);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 10px 24px rgba(37,99,235,.25);
   transition: all .25s ease;
 }
 
-.rx-btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.35);
-  filter: brightness(1.05);
+.rx-print-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(37,99,235,.35);
+  background: linear-gradient(135deg, #1e4ed8, #1c51a3);
 }
 
-.rx-btn-primary i {
-  font-size: 1.1rem;
+.rx-print-btn:active{
+  transform: translateY(0);
+  box-shadow: 0 6px 14px rgba(37,99,235,.25);
+}
+
+.rx-print-icon{
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.rx-print-text{
+  letter-spacing: .2px;
+}
+
+/* Mobile */
+@media (max-width: 576px){
+  .rx-print-btn{
+    width: 100%;
+    justify-content: center;
+  }
 }
 @media print {
-
-  /* اخفي كل حاجة */
-  body * {
-    visibility: hidden;
-  }
-
-  /* اظهر الروشتة بس */
-  .rx-card,
-  .rx-card * {
-    visibility: visible;
-  }
-
-  /* خلّي الروشتة في أول الصفحة */
-  .rx-card {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    box-shadow: none !important;
-  }
-
-  /* اخفي أزرار الطباعة نفسها */
   .rx-actions {
     display: none !important;
   }
-
 }

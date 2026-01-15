@@ -13,14 +13,10 @@ class DoctorInfo extends Model
         'user_id',
         'gender',
         'dob',
-
-        // JSON
         'Specialization',
         'availability_schedule',
         'activities',
         'skills',
-
-        // other fields
         'license_number',
         'address',
         'facebook',
@@ -28,16 +24,16 @@ class DoctorInfo extends Model
         'twitter',
         'image',
         'about',
+        'visit_types',
     ];
 
     protected $casts = [
         'dob' => 'date',
-
-        // JSON casts
         'Specialization' => 'array',
         'availability_schedule' => 'array',
         'activities' => 'array',
         'skills' => 'array',
+        'visit_types' => 'array',
     ];
 
     public function user()
@@ -51,20 +47,19 @@ class DoctorInfo extends Model
             Service::class,
             'doctor_service'
         )
-        ->withPivot(['price', 'duration', 'active'])
-        ->withTimestamps();
+            ->withPivot(['price', 'duration', 'active'])
+            ->withTimestamps();
     }
 
-    // App\Models\User.php
 
-public function reports()
-{
-    return $this->hasMany(Report::class, 'doctor_id');
-}
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'doctor_id');
+    }
 
-public function prescriptions()
-{
-    return $this->hasMany(Prescription::class);
-}
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class);
+    }
 
 }

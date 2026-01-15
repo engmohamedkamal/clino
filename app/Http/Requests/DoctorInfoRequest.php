@@ -49,6 +49,12 @@ class DoctorInfoRequest extends FormRequest
             'skills.*.name'  => ['required','string','max:100'],
             'skills.*.value' => ['required','integer','min:0','max:100'],
 
+            // ✅ NEW: visit types (نوع الكشف + السعر) متعدد
+            // expected: visit_types = [ ['type'=>'كشف','price'=>300], ... ]
+            'visit_types' => ['required','array','min:1'],
+            'visit_types.*.type'  => ['required','string','max:255'],
+            'visit_types.*.price' => ['required','numeric','min:0'],
+
             // social
             'facebook'  => ['nullable','url','max:255'],
             'instagram' => ['nullable','url','max:255'],
@@ -58,20 +64,38 @@ class DoctorInfoRequest extends FormRequest
 
     public function withValidator($validator): void
     {
-        // ✅ ensure "to" بعد "from" لكل صف
         $validator->after(function ($v) {
+            // ✅ ensure "to" بعد "from" لكل صف
             $rows = $this->input('availability_schedule', []);
-            if (!is_array($rows)) return;
+            if (is_array($rows)) {
+                foreach ($rows as $i => $row) {
+                    $from = $row['from'] ?? null;
+                    $to   = $row['to'] ?? null;
 
-            foreach ($rows as $i => $row) {
-                $from = $row['from'] ?? null;
-                $to   = $row['to'] ?? null;
+                    if (!$from || !$to) continue;
 
-                if (!$from || !$to) continue;
+                    if ($to <= $from) {
+                        $v->errors()->add("availability_schedule.$i.to", "The end time must be after the start time.");
+                    }
+                }
+            }
 
-                // string compare on H:i works, but we'll keep it explicit
-                if ($to <= $from) {
-                    $v->errors()->add("availability_schedule.$i.to", "The end time must be after the start time.");
+            // ✅ ensure visit_types not empty rows (احتياطي)
+            $visits = $this->input('visit_types', []);
+            if (is_array($visits)) {
+                foreach ($visits as $i => $r) {
+                    $type  = trim((string)($r['type'] ?? ''));
+                    $price = $r['price'] ?? null;
+
+                    // لو النوع فاضي
+                    if ($type === '') {
+                        $v->errors()->add("visit_types.$i.type", "Visit type is required.");
+                    }
+
+                    // لو السعر مش رقم/سالب
+                    if ($price === null || $price === '' || !is_numeric($price) || (float)$price < 0) {
+                        $v->errors()->add("visit_types.$i.price", "Visit price must be a valid number (0 or more).");
+                    }
                 }
             }
         });
@@ -99,6 +123,16 @@ class DoctorInfoRequest extends FormRequest
             'skills.*.value.required' => 'Each skill must have a percentage.',
             'skills.*.value.integer'  => 'Skill percentage must be a number.',
             'skills.*.value.max'      => 'Skill percentage must be 100 or less.',
+
+            // ✅ Visit Types
+            'visit_types.required' => 'Please add at least one visit type.',
+            'visit_types.array'    => 'Visit types must be a list.',
+            'visit_types.min'      => 'Please add at least one visit type.',
+
+            'visit_types.*.type.required'  => 'Visit type name is required.',
+            'visit_types.*.price.required' => 'Visit price is required.',
+            'visit_types.*.price.numeric'  => 'Visit price must be a number.',
+            'visit_types.*.price.min'      => 'Visit price cannot be negative.',
 
             // Image
             'image.required' => 'Please upload a profile picture.',
