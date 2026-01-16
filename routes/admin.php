@@ -128,5 +128,7 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
     Route::put('/appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])
     ->name('appointments.updateStatus');
 
+Route::get('/appointments/{appointment}/reset', [AppointmentController::class, 'reset'])
+  ->name('appointment.reset');
 
 });

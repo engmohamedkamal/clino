@@ -8,11 +8,11 @@
     $role = auth()->user()->role ?? '';
     $canManage = in_array($role, ['admin', 'doctor']);
     $day = request('day');
-
-    // ✅ Counters per day (appointment_date)
     $dayCounters = [];
-      $vts = $appointments->visit_types;
-  $vts = is_array($vts) ? $vts : (json_decode($vts, true) ?: []);
+
+    $groups = $appointments->getCollection()
+  ->groupBy(fn($a) => $a->appointment_date ?? 'unknown');
+
   @endphp
 
   <section class="pl-main container">
@@ -90,9 +90,7 @@
                 </th>
               @endif
 
-              {{-- ✅ New: Number column --}}
               <th style="width:72px;">No.</th>
-
               <th>Patient</th>
               <th>Phone</th>
               <th>Doctor</th>
@@ -105,97 +103,115 @@
           </thead>
 
           <tbody>
-            @forelse($appointments as $appt)
-              @php
-                $st = $appt->status ?? 'pending';
-                $badgeClass =
-                  $st === 'pending' ? 'bg-warning text-dark' :
-                  ($st === 'cancelled' ? 'bg-danger text-white' :
-                  ($st === 'completed' ? 'bg-success text-white' : 'bg-secondary text-white'));
 
-                // ✅ Per-day counter
-                $dateKey = $appt->appointment_date ?? 'unknown';
-                $dayCounters[$dateKey] = ($dayCounters[$dateKey] ?? 0) + 1;
-                $dayNo = $dayCounters[$dateKey];
+            @forelse($groups as $dateKey => $items)
+              @php
+                // ✅ Sort inside each day by time
+                $sorted = $items->sortBy(function($a){
+                  try {
+                    return \Carbon\Carbon::parse($a->appointment_time)->format('H:i');
+                  } catch (\Exception $e) {
+                    // fallback: لو الوقت فاضي/مش قابل للبارس
+                    return $a->appointment_time ?? '99:99';
+                  }
+                });
+
+                // ✅ header label for the day row
+                $dayHeader = $dateKey !== 'unknown'
+                  ? \Carbon\Carbon::parse($dateKey)->format('D, d M Y')
+                  : 'Unknown Date';
+
+                $colspan = $canManage ? 10 : 9;
               @endphp
 
-              <tr data-id="{{ $appt->id }}">
-                @if($canManage)
-                  <td>
-                    <input class="form-check-input pl-check row-check"
-                           type="checkbox"
-                           name="ids[]"
-                           value="{{ $appt->id }}"
-                           form="bulkDeleteForm">
-                  </td>
-                @endif
-
-                {{-- ✅ Number --}}
-                <td class="fw-semibold">{{ $dayNo }}</td>
-
-                <td>{{ $appt->patient_name ?? '-' }}</td>
-                <td>{{ $appt->patient_number ?? '-' }}</td>
-                <td>{{ $appt->doctor_name ?? '-' }}</td>
-
-                <td>
-                  @if(is_array($appt->visit_types) && count($appt->visit_types))
-                    {{ collect($appt->visit_types)->pluck('type')->implode(' , ') }}
-                  @else
-                    -
-                  @endif
-                </td>
-
-                <td>{{ $appt->appointment_date ?? '-' }}</td>
-                <td>{{ $appt->dob ? \Carbon\Carbon::parse($appt->dob)->format('d/m/Y') : '-' }}</td>
-
-                <td class="status-col">
-                  <span class="badge {{ $badgeClass }}">{{ ucfirst($st) }}</span>
-                </td>
-
-                {{-- ✅ Actions: View + Print Receipt --}}
-                <td class="text-end view-col">
-                  <div class="d-inline-flex align-items-center gap-2">
-
-                    <a class="pl-icon-btn"
-                       href="{{ route('appointments.singleShow', $appt->id) }}"
-                       aria-label="View details"
-                       title="View details">
-                      <span class="material-icons-round">visibility</span>
-                    </a>
-
-                  <button
-  type="button"
-  class="pl-icon-btn"
-  title="Print receipt"
-  aria-label="Print receipt"
-  onclick="event.preventDefault(); event.stopPropagation(); printReceipt(
-    {{ $dayNo }},
-    @json($appt->appointment_date),
-    @json($appt->patient_name),
-    @json($appt->doctor_name),
-    @json($appt->visit_types)
-  )"
->
-  <span class="material-icons-round">print</span>
-</button>
-
-                  </div>
+              {{-- ✅ Day separator row --}}
+              <tr class="table-light">
+                <td colspan="{{ $colspan }}" class="fw-semibold">
+                  {{ $dayHeader }}
                 </td>
               </tr>
 
-            @empty
-              <tr>
+              @foreach($sorted as $appt)
                 @php
-                  // columns count:
-                  // canManage => checkbox + No + Patient + Phone + Doctor + VisitType + Date + DOB + Status + Actions = 10
-                  // else      => No + Patient + Phone + Doctor + VisitType + Date + DOB + Status + Actions = 9
-                  $colspan = $canManage ? 10 : 9;
+                  $st = $appt->status ?? 'pending';
+                  $badgeClass =
+                    $st === 'pending' ? 'bg-warning text-dark' :
+                    ($st === 'cancelled' ? 'bg-danger text-white' :
+                    ($st === 'completed' ? 'bg-success text-white' : 'bg-secondary text-white'));
+
+                  // ✅ Per-day counter
+                  $dayCounters[$dateKey] = ($dayCounters[$dateKey] ?? 0) + 1;
+                  $dayNo = $dayCounters[$dateKey];
                 @endphp
+
+                <tr data-id="{{ $appt->id }}">
+                  @if($canManage)
+                    <td>
+                      <input class="form-check-input pl-check row-check"
+                             type="checkbox"
+                             name="ids[]"
+                             value="{{ $appt->id }}"
+                             form="bulkDeleteForm">
+                    </td>
+                  @endif
+
+                  <td class="fw-semibold">{{ $dayNo }}</td>
+
+                  <td>{{ $appt->patient_name ?? '-' }}</td>
+                  <td>{{ $appt->patient_number ?? '-' }}</td>
+                  <td>{{ $appt->doctor_name ?? '-' }}</td>
+
+                  <td>
+                    @if(is_array($appt->visit_types) && count($appt->visit_types))
+                      {{ collect($appt->visit_types)->pluck('type')->implode(' , ') }}
+                    @else
+                      -
+                    @endif
+                  </td>
+
+                  <td>{{ $appt->appointment_date ?? '-' }}</td>
+                  <td>{{ $appt->dob ? \Carbon\Carbon::parse($appt->dob)->format('d/m/Y') : '-' }}</td>
+
+                  <td class="status-col">
+                    <span class="badge {{ $badgeClass }}">{{ ucfirst($st) }}</span>
+                  </td>
+
+                  <td class="text-end view-col">
+                    <div class="d-inline-flex align-items-center gap-2">
+
+                      <a class="pl-icon-btn"
+                         href="{{ route('appointments.singleShow', $appt->id) }}"
+                         aria-label="View details"
+                         title="View details">
+                        <span class="material-icons-round">visibility</span>
+                      </a>
+
+                      <a
+                    href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
+
+                        class="pl-icon-btn"
+                        title="Print receipt"
+                        aria-label="Print receipt"
+                        target="_blank"
+                        onclick="event.stopPropagation();"
+                      >
+                        <span class="material-icons-round">print</span>
+                      </a>
+
+                    </div>
+                  </td>
+                </tr>
+              @endforeach
+
+            @empty
+              @php $colspan = $canManage ? 10 : 9; @endphp
+              <tr>
                 <td colspan="{{ $colspan }}" class="text-center py-4">
                   No appointments found.
                 </td>
               </tr>
             @endforelse
+
           </tbody>
         </table>
       </div>
@@ -243,57 +259,5 @@
       });
     </script>
   @endif
-
- 
-  <script>
-  window.printReceipt = function(no, date, patient, doctor, visitTypes) {
-    console.log('printReceipt fired', { no, date, patient, doctor, visitTypes });
-
-    const visitTypeText = (Array.isArray(visitTypes) && visitTypes.length)
-      ? visitTypes.map(v => v?.type).filter(Boolean).join(' , ')
-      : '-';
-
-    const html = `
-      <!doctype html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Receipt</title>
-        <style>
-          body{ font-family: Arial, sans-serif; padding:16px; }
-          .card{ border:1px solid #e5e7eb; border-radius:12px; padding:14px; max-width:360px; margin:0 auto; }
-          .title{ font-size:16px; font-weight:700; margin-bottom:8px; text-align:center; }
-          .no{ font-size:44px; font-weight:800; text-align:center; margin:10px 0; }
-          .row{ display:flex; justify-content:space-between; gap:10px; margin:6px 0; font-size:13px; }
-          .muted{ color:#6b7280; }
-          .hr{ height:1px; background:#e5e7eb; margin:10px 0; }
-        </style>
-      </head>
-      <body onload="window.print()">
-        <div class="card">
-          <div class="title">Helper Clinic - Appointment Receipt</div>
-          <div class="hr"></div>
-          <div class="muted" style="text-align:center;">Queue No.</div>
-          <div class="no">${no ?? '-'}</div>
-          <div class="hr"></div>
-          <div class="row"><div class="muted">Date</div><div>${date || '-'}</div></div>
-          <div class="row"><div class="muted">Patient</div><div>${patient || '-'}</div></div>
-          <div class="row"><div class="muted">Doctor</div><div>${doctor || '-'}</div></div>
-          <div class="row"><div class="muted">Visit Type</div><div>${visitTypeText}</div></div>
-        </div>
-      </body>
-      </html>
-    `;
-
-    const w = window.open('', '_blank', 'width=450,height=650');
-    if (!w) {
-      alert('Popup blocked! Allow popups for this site to print.');
-      return;
-    }
-    w.document.open();
-    w.document.write(html);
-    w.document.close();
-  }
-</script>
 
 @endsection

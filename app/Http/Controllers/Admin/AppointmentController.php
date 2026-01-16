@@ -38,7 +38,7 @@ class AppointmentController extends Controller
         $visitTypes = [];
         if ($request->filled('visit_type')) {
             $visitTypes[] = [
-                'type'  => $request->visit_type,
+                'type' => $request->visit_type,
                 'price' => (float) $request->visit_price,
             ];
         }
@@ -47,21 +47,21 @@ class AppointmentController extends Controller
         if ($user->role !== 'patient') {
 
             Appointment::create([
-                'patient_name'      => $request->patient_name,
-                'patient_number'    => $request->patient_number,
-                'dob'               => $request->dob,
-                'gender'            => $request->gender,
+                'patient_name' => $request->patient_name,
+                'patient_number' => $request->patient_number,
+                'dob' => $request->dob,
+                'gender' => $request->gender,
 
-                'doctor_name'       => $doctor->name,
+                'doctor_name' => $doctor->name,
 
-                'appointment_date'  => $request->appointment_date,
-                'appointment_time'  => $request->appointment_time,
+                'appointment_date' => $request->appointment_date,
+                'appointment_time' => $request->appointment_time,
 
                 // ✅ NEW
-                'visit_types'       => $visitTypes,
+                'visit_types' => $visitTypes,
 
-                'reason'            => $request->reason,
-                'status'            => 'pending',
+                'reason' => $request->reason,
+                'status' => 'pending',
             ]);
 
             return redirect()->route('appointment.show')
@@ -84,21 +84,21 @@ class AppointmentController extends Controller
         }
 
         Appointment::create([
-            'patient_name'      => $user->name,
-            'patient_number'    => $user->phone,
-            'dob'               => $patientInfo->dob,
-            'gender'            => $patientInfo->gender,
+            'patient_name' => $user->name,
+            'patient_number' => $user->phone,
+            'dob' => $patientInfo->dob,
+            'gender' => $patientInfo->gender,
 
-            'doctor_name'       => $doctor->name,
+            'doctor_name' => $doctor->name,
 
-            'appointment_date'  => $request->appointment_date,
-            'appointment_time'  => $request->appointment_time,
+            'appointment_date' => $request->appointment_date,
+            'appointment_time' => $request->appointment_time,
 
             // ✅ NEW
-            'visit_types'       => $visitTypes,
+            'visit_types' => $visitTypes,
 
-            'reason'            => $request->reason,
-            'status'            => 'pending',
+            'reason' => $request->reason,
+            'status' => 'pending',
         ]);
 
         return redirect()->route('appointment.show')
@@ -109,7 +109,7 @@ class AppointmentController extends Controller
     {
         $user = Auth::user();
 
-        $q   = $request->get('q');
+        $q = $request->get('q');
         $day = $request->get('day'); // expected: YYYY-MM-DD
 
         $appointments = Appointment::query()
@@ -157,8 +157,10 @@ class AppointmentController extends Controller
         $user = Auth::user();
         $appointment = Appointment::findOrFail($id);
 
-        if ($user->role === 'patient') abort(403);
-        if ($user->role === 'doctor' && $appointment->doctor_name !== $user->name) abort(403);
+        if ($user->role === 'patient')
+            abort(403);
+        if ($user->role === 'doctor' && $appointment->doctor_name !== $user->name)
+            abort(403);
 
         $doctors = User::where('role', 'doctor')->get(['id', 'name']);
         return view('dashboard.appointment.edit', compact('appointment', 'doctors'));
@@ -169,8 +171,10 @@ class AppointmentController extends Controller
         $user = Auth::user();
         $appointment = Appointment::findOrFail($id);
 
-        if ($user->role === 'patient') abort(403);
-        if ($user->role === 'doctor' && $appointment->doctor_name !== $user->name) abort(403);
+        if ($user->role === 'patient')
+            abort(403);
+        if ($user->role === 'doctor' && $appointment->doctor_name !== $user->name)
+            abort(403);
 
         // =========================
         // ✅ Visit Type (JSON)
@@ -178,25 +182,25 @@ class AppointmentController extends Controller
         $visitTypes = [];
         if ($request->filled('visit_type')) {
             $visitTypes[] = [
-                'type'  => $request->visit_type,
+                'type' => $request->visit_type,
                 'price' => (float) $request->visit_price,
             ];
         }
 
         $appointment->update([
-            'patient_name'      => $request->patient_name,
-            'patient_number'    => $request->patient_number,
-            'dob'               => $request->dob,
-            'gender'            => $request->gender,
+            'patient_name' => $request->patient_name,
+            'patient_number' => $request->patient_number,
+            'dob' => $request->dob,
+            'gender' => $request->gender,
 
-            'doctor_name'       => $request->doctor_name,
-            'appointment_date'  => $request->appointment_date,
-            'appointment_time'  => $request->appointment_time,
+            'doctor_name' => $request->doctor_name,
+            'appointment_date' => $request->appointment_date,
+            'appointment_time' => $request->appointment_time,
 
             // ✅ NEW
-            'visit_types'       => $visitTypes,
+            'visit_types' => $visitTypes,
 
-            'reason'            => $request->reason,
+            'reason' => $request->reason,
             // 'status'            => $request->status,
         ]);
 
@@ -209,8 +213,10 @@ class AppointmentController extends Controller
         $user = Auth::user();
         $appointment = Appointment::findOrFail($id);
 
-        if ($user->role === 'patient') abort(403);
-        if ($user->role === 'doctor' && $appointment->doctor_name !== $user->name) abort(403);
+        if ($user->role === 'patient')
+            abort(403);
+        if ($user->role === 'doctor' && $appointment->doctor_name !== $user->name)
+            abort(403);
 
         $appointment->delete();
 
@@ -222,7 +228,8 @@ class AppointmentController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role === 'patient') abort(403);
+        if ($user->role === 'patient')
+            abort(403);
 
         $ids = $request->input('ids', []);
         if (!is_array($ids) || count($ids) === 0) {
@@ -245,7 +252,8 @@ class AppointmentController extends Controller
 
     public function updateStatus(Request $request, Appointment $appointment)
     {
-        if (!in_array(auth()->user()->role, ['admin', 'doctor'])) abort(403);
+        if (!in_array(auth()->user()->role, ['admin', 'doctor']))
+            abort(403);
 
         $request->validate([
             'status' => 'required|in:pending,cancelled,completed',
@@ -269,7 +277,8 @@ class AppointmentController extends Controller
         $info = DoctorInfo::where('user_id', $doctor->id)->first();
 
         $schedule = $info?->availability_schedule ?? [];
-        if (!is_array($schedule)) $schedule = [];
+        if (!is_array($schedule))
+            $schedule = [];
 
         $payload = $this->buildAvailabilityByDate(
             $schedule,
@@ -297,25 +306,29 @@ class AppointmentController extends Controller
         $timeRangesByWeekday = []; // [weekdayIso => [[start,end], ...]]
 
         foreach ($schedule as $row) {
-            if (!is_array($row)) continue;
+            if (!is_array($row))
+                continue;
 
-            $day  = $row['day'] ?? null;
+            $day = $row['day'] ?? null;
             $from = $row['from'] ?? null;
-            $to   = $row['to'] ?? null;
+            $to = $row['to'] ?? null;
 
-            if (!$day || !$from || !$to) continue;
+            if (!$day || !$from || !$to)
+                continue;
 
             $day = ucfirst(strtolower(trim(substr($day, 0, 3)))); // Mon/Sun
-            if (!isset($weekdayMap[$day])) continue;
+            if (!isset($weekdayMap[$day]))
+                continue;
 
             try {
                 $start = Carbon::createFromFormat('H:i', $from)->format('H:i');
-                $end   = Carbon::createFromFormat('H:i', $to)->format('H:i');
+                $end = Carbon::createFromFormat('H:i', $to)->format('H:i');
             } catch (\Throwable $e) {
                 continue;
             }
 
-            if ($start >= $end) continue;
+            if ($start >= $end)
+                continue;
 
             $weekdayIso = $weekdayMap[$day]; // ✅ 1..7
             $timeRangesByWeekday[$weekdayIso][] = [$start, $end];
@@ -326,7 +339,7 @@ class AppointmentController extends Controller
         }
 
         $fromDate = Carbon::today()->format('Y-m-d');
-        $toDate   = Carbon::today()->addDays($daysAhead)->format('Y-m-d');
+        $toDate = Carbon::today()->addDays($daysAhead)->format('Y-m-d');
 
         $booked = Appointment::query()
             ->where('doctor_name', $doctorName)
@@ -356,7 +369,8 @@ class AppointmentController extends Controller
             $d = $today->copy()->addDays($i);
             $weekdayIso = $d->dayOfWeekIso; // ✅ 1..7
 
-            if (!isset($timeRangesByWeekday[$weekdayIso])) continue;
+            if (!isset($timeRangesByWeekday[$weekdayIso]))
+                continue;
 
             $slots = [];
             foreach ($timeRangesByWeekday[$weekdayIso] as [$start, $end]) {
@@ -375,7 +389,8 @@ class AppointmentController extends Controller
             $bookedTimes = $booked[$dateValue] ?? [];
             $available = array_values(array_diff($slots, $bookedTimes));
 
-            if (!count($available)) continue;
+            if (!count($available))
+                continue;
 
             $dates[] = [
                 'value' => $dateValue,
@@ -392,4 +407,13 @@ class AppointmentController extends Controller
         $appointment = \App\Models\Appointment::findOrFail($id);
         return view('dashboard.appointment.details', compact('appointment'));
     }
+    public function reset(Appointment $appointment)
+    {
+
+        $queueNo = request('no');
+
+        return view('dashboard.appointment.reset', compact('appointment', 'queueNo'));
+    }
+
+
 }

@@ -19,7 +19,7 @@
     {{-- Topbar --}}
     <div class="ad-topbar">
       <div class="ad-left">
-        <a href="{{ url()->previous() }}" class="ad-icon-btn" aria-label="Back" title="Back">
+        <a href="{{ route('appointment.show')}}" class="ad-icon-btn" aria-label="Back" title="Back">
           <span class="material-icons-round">arrow_back</span>
         </a>
 
