@@ -1,10 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserInfoController;
 use App\Http\Controllers\DoctorInfoController;
-use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\PatientTransferController;
 
 
 Route::middleware(['auth', 'doctor.area'])->group(function () {
@@ -36,19 +37,14 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
         ->name('doctor-info.update');
 });
 
-
-
-
-
-
 Route::middleware(['auth', 'admin_or_doctor'])->prefix('admin')->group(function () {
 
     Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
     Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
-    
+
     // ✅ خليها reports.show
     Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
-    
+
     Route::get('/reports/{report}/edit', [ReportController::class, 'edit'])->name('reports.edit');
     Route::put('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
     Route::delete('/reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
@@ -60,8 +56,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/{report}', [ReportController::class, 'show'])
         ->name('reports.show');
 });
-
-
 
 Route::middleware(['auth'])->group(function () {
 
@@ -98,5 +92,43 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/prescriptions/bulk-destroy', [PrescriptionController::class, 'bulkDestroy'])
             ->name('prescriptions.bulkDestroy');
         // مهم: bulk-destroy قبل {prescription} لو هتستخدمها
+    });
+});
+Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
+
+    Route::prefix('patient-transfers')->name('patient-transfers.')->group(function () {
+
+        // ===================== LIST =====================
+        Route::get('/', [PatientTransferController::class, 'index'])
+            ->name('index');
+
+        // ===================== CREATE =====================
+        Route::get('/create', [PatientTransferController::class, 'create'])
+            ->name('create');
+
+        // ===================== STORE =====================
+        Route::post('/', [PatientTransferController::class, 'store'])
+            ->name('store');
+
+        // ===================== SHOW =====================
+        Route::get('/{patientTransfer}', [PatientTransferController::class, 'show'])
+            ->name('show');
+
+        // ===================== EDIT =====================
+        Route::get('/{patientTransfer}/edit', [PatientTransferController::class, 'edit'])
+            ->name('edit');
+
+        // ===================== UPDATE =====================
+        Route::put('/{patientTransfer}', [PatientTransferController::class, 'update'])
+            ->name('update');
+
+        // ===================== DELETE =====================
+        Route::delete('/{patientTransfer}', [PatientTransferController::class, 'destroy'])
+            ->name('destroy');
+        Route::delete(
+            'patient-transfers/{patientTransfer}/attachments/{attachment}',
+            [PatientTransferController::class, 'destroyAttachment']
+        )->name('patient-transfers.attachments.destroy');
+
     });
 });

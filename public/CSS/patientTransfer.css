@@ -1,0 +1,691 @@
+:root {
+    --bg: #f5f9ff;
+    --card: #ffffff;
+    --border: #e9eef6;
+    --text: #1f2a37;
+    --muted: #8a97ab;
+
+    --primary: #2f7df6;
+    --primary2: #1f67e8;
+
+    --danger: #ef4444;
+    --success: #22c55e;
+    --warn: #f59e0b;
+
+    --shadow: 0 10px 24px rgba(16, 24, 40, .08);
+    --r: 18px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.pt-body {
+    margin: 0;
+    font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.pt-app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ===== Main ===== */
+.pt-main {
+    flex: 1;
+    padding: 22px 22px 28px;
+    max-width: 1260px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.pt-title {
+    font-weight: 800;
+    letter-spacing: -.3px;
+}
+
+/* Buttons */
+.pt-btn-primary {
+    background: #13B6EC;
+    color: #fff;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-weight: 400;
+}
+
+.pt-btn-primary:hover {
+    background: #0c9fd0;
+    color: #fff;
+}
+
+.pt-btn-danger {
+    background: var(--danger);
+    border: 1px solid var(--danger);
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 400;
+}
+
+.pt-btn-danger:hover {
+    filter: brightness(.95);
+    color: #ef4444;
+}
+
+.pt-btn-outline {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: #0f172a;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 400;
+}
+
+.pt-btn-outline:hover {
+    border-color: #cfe0ff;
+    box-shadow: 0 6px 18px rgba(47, 125, 246, .12);
+}
+
+/* ===== Patient Card ===== */
+.pt-patient-card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.pt-left-accent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    /* background: linear-gradient(180deg, #f59e0b, #fb7185); */
+}
+
+.pt-patient-body {
+    padding: 18px 18px 16px 24px;
+}
+
+.pt-avatar-wrap {
+    position: relative;
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #eef3ff;
+    border: 1px solid var(--border);
+}
+
+.pt-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pt-badge-mini {
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: var(--success);
+    color: #fff;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 16px rgba(34, 197, 94, .25);
+    font-size: 14px;
+}
+
+.pt-patient-name {
+    font-weight: 700;
+    font-size: 18px;
+    color: #0f172a;
+}
+
+.pt-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #f7f9ff;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.pt-tag-warn {
+    background: #fff7ed;
+    border-color: #fed7aa;
+    color: #9a3412;
+}
+
+.pt-tag-soft {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #334155;
+}
+
+.pt-tag-success {
+    background: #ecfdf5;
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+.pt-meta-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.pt-meta-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.pt-meta-val {
+    font-size: 13px;
+    font-weight: 400;
+    color: #0f172a;
+    margin-top: 2px;
+}
+
+@media (max-width: 992px) {
+    .pt-meta-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .pt-meta-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.pt-pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pt-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.pt-pill-danger {
+    background: #fff1f2;
+    border-color: #fecdd3;
+    color: #9f1239;
+}
+
+.pt-pill-purple {
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+    color: #5b21b6;
+}
+
+.pt-pill-orange {
+    background: #fff7ed;
+    border-color: #fed7aa;
+    color: #9a3412;
+}
+
+.pt-header-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media (max-width: 992px) {
+    .pt-header-actions {
+        flex-direction: row;
+    }
+}
+
+/* ===== Common Card ===== */
+.pt-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+}
+
+.pt-card-head {
+    padding: 16px 16px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pt-between {
+    justify-content: space-between;
+}
+
+.pt-card-ico {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #0c9fd0da;
+    border: 1px solid #dbeafe;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-size: 16px;
+}
+
+.pt-card-title {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 14px;
+}
+
+.pt-card-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.pt-card-body {
+    padding: 0 16px 16px;
+}
+
+.pt-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.pt-control {
+    border: 1px solid var(--border) !important;
+    border-radius: 14px !important;
+    padding: 12px 12px !important;
+    font-weight: 400;
+}
+
+.pt-textarea {
+    resize: none;
+}
+
+/* Stability chips */
+.pt-chip-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pt-chip {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: #475569;
+    font-weight: 900;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.pt-chip-active {
+    background: #ecfdf5;
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+/* ✅ Transport cards: Hover Active only */
+.pt-mode-card {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px 14px;
+    text-align: center;
+    transition: .18s ease;
+}
+
+.pt-mode-card:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.pt-mode-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 10px;
+    background: #eaf2ff;
+    border: 1px solid #dbeafe;
+    color: var(--primary);
+    font-size: 22px;
+}
+
+.pt-mode-muted {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+}
+
+.pt-mode-name {
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.pt-mode-sub {
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 900;
+    color: #94a3b8;
+}
+
+/* Hover state = looks active */
+.pt-mode-card:hover {
+    border-color: #13B6EC;
+    box-shadow: 0 10px 24px rgba(84, 142, 228, 0.18);
+    transform: translateY(-2px);
+}
+
+.pt-mode-card:hover .pt-mode-icon {
+    background: #13B6EC;
+    border-color: #c7e0ff;
+    color: white;
+}
+
+/* Toggles */
+.pt-toggle-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 520px) {
+    .pt-toggle-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.pt-toggle-item {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+.pt-switch {
+    cursor: pointer;
+}
+
+/* Switch color when checked -> #13B6EC */
+.pt-switch:checked {
+    background-color: #13B6EC !important;
+    border-color: #13B6EC !important;
+}
+
+/* optional: focus ring */
+.pt-switch:focus {
+    box-shadow: 0 0 0 .2rem rgba(19, 182, 236, .25) !important;
+    border-color: #13B6EC !important;
+}
+
+.pt-switch {
+    cursor: pointer;
+}
+
+/* Destination */
+.pt-dest-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #0f172a;
+}
+
+.pt-small-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.pt-small-val {
+    font-size: 12px;
+    font-weight: 900;
+    color: #0f172a;
+    margin-top: 2px;
+}
+
+.pt-receiver {
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.pt-receiver-ico {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: #0c9fd0e1;
+    color: white;
+    border: 1px solid #dbeafe;
+}
+
+.pt-rec-name {
+    font-weight: 900;
+}
+
+.pt-rec-phone {
+    font-size: 12px;
+    color: #0c9fd0;
+    font-weight: 600;
+}
+
+.pt-muted {
+    color: #94a3b8;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+/* Attachments */
+.pt-file {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: #fff;
+    margin-bottom: 10px;
+}
+
+.pt-file:hover {
+    border-color: #cfe0ff;
+    box-shadow: 0 10px 24px rgba(47, 125, 246, .12);
+}
+
+.pt-file-ico {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 16px;
+}
+
+.pt-red {
+    background: #fb7185;
+}
+
+.pt-green {
+    background: #22c55e;
+}
+
+.pt-file-name {
+    font-weight: 500;
+    color: #0f172a;
+}
+
+.pt-file-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+.pt-drop {
+    border: 2px dashed #dbeafe;
+    border-radius: 16px;
+    background: #fbfdff;
+    padding: 18px 12px;
+    text-align: center;
+    color: #64748b;
+}
+
+.pt-drop i {
+    font-size: 22px;
+    color: #0c9fd0;
+}
+
+.pt-drop-title {
+    font-weight: 500;
+    margin-top: 8px;
+    color: #0f172a;
+}
+
+.pt-drop-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* Footer */
+.pt-footer {
+    display: flex;
+    justify-content: flex-end;
+    /* يروح يمين */
+    align-items: center;
+}
+
+.pt-footer .pt-btn-primary {
+    margin: auto;
+}
+/* ================= Transfer Priority ================= */
+
+.pt-priority-group {
+  display: flex;
+  gap: 8px;
+}
+
+.pt-priority-btn {
+  border: 1px solid transparent;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pt-priority-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* URGENT */
+.pt-priority-btn.urgent.active {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+/* NORMAL */
+.pt-priority-btn.normal.active {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+/* ================= Transport Mode Selected ================= */
+
+.pt-mode-card{
+  position: relative;
+  text-align: left;
+  border: 1px solid var(--border, #e9eef6);
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  transition: .2s ease;
+}
+
+.pt-mode-card:hover{
+  transform: translateY(-1px);
+}
+
+.pt-mode-card.pt-mode-active{
+  border-color: #3371EB;               /* primary */
+  box-shadow: 0 10px 24px rgba(51,113,235,.15);
+  background: #f5f9ff;                  /* نفس bg بتاعك */
+}
+
+/* علامة صح */
+.pt-mode-card::after{
+  content: "";
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--border, #e9eef6);
+  opacity: 0;
+  transform: scale(.9);
+  transition: .2s ease;
+}
+
+.pt-mode-card::before{
+  content: "✓";
+  position: absolute;
+  top: 10px;
+  right: 18px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #3371EB;
+  opacity: 0;
+  transition: .2s ease;
+}
+
+.pt-mode-card.pt-mode-active::after,
+.pt-mode-card.pt-mode-active::before{
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* لو عندك icon circle */
+.pt-mode-card.pt-mode-active .pt-mode-icon{
+  background: rgba(51,113,235,.12);
+  color: #3371EB;
+}

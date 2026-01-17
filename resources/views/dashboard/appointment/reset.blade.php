@@ -19,10 +19,10 @@
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
     rel="stylesheet">
 
-  <!-- Custom CSS -->
+  <!-- Reset / Ticket CSS -->
   <link rel="stylesheet" href="{{ asset('CSS/reset.css') }}" />
 
-  {{-- Print fixes --}}
+  {{-- Print Fixes --}}
   <style>
     @media print {
       .tk-no-print { display: none !important; }
@@ -30,19 +30,30 @@
       .tk-wrap { padding: 0 !important; }
       .tk-ticket { margin: 0 auto !important; box-shadow: none !important; }
     }
+
+    .tk-qr{
+      width: 140px;
+      height: 140px;
+      margin: 10px auto 0;
+      display: grid;
+      place-items: center;
+    }
+    .tk-qr img,
+    .tk-qr canvas{
+      width: 140px !important;
+      height: 140px !important;
+    }
   </style>
 </head>
 
 <body class="tk-body">
 
   @php
-    // ✅ Queue number (priority: query ?no)
     $queueNo = request('no')
       ?? $appointment->day_no
       ?? $appointment->queue_no
       ?? $appointment->id;
 
-    // ✅ Date / Time
     $date = $appointment->appointment_date ?? null;
     $time = $appointment->appointment_time ?? null;
 
@@ -54,10 +65,9 @@
       $timeLabel = $time ?: '-';
     }
 
-    // ✅ Main site URL (barcode target)
-    $siteUrl = config('app.url');
+    // 🔗 Home / Login (Route::view('/', 'login'))
+    $siteUrl = url('/');
 
-    // ✅ Ticket code
     $ticketCode =
       ($date ? \Carbon\Carbon::parse($date)->format('Ymd') : now()->format('Ymd'))
       . '-' . str_pad((string) $appointment->id, 4, '0', STR_PAD_LEFT);
@@ -65,17 +75,17 @@
 
   <div class="tk-wrap container py-5">
 
-    <!-- Print Button -->
+    {{-- Print Button --}}
     <div class="d-flex justify-content-center mb-4 tk-no-print">
       <button id="printBtn" class="btn tk-print-btn" type="button">
         <i class="bi bi-printer me-2"></i> Print Ticket
       </button>
     </div>
 
-    <!-- Ticket -->
+    {{-- Ticket --}}
     <section class="tk-ticket mx-auto" id="ticket">
 
-      <!-- Header -->
+      {{-- Header --}}
       <div class="tk-top text-center">
         <div class="tk-logo">
           <i class="bi bi-bag-plus"></i>
@@ -90,7 +100,7 @@
 
       <div class="tk-divider"></div>
 
-      <!-- Queue Number -->
+      {{-- Queue Number --}}
       <div class="tk-number-wrap text-center">
         <div class="tk-number">{{ $queueNo }}</div>
         <div class="tk-number-label">NUMBER</div>
@@ -98,12 +108,13 @@
 
       <div class="tk-dots"></div>
 
+      {{-- Message --}}
       <div class="tk-msg text-center">
         Please wait for your turn. You will be<br>
         called shortly.
       </div>
 
-      <!-- Details -->
+      {{-- Info --}}
       <div class="tk-kv mt-4">
         <div class="tk-row">
           <div class="tk-key">PATIENT:</div>
@@ -128,28 +139,43 @@
 
       <div class="tk-dots mt-4"></div>
 
-      <!-- Footer -->
+      {{-- Thanks --}}
       <div class="tk-thanks text-center">
         THANK YOU FOR CHOOSING<br>
         HELPER CLINIC
       </div>
 
-      {{-- ✅ Barcode → Main Website --}}
+      {{-- QR Code --}}
       <a href="{{ $siteUrl }}" target="_blank" class="d-block text-decoration-none">
-        <div class="tk-barcode" aria-hidden="true"></div>
-        <div class="tk-code text-center">
-          {{ $ticketCode }} 
-        </div>
+        <div id="tkQr" class="tk-qr" aria-hidden="true"></div>
+        <div class="tk-code text-center">{{ $ticketCode }}</div>
       </a>
 
     </section>
   </div>
+
+  <!-- QR Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('printBtn');
       if (btn) btn.addEventListener('click', () => window.print());
 
+      // ✅ Generate QR (login page + ticket code)
+      const qrEl = document.getElementById('tkQr');
+      if (qrEl && window.QRCode) {
+        const qrData = @json(url('/') . '?ticket=' . $ticketCode);
+
+        new QRCode(qrEl, {
+          text: qrData,
+          width: 140,
+          height: 140,
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+
+      // Auto Print
       const params = new URLSearchParams(window.location.search);
       if (params.get('autoprint') === '1') {
         setTimeout(() => window.print(), 200);
