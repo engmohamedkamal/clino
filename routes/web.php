@@ -7,6 +7,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\DoctorInfoController;
 use App\Http\Controllers\DoctorServicesController;
 use App\Http\Controllers\Admin\AppointmentController;
@@ -99,7 +100,17 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('invoices', InvoiceController::class);
+   
 });
+Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
+    Route::resource('diagnoses', DiagnosisController::class);
+});
+Route::middleware(['auth'])->group(function () {
+    Route::resource('diagnoses', DiagnosisController::class)
+        ->only(['index', 'show']);
+});
+
+
 
 require_once('auth.php');
 require_once('admin.php');

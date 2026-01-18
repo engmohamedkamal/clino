@@ -1,0 +1,149 @@
+/* ================= Base ================= */
+:root{
+  --bg: #f5f9ff;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+
+  --border: #e6edf7;
+  --field: #f3f4f6;
+
+  --primary: #1C5197;
+  --primary-hover: #17427a;
+
+  --radius-xl: 26px;
+  --radius-md: 14px;
+}
+
+*{ box-sizing: border-box; }
+
+.ad-main{
+  font-family: "Poppins", sans-serif;
+  background: var(--bg);
+  min-height: calc(100vh - 72px);
+  padding: 28px 18px 40px;
+}
+
+/* wrapper to align header + card */
+.ad-wrap{
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ================= Header ================= */
+.ad-header{
+  margin-bottom: 14px;
+  padding: 0 8px;
+}
+
+.ad-title{
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ================= Card ================= */
+.ad-card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 26px 26px;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.06);
+}
+
+/* ================= Form Groups ================= */
+.ad-group{
+  margin-bottom: 16px;
+}
+
+.ad-group label{
+  display: block;
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* inputs + select */
+.ad-input{
+  width: 100%;
+  height: 52px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--field);
+  color: var(--text);
+  outline: none;
+  font-size: 14px;
+}
+
+.ad-input::placeholder{
+  color: #9ca3af;
+}
+
+.ad-input:focus{
+  background: #fff;
+  border-color: rgba(28, 81, 151, 0.45);
+  box-shadow: 0 0 0 4px rgba(28, 81, 151, 0.12);
+}
+
+/* make select look consistent */
+select.ad-input{
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #6b7280 50%),
+    linear-gradient(135deg, #6b7280 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 22px,
+    calc(100% - 12px) 22px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 40px;
+}
+
+.is-invalid{
+  border-color: #ef4444 !important;
+  box-shadow: none !important;
+}
+
+.ad-error{
+  margin-top: 8px;
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* ================= Button ================= */
+.ad-btn{
+  width: 100%;
+  height: 56px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.ad-btn:hover{
+  background: var(--primary-hover);
+}
+
+.ad-btn:active{
+  transform: translateY(1px);
+}
+
+/* ================= Responsive ================= */
+@media (max-width: 576px){
+  .ad-main{ padding: 18px 12px 30px; }
+  .ad-card{ padding: 18px 16px; border-radius: 20px; }
+  .ad-title{ font-size: 22px; }
+  .ad-btn{ font-size: 16px; height: 52px; }
+}

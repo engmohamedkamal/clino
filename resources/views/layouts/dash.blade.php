@@ -77,8 +77,13 @@
   Patient Transfers
 </a>
 
-        @endif
 
+        @endif
+<a href="{{ route('diagnoses.index') }}"
+   class="side-link {{ request()->routeIs('diagnoses.*') ? 'active' : '' }}">
+  <i class="fa-solid fa-notes-medical"></i>
+  Diagnoses
+</a>
 
         @if(auth()->user()->role === 'patient')
           <a href="{{ route('patient-info.my') }}"

@@ -117,8 +117,6 @@ Route::middleware(['auth'])->group(function () {
 
 
 Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
-
-  // لو عايزها للأدمن فقط حط middleware admin بدل admin_or_doctor
   Route::get('/admin/doctors/services/bulk', [DoctorServicesBulkController::class, 'bulkEdit'])
     ->name('admin.doctors.services.bulkEdit');
 
