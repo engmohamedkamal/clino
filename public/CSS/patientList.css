@@ -314,3 +314,18 @@
   width: 140px;
   min-width: 140px;
 }
+/* VIP Print Button */
+.pl-icon-btn.vip {
+  background: #f59e0b;          /* ذهبي */
+  color: #fff;
+  border: none;
+}
+
+.pl-icon-btn.vip:hover {
+  background: #d97706;
+  color: #fff;
+}
+
+.pl-icon-btn.vip .material-icons-round {
+  font-size: 20px;
+}

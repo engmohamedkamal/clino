@@ -76,6 +76,11 @@
   <i class="fa-solid fa-right-left"></i>
   Patient Transfers
 </a>
+<a href="{{ route('service-invoices.index') }}"
+   class="side-link {{ request()->routeIs('service-invoices.*') ? 'active' : '' }}">
+  <i class="fa-solid fa-file-invoice-dollar"></i>
+  Service Invoices
+</a>
 
 
         @endif

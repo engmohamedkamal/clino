@@ -415,5 +415,9 @@ class AppointmentController extends Controller
         return view('dashboard.appointment.reset', compact('appointment', 'queueNo'));
     }
 
+public function vipPrint(Appointment $appointment)
+{
+    return view('dashboard.appointment.vip', compact('appointment'));
+}
 
 }

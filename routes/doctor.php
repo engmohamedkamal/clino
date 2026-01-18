@@ -5,6 +5,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserInfoController;
 use App\Http\Controllers\DoctorInfoController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\ServiceInvoiceController;
 use App\Http\Controllers\PatientTransferController;
 
 
@@ -131,4 +132,7 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
         )->name('patient-transfers.attachments.destroy');
 
     });
+});
+Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
+    Route::resource('service-invoices', ServiceInvoiceController::class);
 });

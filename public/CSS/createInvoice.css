@@ -1,0 +1,243 @@
+/* Layout */
+.ci-body {
+  background: #f6f9fe;
+  color: #0f172a;
+}
+
+.ci-container {
+  max-width: 1180px;
+}
+
+/* Sidebar */
+.ci-sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #eef2f7;
+}
+
+.ci-brand {
+  font-size: 18px;
+  font-weight: 600; /* مش تقيل */
+}
+
+.ci-brand-ico {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #eef6ff;
+  color: #2563eb;
+}
+
+.ci-nav .ci-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #64748b;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.ci-nav .ci-link:hover {
+  background: #f3f7ff;
+  color: #1d4ed8;
+}
+
+.ci-nav .ci-link.active {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+/* Top header */
+.ci-title {
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.ci-subtitle {
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Cards */
+.ci-card {
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
+
+.ci-sec-title {
+  font-weight: 600;
+}
+
+.ci-sec-ico {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #eef6ff;
+  color: #2563eb;
+}
+
+.ci-label {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ci-muted {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Inputs */
+.ci-input {
+  border-radius: 12px;
+  border-color: #e6edf7;
+}
+
+.ci-input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.12);
+}
+
+.ci-input-ico {
+  border-radius: 12px;
+  border-color: #e6edf7;
+  background: #f8fbff;
+  color: #64748b;
+}
+
+/* Links / Buttons */
+.ci-link-primary {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.ci-link-primary:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.ci-btn-soft {
+  border-radius: 12px;
+  border-color: #e6edf7;
+  background: #ffffff;
+}
+
+.ci-btn-primary {
+  border-radius: 12px;
+}
+
+.ci-icon-danger {
+  border-radius: 12px;
+  border: 1px solid #eef2f7;
+  color: #94a3b8;
+}
+
+.ci-icon-danger:hover {
+  color: #ef4444;
+  border-color: #fee2e2;
+  background: #fff5f5;
+}
+
+/* Table */
+.ci-table {
+  margin-bottom: 0;
+}
+
+.ci-th {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.ci-item-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ci-item-sub {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.ci-strong {
+  font-weight: 600;
+}
+
+/* Payment method buttons
+   المطلوب: زرار Card يبقى Active وقت الـ hover */
+.ci-pay-btn {
+  border-radius: 12px;
+  border: 1px solid #e6edf7;
+  background: #ffffff;
+  color: #334155;
+  padding: 10px 12px;
+  font-weight: 500;
+}
+
+.ci-pay-btn.active,
+.ci-pay-btn:hover {
+  border-color: #93c5fd;
+  background: #eef6ff;
+  color: #1d4ed8;
+}
+
+/* Summary */
+.ci-mini-title {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ci-sum-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.ci-sum-label {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ci-sum-val {
+  font-weight: 600;
+}
+
+.ci-sum-input {
+  max-width: 140px;
+}
+
+.ci-hr {
+  border-color: #eef2f7;
+  opacity: 1;
+}
+
+.ci-total-label {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.ci-total-val {
+  font-weight: 700;
+  font-size: 22px;
+  color: #2563eb;
+}
+
+.ci-cancel {
+  color: #64748b;
+}
+
+.ci-cancel:hover {
+  color: #0f172a;
+}

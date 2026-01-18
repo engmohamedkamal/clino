@@ -80,6 +80,10 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
  Route::get('/appointments/{id}', [AppointmentController::class, 'singleShow'])
   ->whereNumber('id')
   ->name('appointments.singleShow');
+  Route::get('/appointments/{appointment}/vip-print',
+  [AppointmentController::class, 'vipPrint']
+)->name('appointment.vipPrint');
+
 
 });
 

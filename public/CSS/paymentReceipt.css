@@ -202,3 +202,21 @@ body {
         padding: 18px;
       }
     }
+    @media print {
+
+  /* اخفاء الهيدر بالكامل */
+  .page-header {
+    display: none !important;
+  }
+
+  /* إزالة أي خلفيات */
+  body {
+    background: #fff !important;
+  }
+
+  /* منع تقطيع الصفحة */
+  .receipt,
+  .sec {
+    page-break-inside: avoid;
+  }
+}
