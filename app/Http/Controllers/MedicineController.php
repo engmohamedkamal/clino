@@ -15,7 +15,7 @@ class MedicineController extends Controller
         $medicalOrders = Medicine::query()
             ->when($q !== '', function ($query) use ($q) {
                 $query->where('name', 'like', "%{$q}%")
-                      ->orWhere('type', 'like', "%{$q}%");
+                    ->orWhere('type', 'like', "%{$q}%");
             })
             ->latest()
             ->paginate(10)
@@ -29,12 +29,25 @@ class MedicineController extends Controller
         return view('dashboard.medicine.add');
     }
 
+
     public function store(Request $request)
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', Rule::in(['medicine', 'rumor', 'analysis'])],
+
+            // تظهر/تتحقق فقط لو type=medicine
+            'dosage' => ['nullable', 'string', 'max:255', Rule::requiredIf($request->input('type') === 'medicine')],
+            'duration' => ['nullable', 'string', 'max:255', Rule::requiredIf($request->input('type') === 'medicine')],
+            'notes' => ['nullable', 'string', 'max:2000', Rule::requiredIf($request->input('type') === 'medicine')],
         ]);
+
+        // لو مش medicine نظف القيم
+        if ($data['type'] !== 'medicine') {
+            $data['dosage'] = null;
+            $data['duration'] = null;
+            $data['notes'] = null;
+        }
 
         Medicine::create($data);
 
@@ -53,7 +66,17 @@ class MedicineController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', Rule::in(['medicine', 'rumor', 'analysis'])],
+
+            'dosage' => ['nullable', 'string', 'max:255', Rule::requiredIf($request->input('type') === 'medicine')],
+            'duration' => ['nullable', 'string', 'max:255', Rule::requiredIf($request->input('type') === 'medicine')],
+            'notes' => ['nullable', 'string', 'max:2000', Rule::requiredIf($request->input('type') === 'medicine')],
         ]);
+
+        if ($data['type'] !== 'medicine') {
+            $data['dosage'] = null;
+            $data['duration'] = null;
+            $data['notes'] = null;
+        }
 
         $medicalOrder->update($data);
 
@@ -78,7 +101,7 @@ class MedicineController extends Controller
             return back()->withErrors('Please select at least one medical order to delete.');
         }
 
-        $ids = array_values(array_filter($ids, fn ($id) => is_numeric($id)));
+        $ids = array_values(array_filter($ids, fn($id) => is_numeric($id)));
 
         if (count($ids) === 0) {
             return back()->withErrors('Invalid selection.');

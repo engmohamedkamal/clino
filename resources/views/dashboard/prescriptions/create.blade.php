@@ -13,6 +13,9 @@
 
   $oldRumors    = old('rumor_name', ['']);
   $oldAnalyses  = old('analysis_name', ['']);
+
+  // ✅ patient selected from old() OR query param (if passed from appointment)
+  $selectedPatientId = old('patient_id', $selectedPatientId ?? request('patient_id'));
 @endphp
 
 <div class="container-fluid">
@@ -38,10 +41,12 @@
               {{-- Patient --}}
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Patient</label>
-                <select name="patient_id" class="form-select @error('patient_id') is-invalid @enderror" required>
+                <select name="patient_id"
+                        class="form-select ts-select ts-patient @error('patient_id') is-invalid @enderror"
+                        required>
                   <option value="">-- Select Patient --</option>
                   @foreach($patients as $p)
-                    <option value="{{ $p->id }}" @selected(old('patient_id') == $p->id)>
+                    <option value="{{ $p->id }}" @selected((string)$selectedPatientId === (string)$p->id)>
                       {{ $p->name }}
                     </option>
                   @endforeach
@@ -55,7 +60,9 @@
               @if(auth()->user()->role === 'admin')
                 <div class="col-md-6">
                   <label class="form-label fw-semibold">Doctor</label>
-                  <select name="doctor_id" class="form-select @error('doctor_id') is-invalid @enderror" required>
+                  <select name="doctor_id"
+                          class="form-select ts-select ts-doctor @error('doctor_id') is-invalid @enderror"
+                          required>
                     <option value="">-- Select Doctor --</option>
                     @foreach($doctors as $doctor)
                       <option value="{{ $doctor->id }}" @selected(old('doctor_id') == $doctor->id)>
@@ -77,16 +84,23 @@
                   @foreach($oldMeds as $i => $val)
                     <div class="row g-2 align-items-end medicine-row mb-2">
 
-                      <div class="col-md-3">
-                        <select name="medicine_name[]" class="form-select ts-select ts-medicine" required>
-                          <option value="">Select medicine...</option>
-                          @foreach($medicinesList as $m)
-                            <option value="{{ $m->name }}" @selected(($oldMeds[$i] ?? '') == $m->name)>
-                              {{ $m->name }}
-                            </option>
-                          @endforeach
-                        </select>
-                      </div>
+                   <div class="col-md-3">
+  <select name="medicine_name[]" class="form-select ts-select ts-medicine" required>
+    <option value="">Select medicine...</option>
+    @foreach($medicinesList as $m)
+      <option
+        value="{{ $m->name }}"
+        data-dosage="{{ $m->dosage }}"
+        data-duration="{{ $m->duration }}"
+        data-notes="{{ $m->notes }}"
+        @selected(($oldMeds[$i] ?? '') == $m->name)
+      >
+        {{ $m->name }}
+      </option>
+    @endforeach
+  </select>
+</div>
+
 
                       <div class="col-md-3">
                         <input type="text" name="dosage[]" class="form-control" placeholder="Dosage"
@@ -315,12 +329,25 @@ document.addEventListener('DOMContentLoaded', function () {
     container.querySelectorAll('select.ts-select').forEach((sel) => {
       if (sel.tomselect) return;
 
+      const isPatient = sel.classList.contains('ts-patient');
+      const isDoctor  = sel.classList.contains('ts-doctor');
+
       new TomSelect(sel, {
         create: false,
         allowEmptyOption: true,
         maxItems: 1,
         placeholder: sel.querySelector('option')?.textContent || 'Select...',
+
+        // ✅ تحسين البحث خصوصاً للمرضى/الدكاترة
+        searchField: ['text'],
+        closeAfterSelect: true,
+        openOnFocus: true,
       });
+
+      // ✅ لو patient عليه required و user مسح القيمة
+      if (isPatient) {
+        sel.addEventListener('change', () => {});
+      }
     });
   }
 
@@ -341,9 +368,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const node = template.content.cloneNode(true);
       wrapper.appendChild(node);
 
-      // init tomselect for newly added row (آخر row)
+      // init tomselect for newly added row
       initTomSelect(wrapper);
-
       return;
     }
 
@@ -362,5 +388,42 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 });
+
+document.addEventListener('change', function (e) {
+  const select = e.target.closest('.ts-medicine');
+  if (!select) return;
+
+  const option = select.options[select.selectedIndex];
+  if (!option) return;
+
+  const row = select.closest('.medicine-row');
+  if (!row) return;
+
+  const dosageInput   = row.querySelector('input[name="dosage[]"]');
+  const durationInput = row.querySelector('input[name="duration[]"]');
+  const notesInput    = row.querySelector('input[name="notes[]"]');
+
+  // لو المستخدم اختار placeholder
+  if (!option.value) {
+    if (dosageInput) dosageInput.value = '';
+    if (durationInput) durationInput.value = '';
+    if (notesInput) notesInput.value = '';
+    return;
+  }
+
+  // Auto fill
+  if (dosageInput && !dosageInput.value) {
+    dosageInput.value = option.dataset.dosage || '';
+  }
+
+  if (durationInput && !durationInput.value) {
+    durationInput.value = option.dataset.duration || '';
+  }
+
+  if (notesInput && !notesInput.value) {
+    notesInput.value = option.dataset.notes || '';
+  }
+});
 </script>
+
 @endsection

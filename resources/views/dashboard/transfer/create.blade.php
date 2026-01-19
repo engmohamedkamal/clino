@@ -5,6 +5,21 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="{{ asset('CSS/patientTransfer.css') }}" />
 
+@php
+  // قيمة الـ id المختارة (من query أو old)
+  $pid = old('patient_id', $selectedPatientId ?? '');
+
+  // اسم المريض المختار (لإظهار الاسم داخل الـ input)
+  $selectedName = '';
+  if(!empty($pid) && isset($patients)){
+    $found = collect($patients)->firstWhere('id', (int)$pid) ?? collect($patients)->firstWhere('id', $pid);
+    $selectedName = $found->name ?? '';
+  }
+
+  // اسم الانبوت (لو المستخدم كتب و رجع old)
+  $patientNameOld = old('patient_name', $selectedName);
+@endphp
+
 <main class="pt-main">
 
   {{-- ✅ Success Message --}}
@@ -57,17 +72,33 @@
               {{-- Name + Code + Priority --}}
               <div class="d-flex align-items-end gap-3 flex-wrap">
 
-                {{-- ================= Patient Name ================= --}}
-                <div class="pt-field">
-                  <label class="pt-label mb-1">Patient Name <span class="text-danger">*</span></label>
+                {{-- ================= Patient (Searchable) ================= --}}
+                <div class="mb-3" style="min-width:260px">
+                  <label class="form-label">Patient <span class="text-danger">*</span></label>
+
+                  {{-- hidden id to submit --}}
+                  <input type="hidden" name="patient_id" id="patient_id" value="{{ $pid }}">
+
+                  {{-- searchable input --}}
                   <input
                     type="text"
                     name="patient_name"
-                    class="form-control pt-control pt-control-sm @error('patient_name') is-invalid @enderror"
-                    value="{{ old('patient_name', $patient->name ?? '') }}"
-                    placeholder="Patient Name"
+                    id="patient_name"
+                    class="form-control @error('patient_id') is-invalid @enderror"
+                    list="patientsList"
+                    placeholder="Search patient..."
+                    value="{{ $patientNameOld }}"
+                    autocomplete="off"
+                    required
                   >
-                  @error('patient_name')
+
+                  <datalist id="patientsList">
+                    @foreach($patients as $p)
+                      <option value="{{ $p->name }}" data-id="{{ $p->id }}"></option>
+                    @endforeach
+                  </datalist>
+
+                  @error('patient_id')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                   @enderror
                 </div>
@@ -130,7 +161,7 @@
                     type="number"
                     name="age"
                     class="form-control pt-control pt-control-sm @error('age') is-invalid @enderror"
-                    value="{{ old('age', $patient->age ?? '') }}"
+                    value="{{ old('age') }}"
                     min="0"
                     max="120"
                   >
@@ -146,8 +177,8 @@
                     name="gender"
                     class="form-select pt-control pt-control-sm @error('gender') is-invalid @enderror">
                     <option value="">—</option>
-                    <option value="male" {{ old('gender', strtolower($patient->gender ?? ''))==='male' ? 'selected' : '' }}>Male</option>
-                    <option value="female" {{ old('gender', strtolower($patient->gender ?? ''))==='female' ? 'selected' : '' }}>Female</option>
+                    <option value="male" {{ old('gender')==='male' ? 'selected' : '' }}>Male</option>
+                    <option value="female" {{ old('gender')==='female' ? 'selected' : '' }}>Female</option>
                   </select>
                   @error('gender')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -161,7 +192,7 @@
                     type="text"
                     name="blood_type"
                     class="form-control pt-control pt-control-sm @error('blood_type') is-invalid @enderror"
-                    value="{{ old('blood_type', $patient->blood_type ?? '') }}"
+                    value="{{ old('blood_type') }}"
                     placeholder="O+"
                   >
                   @error('blood_type')
@@ -176,7 +207,7 @@
                     type="text"
                     name="current_location"
                     class="form-control pt-control pt-control-sm @error('current_location') is-invalid @enderror"
-                    value="{{ old('current_location', $patient->current_location ?? '') }}"
+                    value="{{ old('current_location') }}"
                     placeholder="Ward / Unit"
                   >
                   @error('current_location')
@@ -463,30 +494,29 @@
           </div>
         </section>
 
- <div class="mb-2">
-  <label class="pt-label">Attachments (text)</label>
+        <div class="mb-2">
+          <label class="pt-label">Attachments (text)</label>
 
-  <div class="d-flex gap-2 align-items-start">
-    <div id="attWrap" class="flex-grow-1 d-grid gap-2">
-      <input
-        type="text"
-        name="attachments[]"
-        class="form-control pt-control"
-        placeholder="Attachment item..."
-      >
-    </div>
+          <div class="d-flex gap-2 align-items-start">
+            <div id="attWrap" class="flex-grow-1 d-grid gap-2">
+              <input
+                type="text"
+                name="attachments[]"
+                class="form-control pt-control"
+                placeholder="Attachment item..."
+              >
+            </div>
 
-    <button
-      type="button"
-      class="btn btn-light pt-control"
-      id="addAtt"
-      title="Add another"
-    >
-      <i class="bi bi-plus"></i>
-    </button>
-  </div>
-</div>
-  
+            <button
+              type="button"
+              class="btn btn-light pt-control"
+              id="addAtt"
+              title="Add another"
+            >
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+        </div>
 
         <!-- Footer -->
         <div class="pt-footer mt-4">
@@ -502,6 +532,37 @@
 </main>
 
 <script>
+  // ================= Patient searchable -> set hidden patient_id =================
+  (function () {
+    const nameInput = document.getElementById('patient_name');
+    const idInput   = document.getElementById('patient_id');
+    const list      = document.getElementById('patientsList');
+
+    if (!nameInput || !idInput || !list) return;
+
+    function syncIdFromName() {
+      const val = (nameInput.value || '').trim();
+      if (!val) {
+        idInput.value = '';
+        return;
+      }
+
+      const opt = Array.from(list.options).find(o => (o.value || '').trim() === val);
+      if (opt && opt.dataset && opt.dataset.id) {
+        idInput.value = opt.dataset.id;
+      } else {
+        // لو كتب اسم مش موجود في الليست
+        idInput.value = '';
+      }
+    }
+
+    // أول تحميل
+    syncIdFromName();
+
+    nameInput.addEventListener('input', syncIdFromName);
+    nameInput.addEventListener('change', syncIdFromName);
+  })();
+
   // Stability chips -> hidden input
   (function () {
     const group = document.querySelector('[data-stability]');
@@ -567,15 +628,22 @@
       });
     });
   })();
-    document.getElementById('addAtt').addEventListener('click', () => {
+
+  // Add attachments inputs
+  (function(){
+    const btn = document.getElementById('addAtt');
     const wrap = document.getElementById('attWrap');
-    const inp = document.createElement('input');
-    inp.type = 'text';
-    inp.name = 'attachments[]';
-    inp.className = 'form-control pt-control';
-    inp.placeholder = 'Attachment item...';
-    wrap.appendChild(inp);
-  });
+    if(!btn || !wrap) return;
+
+    btn.addEventListener('click', () => {
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.name = 'attachments[]';
+      inp.className = 'form-control pt-control';
+      inp.placeholder = 'Attachment item...';
+      wrap.appendChild(inp);
+    });
+  })();
 </script>
 
 @endsection

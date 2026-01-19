@@ -22,9 +22,9 @@ return new class extends Migration
             $table->json('medicine_name');
             $table->json('dosage');
             $table->json('duration');
+            $table->json('notes')->nullable();
             $table->json('rumor');
             $table->json('analysis');
-            $table->json('notes')->nullable();
             $table->string('diagnosis');   
 
             $table->timestamps();

@@ -23,7 +23,9 @@
     <div class="pl-actions">
 
       {{-- Edit + Delete (Admin/Doctor فقط) --}}
-      @if($canManage)
+      {{-- @if($canManage) --}}
+      
+      @if(auth()->check() && auth()->user()->role === 'admin')
         <button class="pl-icon-btn" type="button" aria-label="Edit" id="editBtn">
           <span class="material-icons-round">edit</span>
         </button>
@@ -35,11 +37,11 @@
             <span class="material-icons-round">delete</span>
           </button>
         </form>
-
+        
+        @endif
         <a href="{{ route('appointment.index') }}" class="pl-icon-btn primary" aria-label="Add">
           <span class="material-icons-round">add</span>
         </a>
-      @endif
 
       {{-- Filters --}}
       <form class="pl-filter d-flex align-items-center gap-2" method="GET" action="{{ route('appointment.show') }}">
@@ -84,6 +86,42 @@
   @if($errors->any())
     <div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
   @endif
+ @php
+  $currentStatus = request('status', 'pending');
+@endphp
+
+<form method="GET" action="{{ route('appointment.show') }}" class="d-inline-flex align-items-center gap-2 mb-3">
+
+  {{-- حافظي على باقي الفلاتر --}}
+  @if(request('q'))
+    <input type="hidden" name="q" value="{{ request('q') }}">
+  @endif
+  @if(request('day'))
+    <input type="hidden" name="day" value="{{ request('day') }}">
+  @endif
+
+  <label class="form-label mb-0 fw-semibold">Status</label>
+
+  <select name="status"
+          class="form-select form-select-sm"
+          style="min-width:160px"
+          onchange="this.form.submit()">
+
+    <option value="pending"   {{ $currentStatus === 'pending' ? 'selected' : '' }}>
+      Pending
+    </option>
+    <option value="completed" {{ $currentStatus === 'completed' ? 'selected' : '' }}>
+      Completed
+    </option>
+    <option value="cancelled" {{ $currentStatus === 'cancelled' ? 'selected' : '' }}>
+      Cancelled
+    </option>
+    <option value="all"       {{ $currentStatus === 'all' ? 'selected' : '' }}>
+      All
+    </option>
+  </select>
+</form>
+
 
   {{-- ================= Table ================= --}}
   <div class="pl-table-card">
@@ -185,6 +223,7 @@
       </a>
 
       {{-- Print Normal --}}
+      @if(auth()->check() && auth()->user()->role === 'admin')
       <a class="pl-icon-btn"
          href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
          target="_blank">
@@ -199,7 +238,7 @@
            title="Print VIP Ticket">
           <span class="material-icons-round">workspace_premium</span>
         </a>
-      {{-- @endif --}}
+      @endif
 
     </div>
   </td>

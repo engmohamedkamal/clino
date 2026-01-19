@@ -10,58 +10,133 @@ use Illuminate\Http\Request;
 
 class PatientTransferController extends Controller
 {
-    /**
-     * Display a listing of transfers.
-     */
+
     public function index(Request $request)
-    {
-        $q = trim((string) $request->get('q', ''));
+{
+    $user = auth()->user();
+    $role = $user->role ?? '';
 
-        $transfers = PatientTransfer::query()
-            ->with([
-                'primaryPhysician:id,name',
-            ])
-            ->when($q, function ($query) use ($q) {
-                $query->where(function ($qq) use ($q) {
-                    $qq->where('transfer_code', 'like', "%{$q}%")
-                        ->orWhere('destination_hospital', 'like', "%{$q}%")
-                        ->orWhere('receiving_doctor_name', 'like', "%{$q}%")
-                        ->orWhere('patient_name', 'like', "%{$q}%");
-                });
-            })
-            ->latest()
-            ->paginate(5)
-            ->withQueryString();
+    $q = trim((string) $request->get('q', ''));
 
-        return view('dashboard.transfer.index', compact('transfers', 'q'));
+    $transfers = PatientTransfer::query()
+        ->with([
+            'primaryPhysician:id,name',
+            // لو عندك relation للمريض ضيفيها هنا:
+            // 'patient:id,patient_name',
+            // 'patientUser:id,name',
+        ])
+
+        // ✅ Role-based filtering
+        ->when($role === 'doctor', function ($query) use ($user) {
+            // الدكتور يشوف التحويلات اللي هو primary physician بتاعها
+            $query->where('primary_physician_id', $user->id);
+        })
+        ->when($role === 'patient', function ($query) use ($user) {
+            // المريض يشوف تحويلاته فقط
+            // (1) لو عندك patient_user_id
+            if (\Illuminate\Support\Facades\Schema::hasColumn('patient_transfers', 'patient_name')) {
+                $query->where('patient_name', $user->name);
+                return;
+            }
+
+            // (2) لو عندك patient_id و patients فيها user_id
+            if (
+                \Illuminate\Support\Facades\Schema::hasColumn('patient_transfers', 'patient_id')
+                && class_exists(\App\Models\Patient::class)
+                && \Illuminate\Support\Facades\Schema::hasColumn('patients', 'user_id')
+            ) {
+                $patientId = \App\Models\Patient::where('user_id', $user->id)->value('id');
+                $query->where('patient_id', $patientId ?? 0);
+                return;
+            }
+
+            // (3) fallback (لو مفيش ربط واضح) امنعي العرض
+            $query->whereRaw('1=0');
+        })
+
+        // ✅ Search
+        ->when($q, function ($query) use ($q) {
+            $query->where(function ($qq) use ($q) {
+                $qq->where('transfer_code', 'like', "%{$q}%")
+                    ->orWhere('destination_hospital', 'like', "%{$q}%")
+                    ->orWhere('receiving_doctor_name', 'like', "%{$q}%")
+                    ->orWhere('patient_name', 'like', "%{$q}%");
+            });
+        })
+
+        ->latest()
+        ->paginate(5)
+        ->withQueryString();
+
+    return view('dashboard.transfer.index', compact('transfers', 'q'));
+}
+
+
+  
+public function create(Request $request)
+{
+    // /patient-transfers/create?patient_id=1&appointment_id=5
+    $selectedPatientId = $request->query('patient_id');
+    $appointmentId     = $request->query('appointment_id');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Patients from patients table
+    |--------------------------------------------------------------------------
+    */
+    $patientsFromPatientsTable = Patient::query()
+        ->selectRaw('id, patient_name as name')
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Patients from users table (role = patient)
+    |--------------------------------------------------------------------------
+    */
+    $patientsFromUsersTable = User::query()
+        ->where('role', 'patient')
+        ->selectRaw('id, name')
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Merge both collections
+    |--------------------------------------------------------------------------
+    */
+    $patients = $patientsFromPatientsTable
+        ->concat($patientsFromUsersTable)
+        ->sortBy('name')
+        ->values();
+
+    // تأكد إن المريض المحدد موجود في أي جدول
+    if ($selectedPatientId) {
+        $exists =
+            Patient::whereKey($selectedPatientId)->exists()
+            || User::where('role', 'patient')->whereKey($selectedPatientId)->exists();
+
+        abort_unless($exists, 404);
     }
 
-    /**
-     * Show the form for creating a new transfer.
-     */
-    public function create(Request $request)
-    {
-        // Optional: /patient-transfers/create?patient_id=1
-        $patientId = $request->get('patient_id');
+    $primaryPhysician = auth()->user();
 
-        $patient = null;
-        if ($patientId) {
-            $patient = Patient::findOrFail($patientId);
-        }
+    $doctors = User::query()
+        ->whereIn('role', ['doctor', 'admin'])
+        ->select('id', 'name')
+        ->orderBy('name')
+        ->get();
 
-        $primaryPhysician = auth()->user();
+    $transfer_code = 'TR-' . now()->format('Ymd') . '-' . random_int(1000, 9999);
 
-        // قائمة الدكاترة (لـ primary_physician_id فقط)
-        $doctors = User::query()
-            ->whereIn('role', ['doctor', 'admin'])
-            ->select('id', 'name')
-            ->orderBy('name')
-            ->get();
+    return view('dashboard.transfer.create', compact(
+        'patients',
+        'selectedPatientId',
+        'appointmentId',
+        'doctors',
+        'primaryPhysician',
+        'transfer_code'
+    ));
+}
 
-        $transfer_code = 'TR-' . now()->format('Ymd') . '-' . random_int(1000, 9999);
-
-        return view('dashboard.transfer.create', compact('patient', 'doctors', 'primaryPhysician', 'transfer_code'));
-    }
 
     /**
      * Store a newly created transfer in storage.
@@ -78,7 +153,13 @@ class PatientTransferController extends Controller
         $data['attachments'] = is_array($data['attachments'] ?? null) ? $data['attachments'] : [];
 
         $transfer = PatientTransfer::create($data);
+$user = auth()->user();
 
+if ($user->role === 'doctor') {
+    return session('return_to')
+        ? redirect(session('return_to'))->with('success', 'Report created successfully.')
+        : redirect()->back()->with('success', 'Report created successfully.');
+}
         return redirect()
             ->route('patient-transfers.show', $transfer->id)
             ->with('success', 'Transfer created successfully.');

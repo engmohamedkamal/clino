@@ -33,8 +33,22 @@
         <span class="badge ad-status {{ $stClass }}">
           {{ ucfirst($st) }}
         </span>
+      <a href="{{ route('day.summary') }}" class="ad-btn ad-btn-primary">
+        Day Summary
+      </a>
+@if(isset($nextAppointment) && $nextAppointment)
+  <a href="{{ route('appointments.singleShow', $nextAppointment->id) }}" class="ad-btn ad-btn-soft" title="Next Pending">
+    <span class="material-icons-round">arrow_forward</span>
+    Next Pending
+  </a>
+@else
+  <button class="ad-btn ad-btn-soft" type="button" disabled title="No next pending appointment">
+    <span class="material-icons-round">block</span>
+    No Next
+  </button>
+@endif
 
-        @if($canManage)
+        @if(auth()->check() && auth()->user()->role === 'admin')
           <a href="{{ url('/appointments') . '/' . $appointment->id . '/edit' }}" class="ad-icon-btn" title="Edit">
             <span class="material-icons-round">edit</span>
           </a>
@@ -107,30 +121,61 @@
           </div>
 
           {{-- Actions under doctor name --}}
-          @if(auth()->user()->role === 'admin' || auth()->user()->role === 'doctor')
-            <div class="ad-row">
-              <div class="ad-label"></div>
-              <div class="ad-value">
-                <div class="ad-box-actions d-flex gap-2 flex-wrap">
+       @if(auth()->user()->role === 'admin' || auth()->user()->role === 'doctor')
 
-                  {{-- Add Report --}}
-                  <a href="{{ route('reports.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
-                    class="ad-btn ad-btn-soft" title="Add Report">
-                    <span class="material-icons-round">description</span>
-                    Report
-                  </a>
+  @php
+    
+    session(['return_to' => url()->current()]);
+  @endphp
 
-                  {{-- Add Prescription --}}
-                  <a href="{{ route('prescriptions.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
-                    class="ad-btn ad-btn-primary" title="Add Prescription">
-                    <span class="material-icons-round">medication</span>
-                    Rx
-                  </a>
+  <div class="ad-row">
+    <div class="ad-label"></div>
+    <div class="ad-value">
+      <div class="ad-box-actions d-flex gap-2 flex-wrap">
 
-                </div>
-              </div>
-            </div>
-          @endif
+        {{-- Add Report --}}
+        <a href="{{ route('reports.create', [
+              'patient_id' => $appointment->patient_id,
+              'appointment_id' => $appointment->id
+            ]) }}" class="ad-btn ad-btn-soft" title="Add Report">
+          <span class="material-icons-round">description</span>
+          Report
+        </a>
+
+        {{-- Add Prescription --}}
+        <a href="{{ route('prescriptions.create', [
+              'patient_id' => $appointment->patient_id,
+              'appointment_id' => $appointment->id
+            ]) }}" class="ad-btn ad-btn-primary" title="Add Prescription">
+          <span class="material-icons-round">medication</span>
+          Rx
+        </a>
+
+        {{-- Add Diagnosis --}}
+        <a href="{{ route('diagnoses.create', [
+              'patient_id' => $appointment->patient_id,
+              'appointment_id' => $appointment->id
+            ]) }}" class="ad-btn ad-btn-soft" title="Add Diagnosis">
+          <span class="material-icons-round">medical_information</span>
+          Diagnosis
+        </a>
+
+        {{-- Add Patient Transfer --}}
+        <a href="{{ route('patient-transfers.create', [
+              'patient_id' => $appointment->patient_id,
+              'appointment_id' => $appointment->id
+            ]) }}" class="ad-btn ad-btn-warning" title="Patient Transfer">
+          <span class="material-icons-round">sync_alt</span>
+          Transfer
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+@endif
+
+
 
         </div>
 
@@ -156,10 +201,11 @@
           <div class="ad-row">
             <div class="ad-label">Visit Type</div>
             <div class="ad-value"> @if(is_array($appointment->visit_types) && count($appointment->visit_types))
-    {{ collect($appointment->visit_types)->pluck('type')->implode(' , ') }}
-  @else
-    -
-  @endif</div>
+              {{ collect($appointment->visit_types)->pluck('type')->implode(' , ') }}
+            @else
+                -
+              @endif
+            </div>
           </div>
 
 
@@ -225,5 +271,183 @@
 
       </div>
     </div>
+    {{-- ================= Previous Records (for this patient) ================= --}}
+{{-- @if($canManage)
+  @php
+    $hasAny = (isset($reports) && $reports->count())
+           || (isset($prescriptions) && $prescriptions->count())
+           || (isset($diagnoses) && $diagnoses->count())
+           || (isset($transfers) && $transfers->count());
+  @endphp
+
+  @if($hasAny)
+    <div class="ad-row mt-3">
+      <div class="ad-label">Previous</div>
+      <div class="ad-value w-100">
+        <div class="d-flex flex-wrap gap-2">
+
+          @if(isset($reports) && $reports->count())
+            @foreach($reports as $r)
+              <a href="{{ route('reports.show', $r->id) }}"
+                 class="ad-btn ad-btn-soft" title="Open report #{{ $r->id }}">
+                <span class="material-icons-round">article</span>
+                Report #{{ $r->id }}
+              </a>
+            @endforeach
+          @endif
+
+     
+          @if(isset($prescriptions) && $prescriptions->count())
+            
+            @foreach($prescriptions as $rx)
+              <a href="{{ route('prescriptions.show', $rx->id) }}"
+                 class="ad-btn ad-btn-primary" title="Open prescription #{{ $rx->id }}">
+                <span class="material-icons-round">receipt_long</span>
+                Rx #{{ $rx->id }}
+              </a>
+            @endforeach
+          @endif
+
+          
+          @if(isset($diagnoses) && $diagnoses->count())
+     
+
+            @foreach($diagnoses as $d)
+              <a href="{{ route('diagnoses.show', $d->id) }}"
+                 class="ad-btn ad-btn-soft" title="Open diagnosis #{{ $d->id }}">
+                <span class="material-icons-round">info</span>
+                Dx #{{ $d->id }}
+              </a>
+            @endforeach
+          @endif
+
+     
+          @if(isset($transfers) && $transfers->count())
+         
+
+            @foreach($transfers as $t)
+              <a href="{{ route('patient-transfers.show', $t->id) }}"
+                 class="ad-btn ad-btn-warning" title="Open transfer {{ $t->transfer_code ?? ('#'.$t->id) }}">
+                <span class="material-icons-round">move_up</span>
+                {{ $t->transfer_code ?? ('Transfer #'.$t->id) }}
+              </a>
+            @endforeach
+          @endif
+
+        </div>
+      </div>
+    </div>
+  @endif
+@endif --}}
+@if($canManage)
+  @php
+    $hasAny =
+        (isset($reports) && $reports->count()) ||
+        (isset($prescriptions) && $prescriptions->count()) ||
+        (isset($diagnoses) && $diagnoses->count()) ||
+        (isset($transfers) && $transfers->count());
+  @endphp
+
+  @if($hasAny)
+    <div class="ad-row mt-4">
+      <div class="ad-label">Previous Records</div>
+
+      <div class="ad-value w-100">
+        <div class="row g-3">
+
+          {{-- ================= Reports ================= --}}
+          @if(isset($reports) && $reports->count())
+            <div class="col-12 col-md-6 col-lg-3">
+              <div class="card ad-prev-card h-100">
+                <div class="card-header ad-prev-head">
+                  <span class="material-icons-round text-primary">article</span>
+                  <span>Reports</span>
+                </div>
+
+                <div class="card-body p-2">
+                  @foreach($reports as $r)
+                    <a href="{{ route('reports.show', $r->id) }}"
+                       class="ad-prev-item">
+                      <span class="material-icons-round">description</span>
+                      <span>Report #{{ $r->id }}</span>
+                    </a>
+                  @endforeach
+                </div>
+              </div>
+            </div>
+          @endif
+
+          {{-- ================= Prescriptions ================= --}}
+          @if(isset($prescriptions) && $prescriptions->count())
+            <div class="col-12 col-md-6 col-lg-3">
+              <div class="card ad-prev-card h-100">
+                <div class="card-header ad-prev-head">
+                  <span class="material-icons-round text-success">receipt_long</span>
+                  <span>Prescriptions</span>
+                </div>
+
+                <div class="card-body p-2">
+                  @foreach($prescriptions as $rx)
+                    <a href="{{ route('prescriptions.show', $rx->id) }}"
+                       class="ad-prev-item">
+                      <span class="material-icons-round">medication</span>
+                      <span>Rx #{{ $rx->id }}</span>
+                    </a>
+                  @endforeach
+                </div>
+              </div>
+            </div>
+          @endif
+
+          {{-- ================= Diagnoses ================= --}}
+          @if(isset($diagnoses) && $diagnoses->count())
+            <div class="col-12 col-md-6 col-lg-3">
+              <div class="card ad-prev-card h-100">
+                <div class="card-header ad-prev-head">
+                  <span class="material-icons-round text-info">info</span>
+                  <span>Diagnoses</span>
+                </div>
+
+                <div class="card-body p-2">
+                  @foreach($diagnoses as $d)
+                    <a href="{{ route('diagnoses.show', $d->id) }}"
+                       class="ad-prev-item">
+                      <span class="material-icons-round">medical_information</span>
+                      <span>Dx #{{ $d->id }}</span>
+                    </a>
+                  @endforeach
+                </div>
+              </div>
+            </div>
+          @endif
+
+          {{-- ================= Transfers ================= --}}
+          @if(isset($transfers) && $transfers->count())
+            <div class="col-12 col-md-6 col-lg-3">
+              <div class="card ad-prev-card h-100">
+                <div class="card-header ad-prev-head">
+                  <span class="material-icons-round text-warning">move_up</span>
+                  <span>Transfers</span>
+                </div>
+
+                <div class="card-body p-2">
+                  @foreach($transfers as $t)
+                    <a href="{{ route('patient-transfers.show', $t->id) }}"
+                       class="ad-prev-item">
+                      <span class="material-icons-round">sync_alt</span>
+                      <span>{{ $t->transfer_code ?? ('Transfer #'.$t->id) }}</span>
+                    </a>
+                  @endforeach
+                </div>
+              </div>
+            </div>
+          @endif
+
+        </div>
+      </div>
+    </div>
+  @endif
+@endif
+
   </section>
 @endsection

@@ -118,36 +118,55 @@ public function store(Request $request)
     }
 
     Report::create($data);
+$user = auth()->user();
 
-    return redirect()->route('reports.index')->with('success', 'Report created successfully.');
+if ($user->role === 'doctor') {
+    $url = session('return_to');
+
+    return $url
+        ? redirect($url)->with('success', 'Report created successfully.')
+        : redirect()->back()->with('success', 'Report created successfully.');
 }
 
-    public function show(Report $report)
-    {
+return redirect()
+    ->route('reports.index')
+    ->with('success', 'Report created successfully.');
 
-    
+}
+
+public function show(Report $report)
+{
     $report->load(['patient', 'patientUser', 'doctor']);
 
-        $user = auth()->user();
+    $user = auth()->user();
+    $role = $user->role ?? '';
 
-        if ($user->role === 'admin') {
-            return view('dashboard.reports.show', compact('report'));
-        }
-
-        if ($user->role === 'doctor') {
-            abort_if($report->doctor_id !== $user->id, 403, 'Not allowed: This report is not yours.');
-            return view('dashboard.reports.show', compact('report'));
-        }
-
-        if ($user->role === 'patient') {
-            // لازم يكون فيه patient.user_id
-            abort_if(is_null(optional($report->patient)->user_id), 403, 'Your patient profile is not linked to your account.');
-            abort_if($report->patient->user_id !== $user->id, 403, 'Not allowed: This report is not yours.');
-            return view('dashboard.reports.show', compact('report'));
-        }
-
-        abort(403);
+    // ✅ Admin يشوف أي تقرير
+    if ($role === 'admin') {
+        return view('dashboard.reports.show', compact('report'));
     }
+
+    // ✅ Doctor: يا يشوف اللي هو عامله فقط (doctor_id)
+    if ($role === 'doctor') {
+        // abort_if((int)$report->doctor_id !== (int)$user->id, 403, 'Not allowed: This report is not yours.');
+        return view('dashboard.reports.show', compact('report'));
+    }
+
+
+    if ($role === 'patient') {
+
+        $ownerUserId =
+            $report->patient_user_id
+            ?? optional($report->patient)->user_id;
+
+        abort_if(empty($ownerUserId), 403, 'Your report is not linked to your account.');
+        abort_if((int)$ownerUserId !== (int)$user->id, 403, 'Not allowed: This report is not yours.');
+
+        return view('dashboard.reports.show', compact('report'));
+    }
+
+    // abort(403);
+}
 
 
     // =========================

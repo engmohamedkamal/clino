@@ -221,3 +221,39 @@
   background:#1e4f91;
   transform: translateY(-1px);
 }
+/* Previous Records Cards */
+.ad-prev-card {
+  border: 1px solid #e9eef6;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ad-prev-head {
+  background: #f8fafc;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e9eef6;
+}
+
+.ad-prev-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #1f2a37;
+  font-size: 14px;
+}
+
+.ad-prev-item:hover {
+  background: #f1f5f9;
+}
+
+.ad-prev-item .material-icons-round {
+  font-size: 18px;
+  color: #64748b;
+}

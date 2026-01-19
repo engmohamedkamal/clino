@@ -49,8 +49,8 @@ class PrescriptionController extends Controller
         if ($this->isDoctor()) {
             $did = $this->currentDoctorId();
 
-            return $query->when($did, fn ($q) => $q->where('doctor_id', $did))
-                         ->when(!$did, fn ($q) => $q->whereRaw('1=0'));
+            return $query->when($did, fn($q) => $q->where('doctor_id', $did))
+                ->when(!$did, fn($q) => $q->whereRaw('1=0'));
         }
 
         return $query;
@@ -70,8 +70,8 @@ class PrescriptionController extends Controller
     private function getOrdersLists(): array
     {
         $medicinesList = MedicalOrder::where('type', 'medicine')->orderBy('name')->get();
-        $rumorsList    = MedicalOrder::where('type', 'rumor')->orderBy('name')->get();
-        $analysesList  = MedicalOrder::where('type', 'analysis')->orderBy('name')->get();
+        $rumorsList = MedicalOrder::where('type', 'rumor')->orderBy('name')->get();
+        $analysesList = MedicalOrder::where('type', 'analysis')->orderBy('name')->get();
 
         return compact('medicinesList', 'rumorsList', 'analysesList');
     }
@@ -89,11 +89,11 @@ class PrescriptionController extends Controller
                 $query->where(function ($w) use ($q) {
                     // ملاحظة: الحقول json ممكن تنبحث كـ string لأن cast->array بيترجع json
                     $w->where('medicine_name', 'like', "%{$q}%")
-                      ->orWhere('dosage', 'like', "%{$q}%")
-                      ->orWhere('duration', 'like', "%{$q}%")
-                      ->orWhere('rumor', 'like', "%{$q}%")
-                      ->orWhere('analysis', 'like', "%{$q}%")
-                      ->orWhere('diagnosis', 'like', "%{$q}%");
+                        ->orWhere('dosage', 'like', "%{$q}%")
+                        ->orWhere('duration', 'like', "%{$q}%")
+                        ->orWhere('rumor', 'like', "%{$q}%")
+                        ->orWhere('analysis', 'like', "%{$q}%")
+                        ->orWhere('diagnosis', 'like', "%{$q}%");
                 });
             })
             ->paginate(10)
@@ -106,35 +106,35 @@ class PrescriptionController extends Controller
 
     /* ================= Show ================= */
 
- 
 
-public function show($id)
-{
-    $rx = $this->findAllowedOrFail((int) $id);
 
-    // ================= Patient URL =================
-    $patientId = $rx->patient_id ?? null;
+    public function show($id)
+    {
+        $rx = $this->findAllowedOrFail((int) $id);
 
-    $patientInfo = $patientId
-        ? PatientInfo::where('user_id', $patientId)->first()
-        : null;
+        // ================= Patient URL =================
+        $patientId = $rx->patient_id ?? null;
 
-    $patientUrl = $patientInfo
-        ? route('patient-info.show', $patientInfo->id)
-        : '#';
+        $patientInfo = $patientId
+            ? PatientInfo::where('user_id', $patientId)->first()
+            : null;
 
-    // ================= Doctor URL =================
-    $doctorId = $rx->doctor_id ?? null;
+        $patientUrl = $patientInfo
+            ? route('patient-info.show', $patientInfo->id)
+            : '#';
 
-    $doctorUrl = $doctorId
-        ? route('doctor-info.show', $doctorId)
-        : '#';
+        // ================= Doctor URL =================
+        $doctorId = $rx->doctor_id ?? null;
 
-    return view(
-        'dashboard.prescriptions.show',
-        compact('rx', 'patientUrl', 'doctorUrl')
-    );
-}
+        $doctorUrl = $doctorId
+            ? route('doctor-info.show', $doctorId)
+            : '#';
+
+        return view(
+            'dashboard.prescriptions.show',
+            compact('rx', 'patientUrl', 'doctorUrl')
+        );
+    }
 
 
     /* ================= Create ================= */
@@ -174,23 +174,23 @@ public function show($id)
             'patient_id' => ['required', 'integer', 'exists:users,id'],
 
             // ✅ Medicines (required)
-            'medicine_name'   => ['required', 'array', 'min:1'],
+            'medicine_name' => ['required', 'array', 'min:1'],
             'medicine_name.*' => ['required', 'string', 'max:255'],
 
-            'dosage'   => ['required', 'array', 'min:1'],
+            'dosage' => ['required', 'array', 'min:1'],
             'dosage.*' => ['required', 'string', 'max:255'],
 
-            'duration'   => ['required', 'array', 'min:1'],
+            'duration' => ['required', 'array', 'min:1'],
             'duration.*' => ['required', 'string', 'max:255'],
 
-            'notes'   => ['nullable', 'array'],
+            'notes' => ['nullable', 'array'],
             'notes.*' => ['nullable', 'string'],
 
             // ✅ NEW: Radiology + Analysis (optional)
-            'rumor_name'   => ['nullable', 'array'],
+            'rumor_name' => ['nullable', 'array'],
             'rumor_name.*' => ['nullable', 'string', 'max:255'],
 
-            'analysis_name'   => ['nullable', 'array'],
+            'analysis_name' => ['nullable', 'array'],
             'analysis_name.*' => ['nullable', 'string', 'max:255'],
 
             'diagnosis' => ['required', 'string', 'max:255'],
@@ -218,12 +218,12 @@ public function show($id)
         }
 
         // ✅ تنظيف medicines rows
-        $medicine = collect($data['medicine_name'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
-        $dosage   = collect($data['dosage'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
-        $duration = collect($data['duration'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
+        $medicine = collect($data['medicine_name'])->map(fn($v) => trim((string) $v))->filter()->values()->all();
+        $dosage = collect($data['dosage'])->map(fn($v) => trim((string) $v))->filter()->values()->all();
+        $duration = collect($data['duration'])->map(fn($v) => trim((string) $v))->filter()->values()->all();
 
         $notes = collect($data['notes'] ?? [])
-            ->map(fn($v) => is_null($v) ? null : trim((string)$v))
+            ->map(fn($v) => is_null($v) ? null : trim((string) $v))
             ->values()
             ->all();
 
@@ -239,19 +239,19 @@ public function show($id)
         }
 
         $data['medicine_name'] = $medicine;
-        $data['dosage']        = $dosage;
-        $data['duration']      = $duration;
-        $data['notes']         = $notes;
+        $data['dosage'] = $dosage;
+        $data['duration'] = $duration;
+        $data['notes'] = $notes;
 
         // ✅ NEW: rumor + analysis (json arrays)
         $data['rumor'] = collect($data['rumor_name'] ?? [])
-            ->map(fn($v) => trim((string)$v))
+            ->map(fn($v) => trim((string) $v))
             ->filter()
             ->values()
             ->all();
 
         $data['analysis'] = collect($data['analysis_name'] ?? [])
-            ->map(fn($v) => trim((string)$v))
+            ->map(fn($v) => trim((string) $v))
             ->filter()
             ->values()
             ->all();
@@ -259,7 +259,13 @@ public function show($id)
         unset($data['rumor_name'], $data['analysis_name']);
 
         $rx = Prescription::create($data);
+        $user = auth()->user();
 
+        if ($user->role === 'doctor') {
+            return session('return_to')
+                ? redirect(session('return_to'))->with('success', 'Report created successfully.')
+                : redirect()->back()->with('success', 'Report created successfully.');
+        }
         return redirect()->route('prescriptions.show', $rx->id)
             ->with('success', 'Prescription created successfully.');
     }
@@ -303,23 +309,23 @@ public function show($id)
         $rules = [
             'patient_id' => ['required', 'integer', 'exists:users,id'],
 
-            'medicine_name'   => ['required', 'array', 'min:1'],
+            'medicine_name' => ['required', 'array', 'min:1'],
             'medicine_name.*' => ['required', 'string', 'max:255'],
 
-            'dosage'   => ['required', 'array', 'min:1'],
+            'dosage' => ['required', 'array', 'min:1'],
             'dosage.*' => ['required', 'string', 'max:255'],
 
-            'duration'   => ['required', 'array', 'min:1'],
+            'duration' => ['required', 'array', 'min:1'],
             'duration.*' => ['required', 'string', 'max:255'],
 
-            'notes'   => ['nullable', 'array'],
+            'notes' => ['nullable', 'array'],
             'notes.*' => ['nullable', 'string'],
 
             // ✅ NEW
-            'rumor_name'   => ['nullable', 'array'],
+            'rumor_name' => ['nullable', 'array'],
             'rumor_name.*' => ['nullable', 'string', 'max:255'],
 
-            'analysis_name'   => ['nullable', 'array'],
+            'analysis_name' => ['nullable', 'array'],
             'analysis_name.*' => ['nullable', 'string', 'max:255'],
 
             'diagnosis' => ['required', 'string', 'max:255'],
@@ -342,12 +348,12 @@ public function show($id)
         }
 
         // تنظيف medicines
-        $medicine = collect($data['medicine_name'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
-        $dosage   = collect($data['dosage'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
-        $duration = collect($data['duration'])->map(fn($v) => trim((string)$v))->filter()->values()->all();
+        $medicine = collect($data['medicine_name'])->map(fn($v) => trim((string) $v))->filter()->values()->all();
+        $dosage = collect($data['dosage'])->map(fn($v) => trim((string) $v))->filter()->values()->all();
+        $duration = collect($data['duration'])->map(fn($v) => trim((string) $v))->filter()->values()->all();
 
         $notes = collect($data['notes'] ?? [])
-            ->map(fn($v) => is_null($v) ? null : trim((string)$v))
+            ->map(fn($v) => is_null($v) ? null : trim((string) $v))
             ->values()
             ->all();
 
@@ -363,19 +369,19 @@ public function show($id)
         }
 
         $data['medicine_name'] = $medicine;
-        $data['dosage']        = $dosage;
-        $data['duration']      = $duration;
-        $data['notes']         = $notes;
+        $data['dosage'] = $dosage;
+        $data['duration'] = $duration;
+        $data['notes'] = $notes;
 
         // ✅ NEW: rumor + analysis
         $data['rumor'] = collect($data['rumor_name'] ?? [])
-            ->map(fn($v) => trim((string)$v))
+            ->map(fn($v) => trim((string) $v))
             ->filter()
             ->values()
             ->all();
 
         $data['analysis'] = collect($data['analysis_name'] ?? [])
-            ->map(fn($v) => trim((string)$v))
+            ->map(fn($v) => trim((string) $v))
             ->filter()
             ->values()
             ->all();
@@ -412,7 +418,7 @@ public function show($id)
         }
 
         $data = $request->validate([
-            'ids'   => ['required', 'array'],
+            'ids' => ['required', 'array'],
             'ids.*' => ['integer'],
         ]);
 

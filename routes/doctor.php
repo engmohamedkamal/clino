@@ -42,10 +42,6 @@ Route::middleware(['auth', 'admin_or_doctor'])->prefix('admin')->group(function 
 
     Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
     Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
-
-    // ✅ خليها reports.show
-    Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
-
     Route::get('/reports/{report}/edit', [ReportController::class, 'edit'])->name('reports.edit');
     Route::put('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
     Route::delete('/reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
@@ -53,10 +49,9 @@ Route::middleware(['auth', 'admin_or_doctor'])->prefix('admin')->group(function 
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
 
-Route::middleware(['auth'])->group(function () {
     Route::get('/reports/{report}', [ReportController::class, 'show'])
         ->name('reports.show');
-});
+
 
 Route::middleware(['auth'])->group(function () {
 
@@ -99,10 +94,7 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
 
     Route::prefix('patient-transfers')->name('patient-transfers.')->group(function () {
 
-        // ===================== LIST =====================
-        Route::get('/', [PatientTransferController::class, 'index'])
-            ->name('index');
-
+   
         // ===================== CREATE =====================
         Route::get('/create', [PatientTransferController::class, 'create'])
             ->name('create');
@@ -111,9 +103,7 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
         Route::post('/', [PatientTransferController::class, 'store'])
             ->name('store');
 
-        // ===================== SHOW =====================
-        Route::get('/{patientTransfer}', [PatientTransferController::class, 'show'])
-            ->name('show');
+      
 
         // ===================== EDIT =====================
         Route::get('/{patientTransfer}/edit', [PatientTransferController::class, 'edit'])
@@ -136,3 +126,15 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
 Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
     Route::resource('service-invoices', ServiceInvoiceController::class);
 });
+
+
+  Route::prefix('patient-transfers')->name('patient-transfers.')->group(function () {
+
+     // ===================== LIST =====================
+        Route::get('/', [PatientTransferController::class, 'index'])
+            ->name('index');
+
+  // ===================== SHOW =====================
+        Route::get('/{patientTransfer}', [PatientTransferController::class, 'show'])
+            ->name('show');
+   });

@@ -84,7 +84,8 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
   [AppointmentController::class, 'vipPrint']
 )->name('appointment.vipPrint');
 
-
+ Route::get('/day-summary', [AppointmentController::class, 'daySummary'])
+        ->name('day.summary');
 });
 
 Route::middleware(['auth'])->group(function () {

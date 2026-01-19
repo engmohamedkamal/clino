@@ -2,22 +2,29 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Report;
+use App\Models\Patient;
+use App\Models\Diagnosis;
+use App\Models\DoctorInfo;
 use App\Models\Appointment;
 use App\Models\patientInfo;
+use App\Models\Prescription;
 use Illuminate\Http\Request;
+use App\Models\PatientTransfer;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\AppointmentRequest;
-use Carbon\Carbon;
-use App\Models\DoctorInfo;
 
 class AppointmentController extends Controller
 {
     public function index()
     {
         $doctors = User::where('role', 'doctor')->get(['id', 'name']);
-        return view('dashboard.appointment.index', compact('doctors'));
+        $patients = User::where('role', 'patient')->get(['id', 'name']);
+        return view('dashboard.appointment.index', compact('doctors','patients'));
     }
 
     public function store(AppointmentRequest $request)
@@ -105,52 +112,65 @@ class AppointmentController extends Controller
             ->with('success', 'Appointment created successfully');
     }
 
-    public function show(Request $request)
-    {
-        $user = Auth::user();
+public function show(Request $request)
+{
+    $user = Auth::user();
 
-        $q = $request->get('q');
-        $day = $request->get('day'); // expected: YYYY-MM-DD
+    $q      = trim((string) $request->get('q', ''));
+    $day    = $request->get('day');      // YYYY-MM-DD
+    $status = $request->get('status', 'pending'); // ✅ default pending
 
-        $appointments = Appointment::query()
-
-            // ===================== Role Filtering =====================
-            ->when($user && $user->role === 'doctor', function ($query) use ($user) {
-                $query->where('doctor_name', $user->name);
-            })
-
-            ->when($user && $user->role === 'patient', function ($query) use ($user) {
-                $query->where(function ($qq) use ($user) {
-                    $qq->where('patient_name', $user->name);
-
-                    if (!empty($user->phone)) {
-                        $qq->orWhere('patient_number', $user->phone);
-                    }
-                });
-            })
-
-            // ===================== Day Filter =====================
-            ->when($day, function ($query) use ($day) {
-                $query->whereDate('appointment_date', $day);
-            })
-
-            // ===================== Search =====================
-            ->when($q, function ($query) use ($q) {
-                $query->where(function ($qq) use ($q) {
-                    $qq->where('patient_name', 'like', "%{$q}%")
-                        ->orWhere('patient_number', 'like', "%{$q}%")
-                        ->orWhere('doctor_name', 'like', "%{$q}%")
-                        ->orWhere('appointment_date', 'like', "%{$q}%");
-                });
-            })
-
-            // ===================== Latest + Pagination =====================
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('dashboard.appointment.show', compact('appointments'));
+    // ✅ allowed values
+    $allowed = ['pending', 'completed', 'cancelled', 'all'];
+    if (!in_array($status, $allowed, true)) {
+        $status = 'pending';
     }
+
+    $appointments = Appointment::query()
+
+        // ===================== Doctor =====================
+        ->when($user && $user->role === 'doctor', function ($query) use ($user) {
+            $query->where('doctor_name', $user->name);
+        })
+
+        // ===================== Patient =====================
+        ->when($user && $user->role === 'patient', function ($query) use ($user) {
+            $query->where(function ($qq) use ($user) {
+                $qq->where('patient_name', $user->name);
+                if (!empty($user->phone)) {
+                    $qq->orWhere('patient_number', $user->phone);
+                }
+            });
+        })
+
+        // ===================== Status Filter (default pending) =====================
+        ->when($status !== 'all', function ($query) use ($status) {
+            $query->where('status', $status);
+        })
+
+        // ===================== Day Filter =====================
+        ->when($day, function ($query) use ($day) {
+            $query->whereDate('appointment_date', $day);
+        })
+
+        // ===================== Search =====================
+        ->when($q !== '', function ($query) use ($q) {
+            $query->where(function ($qq) use ($q) {
+                $qq->where('patient_name', 'like', "%{$q}%")
+                   ->orWhere('patient_number', 'like', "%{$q}%")
+                   ->orWhere('doctor_name', 'like', "%{$q}%")
+                   ->orWhere('appointment_date', 'like', "%{$q}%");
+            });
+        })
+
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
+    return view('dashboard.appointment.show', compact('appointments', 'status', 'q', 'day'));
+}
+
+ 
 
     public function edit($id)
     {
@@ -402,11 +422,68 @@ class AppointmentController extends Controller
         return ['dates' => $dates];
     }
 
-    public function singleShow($id)
-    {
-        $appointment = \App\Models\Appointment::findOrFail($id);
-        return view('dashboard.appointment.details', compact('appointment'));
-    }
+public function singleShow($id)
+{
+    $appointment = Appointment::findOrFail($id);
+
+    $patient = User::query()
+        ->where('name', $appointment->patient_name)
+        ->where('phone', $appointment->patient_number)
+        ->first();
+
+    $patientId = $patient?->id;
+
+    $reports = $patientId
+        ? Report::where('patient_user_id', $patientId)->latest()->take(5)->get(['id','exam_type','exam_date','created_at'])
+        : collect();
+
+    // ✅ PRESCRIPTIONS (آخر 5 روشتات)
+    $prescriptions = $patientId
+        ? Prescription::where('patient_id', $patientId)->latest()->take(5)->get(['id','created_at'])
+        : collect();
+
+    // ✅ DIAGNOSES
+    $diagnoses = Diagnosis::query()
+        ->where('patient_name', $appointment->patient_name)
+        ->latest()
+        ->take(5)
+        ->get(['id', 'created_at']);
+
+    // ✅ TRANSFERS
+    $transfers = PatientTransfer::query()
+        ->where('patient_name', $appointment->patient_name)
+        ->latest()
+        ->take(5)
+        ->get(['id', 'transfer_code', 'created_at']);
+
+    // ✅ NEXT PENDING (نفس الدكتور + pending + بعد الحالي)
+    $nextAppointment = Appointment::query()
+        ->where('status', 'pending')
+        ->where('doctor_name', $appointment->doctor_name)
+        ->where(function ($q) use ($appointment) {
+            // لو عندك نفس اليوم: يجيب اللي بعده في الوقت
+            $q->whereDate('appointment_date', $appointment->appointment_date)
+              ->where('appointment_time', '>', $appointment->appointment_time);
+
+            // أو لو يوم أكبر (أي pending بعده)
+            $q->orWhereDate('appointment_date', '>', $appointment->appointment_date);
+        })
+        ->orderBy('appointment_date')
+        ->orderBy('appointment_time')
+        ->first();
+
+    return view('dashboard.appointment.details', compact(
+        'appointment',
+        'patient',
+        'reports',
+        'prescriptions',
+        'diagnoses',
+        'transfers',
+        'nextAppointment' // ✅ اضافه فقط
+    ));
+}
+
+
     public function reset(Appointment $appointment)
     {
 
@@ -415,9 +492,104 @@ class AppointmentController extends Controller
         return view('dashboard.appointment.reset', compact('appointment', 'queueNo'));
     }
 
-public function vipPrint(Appointment $appointment)
-{
-    return view('dashboard.appointment.vip', compact('appointment'));
-}
+    public function vipPrint(Appointment $appointment)
+    {
+        return view('dashboard.appointment.vip', compact('appointment'));
+    }
+
+    public function daySummary(Request $request)
+    {
+        $user = Auth::user();
+
+        // ✅ date filter (default today)
+        $date = $request->query('date');
+        $date = $date ? Carbon::parse($date, 'Africa/Cairo')->toDateString()
+            : Carbon::now('Africa/Cairo')->toDateString();
+
+        // ✅ doctor_name filter (string column)
+        $doctorName = null;
+
+        if ($user->role === 'doctor') {
+            $doctorName = trim((string) ($user->name ?? ''));
+            if ($doctorName === '')
+                abort(403);
+        } elseif ($user->role === 'admin') {
+            $doctorName = $request->query('doctor_name');
+            $doctorName = is_string($doctorName) ? trim($doctorName) : null;
+            if ($doctorName === '')
+                $doctorName = null;
+        } else {
+            abort(403);
+        }
+
+        $dateColumn = 'appointment_date';
+
+        // ✅ appointments completed on selected date
+        $appointments = Appointment::query()
+            ->whereDate($dateColumn, $date)
+            ->where('status', 'completed')
+            ->when(!empty($doctorName), fn($q) => $q->where('doctor_name', $doctorName))
+            ->get(['id', 'patient_name', 'doctor_name', 'appointment_time', 'visit_types']);
+
+        $totalCompleted = $appointments->count();
+
+        // ✅ summary by visit_types[].type
+        $summary = [];
+        foreach ($appointments as $ap) {
+            $vts = $ap->visit_types;
+
+            if (is_string($vts))
+                $vts = json_decode($vts, true) ?: [];
+            if (!is_array($vts))
+                $vts = [];
+
+            foreach ($vts as $item) {
+                $type = isset($item['type']) ? trim((string) $item['type']) : '';
+                $price = isset($item['price']) ? (float) $item['price'] : 0.0;
+                if ($type === '')
+                    continue;
+
+                if (!isset($summary[$type])) {
+                    $summary[$type] = [
+                        'visit_type' => $type,
+                        'items_count' => 0,
+                        'total_price' => 0.0,
+                    ];
+                }
+
+                $summary[$type]['items_count'] += 1;
+                $summary[$type]['total_price'] += $price;
+            }
+        }
+
+        $byVisitType = array_values($summary);
+        usort($byVisitType, fn($a, $b) => $b['items_count'] <=> $a['items_count']);
+
+        $grandTotalPrice = array_sum(array_map(fn($x) => (float) $x['total_price'], $byVisitType));
+
+        // ✅ (Admin فقط) قائمة الدكاترة الموجودة في appointments لاستخدامها في الفلتر
+        $doctorNames = [];
+        if ($user->role === 'admin') {
+            $doctorNames = Appointment::query()
+                ->select('doctor_name')
+                ->whereNotNull('doctor_name')
+                ->distinct()
+                ->orderBy('doctor_name')
+                ->pluck('doctor_name')
+                ->toArray();
+        }
+
+        return view('dashboard.appointment.summary', [
+            'date' => $date,
+            'doctorName' => $doctorName,
+            'doctorNames' => $doctorNames,
+
+            'totalCompleted' => $totalCompleted,
+            'grandTotalPrice' => $grandTotalPrice,
+            'byVisitType' => $byVisitType,
+            'appointments' => $appointments,
+        ]);
+    }
+
 
 }

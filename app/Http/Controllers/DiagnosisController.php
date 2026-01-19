@@ -153,7 +153,13 @@ class DiagnosisController extends Controller
                 'created_by'        => $data['created_by'],
             ]);
         });
+$user = auth()->user();
 
+if ($user->role === 'doctor') {
+    return session('return_to')
+        ? redirect(session('return_to'))->with('success', 'Report created successfully.')
+        : redirect()->back()->with('success', 'Report created successfully.');
+}
         return redirect()
             ->route('diagnoses.index')
             ->with('success', 'Diagnosis added successfully.');

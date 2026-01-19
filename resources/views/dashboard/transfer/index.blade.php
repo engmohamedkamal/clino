@@ -56,10 +56,12 @@
         @endif
       </form>
 
-      {{-- Create (optional) --}}
-      <a href="{{ route('patient-transfers.create') }}" class="btn btn-primary">
-        <i class="bi bi-plus-lg me-1"></i> New Transfer
-      </a>
+      {{-- ✅ Create (Admin/Doctor only) --}}
+      @if(auth()->user()->role !== 'patient')
+        <a href="{{ route('patient-transfers.create') }}" class="btn btn-primary">
+          <i class="bi bi-plus-lg me-1"></i> New Transfer
+        </a>
+      @endif
     </div>
   </div>
 
@@ -105,7 +107,9 @@
 
                   $prioClass = $priority === 'urgent' ? 'pt-tag-warn' : 'pt-tag-soft';
 
-                  $bedClass = $bed === 'confirmed' ? 'pt-tag-success' : ($bed === 'denied' ? 'pt-tag-danger' : 'pt-tag-warn');
+                  $bedClass = $bed === 'confirmed'
+                    ? 'pt-tag-success'
+                    : ($bed === 'denied' ? 'pt-tag-danger' : 'pt-tag-warn');
 
                   $created = optional($t->created_at)->format('M d, Y');
                 @endphp
@@ -114,7 +118,6 @@
                   {{-- Patient --}}
                   <td>
                     <div class="d-flex align-items-center gap-2">
-                     
                       <div class="min-w-0">
                         <div class="fw-semibold text-truncate" style="max-width:220px;">
                           {{ $patientName }}
@@ -168,24 +171,28 @@
 
                   {{-- Actions --}}
                   <td class="text-end text-nowrap">
+                    {{-- View للجميع --}}
                     <a href="{{ route('patient-transfers.show', $t) }}" class="btn btn-sm btn-light">
                       <i class="bi bi-eye"></i>
                     </a>
 
-                    <a href="{{ route('patient-transfers.edit', $t) }}" class="btn btn-sm btn-light">
-                      <i class="bi bi-pencil"></i>
-                    </a>
+                    {{-- Edit/Delete لغير المريض فقط --}}
+                    @if(auth()->user()->role !== 'patient')
+                      <a href="{{ route('patient-transfers.edit', $t) }}" class="btn btn-sm btn-light">
+                        <i class="bi bi-pencil"></i>
+                      </a>
 
-                    <form method="POST"
-                          action="{{ route('patient-transfers.destroy', $t) }}"
-                          class="d-inline"
-                          onsubmit="return confirm('Delete this transfer?');">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" class="btn btn-sm btn-outline-danger">
-                        <i class="bi bi-trash"></i>
-                      </button>
-                    </form>
+                      <form method="POST"
+                            action="{{ route('patient-transfers.destroy', $t) }}"
+                            class="d-inline"
+                            onsubmit="return confirm('Delete this transfer?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </form>
+                    @endif
                   </td>
                 </tr>
               @endforeach
@@ -207,9 +214,13 @@
       @else
         <div class="text-center py-5">
           <div class="pt-muted mb-2">No transfers found.</div>
-          <a href="{{ route('patient-transfers.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i> Create Transfer
-          </a>
+
+          {{-- ✅ Create button (Admin/Doctor only) --}}
+          @if(auth()->user()->role !== 'patient')
+            <a href="{{ route('patient-transfers.create') }}" class="btn btn-primary">
+              <i class="bi bi-plus-lg me-1"></i> Create Transfer
+            </a>
+          @endif
         </div>
       @endif
 
