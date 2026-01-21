@@ -88,3 +88,60 @@
   filter: brightness(.95);
   transform: translateY(-1px);
 }
+/* Wrapper */
+.rp-file-wrap{
+  position: relative;
+}
+
+/* Hide native input */
+.rp-file-input{
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* UI box */
+.rp-file-ui{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f8f9fb;
+  border: 1px solid #e5eaf1;
+  min-height: 56px;
+}
+
+/* Button */
+.rp-file-btn{
+  background: #ffffff;
+  border: 1px solid #dbe3ef;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* File name */
+.rp-file-name{
+  font-size: 14px;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* Right icon */
+.rp-file-icon{
+  font-size: 18px;
+  color: #9ca3af;
+}
+
+/* Error state */
+.rp-file-wrap.is-invalid .rp-file-ui{
+  border-color: #dc3545;
+}

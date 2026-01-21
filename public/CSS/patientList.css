@@ -329,3 +329,131 @@
 .pl-icon-btn.vip .material-icons-round {
   font-size: 20px;
 }
+/* ===== Topbar layout ===== */
+.pl-topbar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:16px;
+}
+
+.pl-title{
+  margin:0;
+  font-weight:700;
+  font-size:22px;
+  line-height:1.2;
+}
+
+/* Actions area */
+.pl-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+  flex-wrap:wrap;
+  max-width: 900px;
+}
+
+/* Group of buttons + filters */
+.pl-action-group{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* Icon button */
+.pl-icon-btn{
+  width:40px;
+  height:40px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  border:1px solid #e9eef6;
+  background:#fff;
+  color:#1f2a37;
+  text-decoration:none;
+  transition:.15s ease;
+}
+
+.pl-icon-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.06);
+}
+
+.pl-icon-btn.primary{
+  background:#3371EB;
+  border-color:#3371EB;
+  color:#fff;
+}
+
+/* Filter form */
+.pl-filter input[type="date"]{
+  height:40px;
+  border-radius:12px;
+  border:1px solid #e9eef6;
+  padding: 0 12px;
+  min-width: 160px;
+}
+
+/* Search */
+.pl-search{
+  position:relative;
+  display:flex;
+  align-items:center;
+  border:1px solid #e9eef6;
+  background:#fff;
+  border-radius:14px;
+  height:40px;
+  padding: 0 10px 0 40px;
+  min-width: 260px;
+  max-width: 360px;
+}
+
+.pl-search .material-icons-round{
+  position:absolute;
+  left:12px;
+  color:#9ca3af;
+  font-size:20px;
+}
+
+.pl-search input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  font-size:14px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px){
+  .pl-topbar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .pl-actions{
+    justify-content:space-between;
+    max-width: 100%;
+  }
+
+  .pl-search{
+    max-width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 576px){
+  .pl-filter input[type="date"]{
+    min-width: 140px;
+  }
+
+  .pl-icon-btn{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+  }
+}

@@ -434,41 +434,40 @@ public function singleShow($id)
     $patientId = $patient?->id;
 
     $reports = $patientId
-        ? Report::where('patient_user_id', $patientId)->latest()->take(5)->get(['id','exam_type','exam_date','created_at'])
+        ? Report::where('patient_user_id', $patientId)
+            ->latest()
+            ->select(['id', 'exam_type', 'exam_date', 'created_at'])
+            ->paginate(3, ['*'], 'reports_page')
+            ->withQueryString()
         : collect();
 
-    // ✅ PRESCRIPTIONS (آخر 5 روشتات)
     $prescriptions = $patientId
-        ? Prescription::where('patient_id', $patientId)->latest()->take(5)->get(['id','created_at'])
+        ? Prescription::where('patient_id', $patientId)
+            ->latest()
+            ->select(['id', 'created_at'])
+            ->paginate(3, ['*'], 'rx_page')
+            ->withQueryString()
         : collect();
 
-    // ✅ DIAGNOSES
     $diagnoses = Diagnosis::query()
         ->where('patient_name', $appointment->patient_name)
         ->latest()
-        ->take(5)
-        ->get(['id', 'created_at']);
+        ->select(['id', 'created_at'])
+        ->paginate(3, ['*'], 'dx_page')
+        ->withQueryString();
 
-    // ✅ TRANSFERS
     $transfers = PatientTransfer::query()
         ->where('patient_name', $appointment->patient_name)
         ->latest()
-        ->take(5)
-        ->get(['id', 'transfer_code', 'created_at']);
+        ->select(['id', 'transfer_code', 'created_at'])
+        ->paginate(3, ['*'], 'tr_page')
+        ->withQueryString();
 
-    // ✅ NEXT PENDING (نفس الدكتور + pending + بعد الحالي)
     $nextAppointment = Appointment::query()
         ->where('status', 'pending')
         ->where('doctor_name', $appointment->doctor_name)
-        ->where(function ($q) use ($appointment) {
-            // لو عندك نفس اليوم: يجيب اللي بعده في الوقت
-            $q->whereDate('appointment_date', $appointment->appointment_date)
-              ->where('appointment_time', '>', $appointment->appointment_time);
-
-            // أو لو يوم أكبر (أي pending بعده)
-            $q->orWhereDate('appointment_date', '>', $appointment->appointment_date);
-        })
-        ->orderBy('appointment_date')
+        ->whereDate('appointment_date', $appointment->appointment_date)
+        ->where('appointment_time', '>', $appointment->appointment_time)
         ->orderBy('appointment_time')
         ->first();
 
@@ -479,9 +478,10 @@ public function singleShow($id)
         'prescriptions',
         'diagnoses',
         'transfers',
-        'nextAppointment' // ✅ اضافه فقط
+        'nextAppointment'
     ));
 }
+
 
 
     public function reset(Appointment $appointment)
@@ -590,6 +590,27 @@ public function singleShow($id)
             'appointments' => $appointments,
         ]);
     }
+
+public function cards(Request $request)
+{
+    $appointments = Appointment::query()
+        ->when($request->q, fn ($q) =>
+            $q->where('patient_name', 'like', "%{$request->q}%")
+              ->orWhere('doctor_name', 'like', "%{$request->q}%")
+        )
+        ->when($request->day, fn ($q) =>
+            $q->whereDate('appointment_date', $request->day)
+        )
+        ->when($request->status && $request->status !== 'all', fn ($q) =>
+            $q->where('status', $request->status)
+        )
+        ->orderBy('appointment_date')
+        ->orderBy('appointment_time')
+        ->paginate(12)
+        ->withQueryString();
+
+    return view('dashboard.appointment.cards', compact('appointments'));
+}
 
 
 }

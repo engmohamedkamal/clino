@@ -117,35 +117,48 @@
               </div>
             </div>
 
-            <div class="col-12 col-xl-4">
-              <div class="cardx h-100">
-                <div class="cardx-head">
-                  <div class="cardx-title">Upcoming Appointments</div>
-                  <button class="btn icon-btn icon-btn-sm" type="button" aria-label="more">
-                    <i class="fa-solid fa-ellipsis"></i>
-                  </button>
-                </div>
+        <div class="col-12 col-xl-4">
+  <div class="cardx h-100">
+    <div class="cardx-head">
+      <div class="cardx-title">Upcoming Appointments</div>
+    </div>
 
-                <div class="p-3">
-                  @forelse($upcomingAppointments as $a)
-                    <div class="appt-item mb-2">
-                      <div class="appt-time">
-                        <span class="dot"></span>
-                        {{ \Carbon\Carbon::parse($a->appointment_time)->format('h:i a') }}
-                        <span class="ms-2 text-muted">•</span>
-                        <span class="ms-2 text-muted">{{ \Carbon\Carbon::parse($a->appointment_date)->format('M d, Y') }}</span>
-                        <i class="fa-solid fa-chevron-right ms-auto"></i>
-                      </div>
-                      <div class="appt-title">{{ $a->patient_name }}</div>
-                      <div class="appt-sub">{{ $a->doctor_name ?? '-' }}</div>
-                    </div>
-                  @empty
-                    <div class="text-muted">No upcoming appointments.</div>
-                  @endforelse
-                </div>
-              </div>
-            </div>
+    <div class="p-3">
+      @forelse($upcomingAppointments as $a)
+
+        <div class="appt-item mb-2">
+          {{-- Top row: time + date + arrow --}}
+          <div class="appt-time d-flex align-items-center gap-2">
+            <span class="dot"></span>
+
+            <span>
+              {{ \Carbon\Carbon::parse($a->appointment_time)->format('h:i a') }}
+            </span>
+
+            <span class="text-muted">•</span>
+
+            <span class="text-muted">
+              {{ \Carbon\Carbon::parse($a->appointment_date)->format('M d, Y') }}
+            </span>
+
+            <a href="{{ route('appointments.singleShow', $a->id) }}"
+               class="ms-auto text-decoration-none text-muted"
+               aria-label="View appointment">
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
           </div>
+
+          <div class="appt-title">{{ $a->patient_name ?? '-' }}</div>
+          <div class="appt-sub">{{ $a->doctor_name ?? '-' }}</div>
+        </div>
+
+      @empty
+        <div class="text-muted">No upcoming appointments.</div>
+      @endforelse
+    </div>
+  </div>
+</div>
+
 
           <!-- Latest Patients Table -->
        <div class="cardx table-card">

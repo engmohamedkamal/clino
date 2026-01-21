@@ -28,6 +28,10 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/appointment', [AppointmentController::class, "index"])->name('appointment');
   // Route::post('/appointment-store', [AppointmentController::class, "store"])->name('appointment.store');
   Route::get('/appointment-show', [AppointmentController::class, "show"])->name('appointment.show');
+Route::get('/appointments/cards', [AppointmentController::class, 'cards'])
+  ->name('appointments.cards');
+Route::get('/appointments/{id}/section', [AppointmentController::class, 'detailsSection'])
+    ->name('appointments.details.section');
 
   Route::get('/doctor', [DoctorInfoController::class, "list"])->name('doctor.list');
   Route::get('/doctor-info/{id}', [DoctorInfoController::class, 'show'])

@@ -2,41 +2,42 @@
 @section('content')
 <link rel="stylesheet" href="{{ asset('CSS/about.css') }}">
 <title>About Us</title>
-    <section class="stats-section">
-        <div class="container rounded-3">
-            <div class="row">
+<section class="stats-section" id="statsSection">
+  <div class="container rounded-3">
+    <div class="row">
 
-                <div class="col-md-3">
-                    <div class="item text-center border-right-line">
-                        <p>Years Experience</p>
-                        <h3>15</h3>
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="item text-center border-right-line">
-                        <p>Export Doctors</p>
-                        <h3>30+</h3>
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="item text-center border-right-line">
-                        <p>Medical Staff</p>
-                        <h3>200+</h3>
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="item text-center">
-                        <p>Patient Capacity</p>
-                        <h3>4000+</h3>
-                    </div>
-                </div>
-
-            </div>
+      <div class="col-md-3">
+        <div class="item text-center border-right-line">
+          <p>Years Experience</p>
+          <h3 class="counter" data-count="15">0+</h3>
         </div>
-    </section>
+      </div>
+
+      <div class="col-md-3">
+        <div class="item text-center border-right-line">
+          <p>Expert Doctors</p>
+          <h3 class="counter" data-count="30">0+</h3>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="item text-center border-right-line">
+          <p>Medical Staff</p>
+          <h3 class="counter" data-count="200">0+</h3>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="item text-center">
+          <p>Patient Capacity</p>
+          <h3 class="counter" data-count="4000">0+</h3>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
 
     <!-- Vision -->
@@ -194,6 +195,57 @@
   render();
 })();
 
-    </script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const section = document.getElementById("statsSection");
+  const counters = section.querySelectorAll(".counter");
+
+  function resetCounters() {
+    counters.forEach(c => {
+      if (!c.dataset.init) {
+        c.dataset.plus = c.textContent.includes("+") ? "1" : "0";
+        c.dataset.init = "1";
+      }
+      c.textContent = "0" + (c.dataset.plus === "1" ? "+" : "");
+    });
+  }
+
+  function animateCounter(counter) {
+    const target = +counter.dataset.count;
+    const hasPlus = counter.dataset.plus === "1";
+    const duration = 900;
+    const start = performance.now();
+
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const value = Math.floor(progress * target);
+      counter.textContent = value + (hasPlus ? "+" : "");
+
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        counter.textContent = target + (hasPlus ? "+" : "");
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  resetCounters();
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        resetCounters();
+        counters.forEach(animateCounter);
+      }
+    });
+  }, { threshold: 0.4 });
+
+  observer.observe(section);
+
+});
+</script>
+
 
 @endsection

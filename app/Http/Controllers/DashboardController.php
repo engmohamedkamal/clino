@@ -51,7 +51,7 @@ class DashboardController extends Controller
 
         $latestPatientsFromUsers = User::where('role', 'patient')
             ->latest()
-            ->take(5)
+            ->take(0)
             ->get()
             ->map(function ($u) {
                 return (object) [
@@ -77,7 +77,7 @@ class DashboardController extends Controller
         $upcomingAppointments = Appointment::whereDate('appointment_date', '>=', now()->toDateString())
             ->orderBy('appointment_date')
             ->orderBy('appointment_time')
-            ->take(5)
+            ->take(3)
             ->get();
 
         // =========================
