@@ -71,6 +71,7 @@ Route::middleware(['auth', 'admin_or_doctor'])->group(function () {
   Route::delete('/patients/bulk-destroy', [PatientController::class, 'bulkDestroy'])
     ->name('patients.bulkDestroy');
 
+    Route::get('/patients/cards', [PatientController::class, 'cards'])->name('patients.cards');
   Route::resource('patients', PatientController::class);
 
   Route::delete('/medical-orders/bulk-destroy', [MedicineController::class, 'bulkDestroy'])

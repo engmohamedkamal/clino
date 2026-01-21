@@ -10,8 +10,6 @@
       <main class="flex-grow-1">
         <div class="container-fluid ap-container py-3 py-md-4">
 
-          <!-- Header -->
-
           <header class="topbar">
             <div class="d-flex align-items-center gap-2">
               <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"

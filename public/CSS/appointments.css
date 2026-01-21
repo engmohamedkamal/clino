@@ -1,0 +1,312 @@
+:root{
+  --bg:#f4f8ff;
+  --card:#ffffff;
+  --text:#1f2a37;
+  --muted:#8b95a7;
+  --line:#e7edf7;
+  --primary:#2f6fed;
+  --pending:#ff8a00;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.app{
+  min-height:100vh;
+}
+
+.main{
+  min-height:100vh;
+}
+
+/* layout container width like screenshot */
+.ap-container{
+  max-width: 1180px;
+}
+
+/* Topbar */
+.ap-topbar{
+  background:#fff;
+  border-bottom:1px solid var(--line);
+}
+
+.ap-topbar .ap-container{
+  padding-top:14px;
+  padding-bottom:14px;
+}
+
+
+.ap-page-title{
+  font-size:28px;
+  font-weight:700;
+  color:#111827;
+}
+
+.ap-search{
+  position:relative;
+  width: 420px;
+  max-width: 100%;
+}
+
+.ap-search-ic{
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#9aa6b2;
+  pointer-events:none;
+  font-size:14px;
+}
+
+.ap-search-input{
+  padding-left:40px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  height:42px;
+  background:#fff;
+}
+
+.ap-search-input:focus{
+  border-color: rgba(47,111,237,.35);
+  box-shadow: 0 0 0 .2rem rgba(47,111,237,.10);
+}
+
+
+/* Main */
+.ap-main{
+  padding:28px 0 48px;
+}
+
+/* Cards */
+.ap-card{
+  background:var(--card);
+  border:1px solid #eef3fb;
+  border-radius:14px;
+  padding:18px 18px 16px;
+  box-shadow: 0 10px 22px rgba(18, 64, 143, 0.06);
+  min-height: 240px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.ap-card-head{
+  position:relative;
+  margin-bottom:10px;
+}
+
+.ap-name{
+  font-weight:700;
+  color:#111827;
+  text-align:center;
+  /* flex:1; */
+}
+
+.ap-status{
+  position:absolute;
+  right:0;
+  top:2px;
+  background: var(--pending);
+  color:#fff;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:8px;
+  font-weight:600;
+}
+
+.ap-info{
+  padding-top:8px;
+}
+
+.ap-line{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--muted);
+  font-size:13px;
+  padding:6px 0;
+}
+
+.ap-line-ic{
+  color:#000000ad;
+  font-size:14px;
+  width:18px;
+}
+
+.ap-line-label{
+  color:#000000ad;
+  font-weight:500;
+}
+
+.ap-line-val{
+  color:#97a6b7;
+}
+
+/* Actions */
+.ap-actions{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-top:14px;
+}
+
+.ap-action-btn{
+  width:44px;
+  height:44px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:#1f5fd6;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  transition:.15s ease;
+  text-decoration: none;
+}
+
+.ap-action-btn:hover{
+  border-color: rgba(47,111,237,.25);
+  background: rgba(47,111,237,.05);
+}
+
+.ap-action-btn i{
+  font-size:18px;
+}
+/* ================== Topbar buttons (icons) ================== */
+.ap-icon-btn{
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:#1f5fd6;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  transition:.15s ease;
+  text-decoration:none;
+}
+
+.ap-icon-btn:hover{
+  border-color: rgba(47,111,237,.25);
+  background: rgba(47,111,237,.05);
+}
+
+.ap-icon-btn.primary{
+  background: var(--primary);
+  color:#fff;
+  border-color: transparent;
+}
+
+.ap-icon-btn.primary:hover{
+  background: rgba(47,111,237,.92);
+}
+
+/* ================== Filters form ================== */
+.ap-filter .form-control,
+.ap-filter .form-select{
+  height:42px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  font-size:13px;
+}
+
+/* ================== Day header (group) ================== */
+.ap-day-head{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow: 0 10px 22px rgba(18, 64, 143, 0.03);
+}
+
+.ap-day-title{
+  font-weight:700;
+  color:#111827;
+}
+
+/* ================== Status colors ================== */
+.ap-status.ap-status-pending{
+  background: var(--pending);
+}
+
+.ap-status.ap-status-completed{
+  background:#16a34a;
+}
+
+.ap-status.ap-status-cancelled{
+  background:#dc2626;
+}
+
+.ap-status.ap-status-all{
+  background:#6b7280;
+}
+
+/* ================== Checkbox inside card ================== */
+.ap-check-wrap{
+  position:relative;
+  width:44px;
+  height:44px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#fff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:.15s ease;
+}
+
+.ap-check-wrap:hover{
+  border-color: rgba(47,111,237,.25);
+  background: rgba(47,111,237,.05);
+}
+
+.ap-check-wrap input{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  cursor:pointer;
+}
+
+.ap-check-ui{
+  width:22px;
+  height:22px;
+  border-radius:7px;
+  border:1px solid #d6deea;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:transparent;
+  transition:.15s ease;
+  background:#fff;
+}
+
+.ap-check-wrap input:checked + .ap-check-ui{
+  background: var(--primary);
+  border-color: var(--primary);
+  color:#fff;
+}
+
+.ap-check-ui i{
+  font-size:12px;
+}
+
+/* ================== VIP button (optional) ================== */
+.ap-action-btn.ap-action-btn-vip{
+  color:#b45309;
+}
+
+.ap-action-btn.ap-action-btn-vip:hover{
+  border-color: rgba(245,158,11,.35);
+  background: rgba(245,158,11,.08);
+}

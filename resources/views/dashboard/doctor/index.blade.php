@@ -459,7 +459,7 @@
 
           <!-- Save button -->
           <div class="mt-3 mt-md-4">
-            <button type="submit" class="btn di-save-btn w-100">
+            <button type="submit" class="btn di-save-btn text-light w-100">
               Save
             </button>
           </div>

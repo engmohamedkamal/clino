@@ -4,13 +4,17 @@
 <link rel="stylesheet" href="{{ asset('CSS/patientList.css') }}">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
+@php
+  // هنا عندك إدارة الجدول (الـ bulk delete و edit)
+@endphp
+
 <section class="pl-main container">
   <div class="pl-topbar">
     <h2 class="pl-title">Patient List</h2>
 
     <div class="pl-actions">
 
-      {{-- Edit: يروح لصفحة edit لو مختار مريض واحد --}}
+      {{-- Edit --}}
       <button class="pl-icon-btn" type="button" aria-label="Edit" id="editBtn">
         <span class="material-icons-round">edit</span>
       </button>
@@ -25,21 +29,27 @@
       </form>
 
       {{-- Add --}}
-      <a href="{{ route('patients.create') }}" class="pl-icon-btn primary" aria-label="Add">
+      <a href="{{ route('users.create') }}" class="pl-icon-btn primary" aria-label="Add">
         <span class="material-icons-round">add</span>
+      </a>
+
+      {{-- ✅ Card View --}}
+      <a href="{{ route('patients.cards', array_merge(request()->query(), ['view' => 'cards'])) }}"
+         class="pl-icon-btn"
+         aria-label="Card View"
+         title="Card View">
+        <span class="material-icons-round">view_module</span>
       </a>
 
       {{-- Search --}}
       <form class="pl-search" method="GET" action="{{ route('patients.index') }}">
+        {{-- ✅ يخلي أي submit من هنا يرجع Table View --}}
+        <input type="hidden" name="view" value="table">
+
         <span class="material-icons-round">search</span>
-        <input
-          id="searchInput"
-          name="q"
-          type="text"
-          value="{{ request('q') }}"
-          placeholder="Search type of keywords"
-        >
+        <input id="searchInput" name="q" type="text" value="{{ request('q') }}" placeholder="Search type of keywords">
       </form>
+
     </div>
   </div>
 
@@ -61,10 +71,7 @@
               <input class="form-check-input pl-check" type="checkbox" id="selectAll">
             </th>
             <th>Name</th>
-            <th>Gender</th>
-            <th>About</th>
             <th>Phone Number</th>
-            <th>Address</th>
             <th>ID</th>
           </tr>
         </thead>
@@ -84,14 +91,10 @@
               </td>
 
               <td>{{ $patient->patient_name }}</td>
-              <td>{{ $patient->gender ?? '-' }}</td>
-              <td>{{ \Illuminate\Support\Str::limit($patient->about ?? '-', 25) }}</td>
               <td>{{ $patient->patient_number }}</td>
-              <td>{{ $patient->address ?? '-' }}</td>
               <td>{{ $patient->id_number ?? '-' }}</td>
             </tr>
           @empty
-            {{-- هنسيبها فاضية هنا، ونطبع "No patients" تحت لو الاتنين فاضيين --}}
           @endforelse
 
           {{-- ✅ Users table results (role = patient) --}}
@@ -99,7 +102,6 @@
             @foreach($users as $user)
               <tr data-id="user-{{ $user->id }}" class="table-warning">
                 <td>
-                  {{-- NOTE: ده مش هيتحذف من bulkDeleteForm لأن الفورم بتاعك patients --}}
                   <input class="form-check-input pl-check row-check"
                          type="checkbox"
                          name="user_ids[]"
@@ -108,14 +110,8 @@
                          data-type="user">
                 </td>
 
-                <td>
-                  {{ $user->name }}
-                  <span class="badge bg-secondary ms-2">User</span>
-                </td>
-                <td>-</td>
-                <td>User Only</td>
+                <td>{{ $user->name }}</td>
                 <td>{{ $user->phone ?? '-' }}</td>
-                <td>-</td>
                 <td>{{ $user->id_number }}</td>
               </tr>
             @endforeach
@@ -124,7 +120,7 @@
           {{-- ✅ لو مفيش نتائج خالص --}}
           @if($patients->isEmpty() && (!isset($users) || $users->isEmpty()))
             <tr>
-              <td colspan="7" class="text-center py-4">No patients found.</td>
+              <td colspan="4" class="text-center py-4">No patients found.</td>
             </tr>
           @endif
 
@@ -134,12 +130,12 @@
 
     {{-- ✅ Pagination --}}
     <div class="mt-4 custom-pagination">
-      {{ $patients->links('pagination::bootstrap-5') }}
+      {{ $patients->appends(request()->query())->links('pagination::bootstrap-5') }}
     </div>
 
     @isset($users)
       <div class="mt-3 custom-pagination">
-        {{ $users->links('pagination::bootstrap-5') }}
+        {{ $users->appends(request()->query())->links('pagination::bootstrap-5') }}
       </div>
     @endisset
   </div>
@@ -148,8 +144,8 @@
 
 <script>
   const selectAll = document.getElementById('selectAll');
-  const editBtn   = document.getElementById('editBtn');
-  const bulkForm  = document.getElementById('bulkDeleteForm');
+  const editBtn = document.getElementById('editBtn');
+  const bulkForm = document.getElementById('bulkDeleteForm');
 
   function getChecked() {
     return [...document.querySelectorAll('.row-check:checked')];
@@ -162,20 +158,17 @@
   }
 
   function getCheckedRowsInfo() {
-    // [{type:'patient'|'user', id:'...'}]
     return getChecked().map(cb => ({
       type: cb.dataset.type,
       id: cb.value
     }));
   }
 
-  // Select all
   selectAll?.addEventListener('change', () => {
     const checked = selectAll.checked;
     document.querySelectorAll('.row-check').forEach(cb => cb.checked = checked);
   });
 
-  // Edit selected (يدعم patient أو user)
   editBtn?.addEventListener('click', () => {
     const selected = getCheckedRowsInfo();
 
@@ -191,12 +184,9 @@
       return;
     }
 
-    // لو عندك صفحة تعديل لليوزر:
-    // عدّل المسار حسب الروت عندك
     window.location.href = "{{ url('/users') }}/" + id + "/edit";
   });
 
-  // Bulk delete: يطبق على patients فقط (لأن route بتاعك patients.bulkDestroy)
   bulkForm?.addEventListener('submit', (e) => {
     const patientIds = getCheckedPatientsIds();
 

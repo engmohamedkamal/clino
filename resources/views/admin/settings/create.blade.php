@@ -144,23 +144,44 @@
           </div>
 
           <!-- Logo -->
-          <div class="col-12">
-            <label class="st-label">Logo</label>
-            <input class="form-control st-file-input @error('logo') is-invalid @enderror"
-              type="file" name="logo" accept="image/*" />
-            @error('logo') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+       <div class="col-12">
+  <label class="st-label mb-2">Logo</label>
 
-            @if(!empty($settings->logo))
-              <div class="mt-2">
-                <small class="text-muted">Current Logo:</small><br>
-                <img src="{{ asset('storage/'.$settings->logo) }}" alt="logo" style="height:50px">
-              </div>
-            @endif
-          </div>
+  <div class="st-file-wrapper">
+    <input
+      type="file"
+      name="logo"
+      id="logoInput"
+      accept="image/*"
+      class="st-file-input @error('logo') is-invalid @enderror"
+    />
+
+    <label for="logoInput" class="st-file-label">
+      <i class="bi bi-upload"></i>
+      <span id="logoFileName">Choose logo</span>
+    </label>
+  </div>
+
+  @error('logo')
+    <div class="invalid-feedback d-block">{{ $message }}</div>
+  @enderror
+
+  @if(!empty($settings->logo))
+    <div class="mt-3 d-flex align-items-center gap-3">
+      <img
+        src="{{ asset('storage/'.$settings->logo) }}"
+        alt="logo"
+        class="st-logo-preview"
+      >
+      <small class="text-muted">Current Logo</small>
+    </div>
+  @endif
+</div>
+
 
           <!-- Save -->
           <div class="col-12">
-            <button type="submit" class="btn st-save-btn w-100">
+            <button type="submit" class="btn st-save-btn text-light w-100">
               {{ $isEdit ? 'Update' : 'Save' }}
             </button>
           </div>
@@ -172,4 +193,11 @@
   </section>
 
 </main>
+<script>
+  document.getElementById('logoInput')?.addEventListener('change', function () {
+    const name = this.files[0]?.name || 'Choose logo';
+    document.getElementById('logoFileName').textContent = name;
+  });
+</script>
+
 @endsection

@@ -75,14 +75,13 @@
   border-radius: 14px;
   padding: 14px 16px;
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: .5px;
   transition: .2s ease;
 }
 
 .di-save-btn:hover{
-  filter: brightness(1.05);
-  transform: translateY(-1px);
+background-color: #06244d;
 }
 
 /* labels */

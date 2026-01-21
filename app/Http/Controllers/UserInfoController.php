@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserInfo;
 use App\Models\patientInfo;
 use Illuminate\Http\Request;
@@ -11,18 +12,19 @@ use Illuminate\Support\Facades\Storage;
 
 class UserInfoController extends Controller
 {
-    public function myInfo()
-    {
-        
-        $info = Auth::user()->patientInfo; 
+ public function myInfo($id)
+{
+    $user = User::findOrFail($id);
+    $info = $user->patientInfo;
 
-        if (!$info) {
-            return redirect()->route('patient-info.create')
-                ->with('info', 'Please add your info first.');
-        }
-
-        return view('patient-info.show', compact('info'));
+    if (!$info) {
+        return redirect()
+            ->route('patient-info.create')
+            ->with('info', 'Please add your info first.');
     }
+
+    return view('patient-info.show', compact('info'));
+}
     public function create()
     {
         $info = Auth::user()->patientInfo;

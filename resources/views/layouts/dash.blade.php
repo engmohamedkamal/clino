@@ -25,6 +25,7 @@
 </head>
 
 <body>
+
 @php
   $role = auth()->user()->role ?? '';
 
@@ -75,22 +76,28 @@
     ];
   }
 
-// ================= PATIENT =================
-if ($role === 'patient') {
-  $nav = [
-    ['route' => 'appointment.show', 'icon' => 'fa-regular fa-calendar', 'label' => 'Appointment'],
+  // ================= PATIENT =================
+  if ($role === 'patient') {
+    $nav = [
+      ['route' => 'appointment.show', 'icon' => 'fa-regular fa-calendar', 'label' => 'Appointment'],
 
-    // ✅ Patient can view his records
-    ['route' => 'reports.index', 'icon' => 'fa-solid fa-file-lines', 'label' => 'Reports'],
-    ['route' => 'prescriptions.index', 'icon' => 'fa-solid fa-prescription-bottle-medical', 'label' => 'Prescription'],
-    ['route' => 'diagnoses.index', 'icon' => 'fa-solid fa-notes-medical', 'label' => 'Diagnoses'],
-    ['route' => 'patient-transfers.index', 'icon' => 'fa-solid fa-right-left', 'label' => 'Transfers'],
+      // ✅ Patient can view his records
+      ['route' => 'reports.index', 'icon' => 'fa-solid fa-file-lines', 'label' => 'Reports'],
+      ['route' => 'prescriptions.index', 'icon' => 'fa-solid fa-prescription-bottle-medical', 'label' => 'Prescription'],
+      ['route' => 'diagnoses.index', 'icon' => 'fa-solid fa-notes-medical', 'label' => 'Diagnoses'],
+      ['route' => 'patient-transfers.index', 'icon' => 'fa-solid fa-right-left', 'label' => 'Transfers'],
 
-    ['route' => 'patient-info.my', 'icon' => 'fa-solid fa-user', 'label' => 'Profile'],
-    ['route' => 'feedback.form', 'icon' => 'fa-regular fa-comment-dots', 'label' => 'Feedback'],
-  ];
-}
+      // ✅ Patient Profile (route has {id})
+      [
+        'href' => route('patient-info.my', auth()->id()),
+        'icon' => 'fa-solid fa-user',
+        'label' => 'Profile',
+        'is_active' => request()->routeIs('patient-info.*'),
+      ],
 
+      ['route' => 'feedback.form', 'icon' => 'fa-regular fa-comment-dots', 'label' => 'Feedback'],
+    ];
+  }
 @endphp
 
 <div class="app">
@@ -108,8 +115,8 @@ if ($role === 'patient') {
     <nav class="side-nav flex-grow-1">
       @foreach($nav as $item)
         @php
-          $href = $item['href'] ?? route($item['route']);
-          $active = $item['is_active'] ?? request()->routeIs(($item['route'] ?? '').'*');
+          $href = $item['href'] ?? (isset($item['route']) ? route($item['route']) : '#');
+          $active = $item['is_active'] ?? (isset($item['route']) ? request()->routeIs(($item['route']).'*') : false);
         @endphp
         <a href="{{ $href }}" class="side-link {{ $active ? 'active' : '' }}">
           <i class="{{ $item['icon'] }}"></i>
@@ -144,8 +151,8 @@ if ($role === 'patient') {
       <nav class="side-nav flex-grow-1">
         @foreach($nav as $item)
           @php
-            $href = $item['href'] ?? route($item['route']);
-            $active = $item['is_active'] ?? request()->routeIs(($item['route'] ?? '').'*');
+            $href = $item['href'] ?? (isset($item['route']) ? route($item['route']) : '#');
+            $active = $item['is_active'] ?? (isset($item['route']) ? request()->routeIs(($item['route']).'*') : false);
           @endphp
           <a href="{{ $href }}" class="side-link js-offcanvas-link {{ $active ? 'active' : '' }}">
             <i class="{{ $item['icon'] }}"></i>

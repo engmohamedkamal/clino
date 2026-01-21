@@ -42,6 +42,41 @@ public function index(Request $request)
 
     return view('dashboard.patient.view', compact('patients', 'users', 'q'));
 }
+public function cards(Request $request)
+{
+    $q = $request->query('q');
+
+    // ✅ Query 1: search in patients table
+    $patients = Patient::query()
+        ->when($q, function ($query) use ($q) {
+            $query->where(function ($sub) use ($q) {
+                $sub->where('patient_name', 'like', "%{$q}%")
+                    ->orWhere('patient_number', 'like', "%{$q}%")
+                    ->orWhere('patient_email', 'like', "%{$q}%")
+                    ->orWhere('id_number', 'like', "%{$q}%")
+                    ->orWhere('address', 'like', "%{$q}%");
+            });
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
+    // ✅ Query 2: search in users table (role=patient)
+    $users = User::query()
+        ->where('role', 'patient')
+        ->when($q, function ($query) use ($q) {
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('phone', 'like', "%{$q}%");
+            });
+        })
+        ->latest()
+        ->paginate(10, ['*'], 'users_page')
+        ->withQueryString();
+
+    // ✅ رجّع صفحة الكروت
+    return view('dashboard.patient.card', compact('patients', 'users', 'q'));
+}
 
 
     public function bulkDestroy(Request $request)

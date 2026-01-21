@@ -22,6 +22,15 @@
 @endif
 
   <!-- Content -->
+  @if (auth()->user()->role != 'patient')
+ <div class="alert alert-info text-center py-4">
+    <i class="fa-regular fa-folder-open fa-2x mb-2 d-block"></i>
+    <h5 class="mb-1 fw-semibold">No info yet</h5>
+    <p class="mb-0 text-muted">
+      Your profile information has not been added yet.
+    </p>
+  </div>
+  @else
   <section class="content-area">
     <div class="h-100 d-flex align-items-start justify-content-center pt-3 pt-md-4">
       <div class="appointment-card">
@@ -38,7 +47,6 @@
 
           <div class="row g-3">
 
-            {{-- ================== BASIC INFO ================== --}}
             <div class="col-12">
               <h6 class="fw-bold mb-2">Basic Information</h6>
             </div>
@@ -236,6 +244,6 @@
       </div>
     </div>
   </section>
-
+@endif
 </main>
 @endsection

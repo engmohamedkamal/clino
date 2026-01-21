@@ -24,9 +24,9 @@
       </div>
 
       <div class="d-flex align-items-center gap-2">
-        @if($info)
+        @if($info && auth()->user()->role == 'patient')
           <a href="{{ route('patient-info.edit', $info->id) }}" class="dp-btn">Edit</a>
-        @else
+        @elseif(auth()->user()->role == 'patient')
           <a href="{{ route('patient-info.create') }}" class="dp-btn">Create</a>
         @endif
       </div>

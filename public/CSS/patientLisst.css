@@ -1,0 +1,229 @@
+:root{
+  --bg:#f3f8ff;
+  --card:#ffffff;
+  --border:#e9eef6;
+
+  --text:#1f2a37;
+  --muted:#9aa6b2;
+
+  --primary:#2f6fed;
+  --badge:#ff8a1f;
+
+  --radius:14px;
+}
+
+*{ box-sizing:border-box; }
+
+.ap-body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+}
+
+/* Topbar */
+.ap-topbar{
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:18px 0;
+}
+
+.ap-title{
+  font-size:26px;
+  font-weight:700;
+  letter-spacing:.2px;
+}
+
+/* Search */
+.ap-search-wrap{
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.ap-search .input-group-text{
+  background:#fff;
+}
+
+.ap-search{
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.ap-search-ic{
+  border:0;
+  color:#98a6b5;
+  padding-left:14px;
+}
+
+.ap-search-input{
+  border:0;
+  box-shadow:none !important;
+  padding:12px 14px;
+  color:var(--text);
+}
+
+.ap-search-input::placeholder{
+  color:#b2bdc8;
+}
+
+/* Icons btn */
+.ap-icon-btn{
+  width:44px;
+  height:44px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  color:#7b8794;
+}
+
+.ap-icon-btn:hover{
+  background:#f7fbff;
+}
+
+/* Main spacing */
+.ap-main{
+  padding: 28px 0 60px;
+}
+
+/* Cards */
+.ap-card{
+  background:var(--card);
+  border:1px solid transparent;
+  border-radius:16px;
+  padding:26px 22px 22px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, .06);
+  position:relative;
+  min-height: 230px;
+}
+
+.ap-avatar{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  background:#eef6ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#a9b7c7;
+  margin: 0 auto 14px;
+  border: 1px solid #e6f0ff;
+}
+
+.ap-avatar i{
+  font-size:22px;
+}
+
+.ap-card-body{
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.ap-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:6px 0;
+}
+
+.ap-left{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  color: var(--muted);
+  font-size:14px;
+  line-height:1.2;
+}
+
+.ap-ic{
+  color:#0000009c;
+  font-size:15px;
+  flex:0 0 auto;
+  font-weight: 600;
+}
+
+.ap-k{
+  color:#000000a6;
+  white-space:nowrap;
+    font-weight: 600;
+}
+
+.ap-v{
+  color:#aab6c3;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-weight: 600;
+}
+
+.ap-badge{
+  background:var(--badge);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  padding:4px 10px;
+  border-radius: 999px;
+  flex:0 0 auto;
+}
+
+/* responsive tweaks */
+@media (max-width: 575.98px){
+  .ap-title{ font-size:22px; }
+  .ap-card{ padding:22px 18px 18px; }
+  .ap-card-body{ max-width: 100%; }
+  .ap-v{ white-space:normal; }
+}
+.ap-view-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+  font-weight:600;
+  color:#2f6fed;
+  text-decoration:none;
+  padding:6px 12px;
+  border-radius:8px;
+  border:1px solid rgba(47,111,237,.25);
+  transition:.15s ease;
+}
+
+.ap-view-btn:hover{
+  background:rgba(47,111,237,.08);
+  border-color:rgba(47,111,237,.45);
+  text-decoration:none;
+}
+/* يخلي السطر كله في النص */
+.ap-row {
+  justify-content: center;
+}
+
+/* يشيل أي محاذاة جانبية */
+.ap-row .ap-left {
+  justify-content: center;
+}
+
+/* الزر نفسه */
+.ap-view-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  font-weight:600;
+  color:#2f6fed;
+  text-decoration:none;
+  padding:8px 18px;
+  border-radius:10px;
+  border:1px solid rgba(47,111,237,.25);
+  transition:.15s ease;
+}
+
+.ap-view-btn:hover{
+  background:rgba(47,111,237,.08);
+  border-color:rgba(47,111,237,.45);
+  text-decoration:none;
+}

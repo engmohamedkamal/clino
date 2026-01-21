@@ -117,25 +117,27 @@ public function show(Request $request)
     $user = Auth::user();
 
     $q      = trim((string) $request->get('q', ''));
-    $day    = $request->get('day');      // YYYY-MM-DD
-    $status = $request->get('status', 'pending'); // ✅ default pending
+    $day    = $request->get('day');
+    $status = $request->get('status', 'pending');
 
-    // ✅ allowed values
-    $allowed = ['pending', 'completed', 'cancelled', 'all'];
-    if (!in_array($status, $allowed, true)) {
+    // view mode (table | cards)
+    $viewMode = $request->get('view', 'table');
+
+    $allowedStatus = ['pending', 'completed', 'cancelled', 'all'];
+    if (!in_array($status, $allowedStatus, true)) {
         $status = 'pending';
     }
 
     $appointments = Appointment::query()
 
-        // ===================== Doctor =====================
-        ->when($user && $user->role === 'doctor', function ($query) use ($user) {
-            $query->where('doctor_name', $user->name);
+        // Doctor
+        ->when($user && $user->role === 'doctor', function ($q) use ($user) {
+            $q->where('doctor_name', $user->name);
         })
 
-        // ===================== Patient =====================
-        ->when($user && $user->role === 'patient', function ($query) use ($user) {
-            $query->where(function ($qq) use ($user) {
+        // Patient
+        ->when($user && $user->role === 'patient', function ($q) use ($user) {
+            $q->where(function ($qq) use ($user) {
                 $qq->where('patient_name', $user->name);
                 if (!empty($user->phone)) {
                     $qq->orWhere('patient_number', $user->phone);
@@ -143,32 +145,40 @@ public function show(Request $request)
             });
         })
 
-        // ===================== Status Filter (default pending) =====================
-        ->when($status !== 'all', function ($query) use ($status) {
-            $query->where('status', $status);
-        })
+        // Status
+        ->when($status !== 'all', fn ($q) => $q->where('status', $status))
 
-        // ===================== Day Filter =====================
-        ->when($day, function ($query) use ($day) {
-            $query->whereDate('appointment_date', $day);
-        })
+        // Day
+        ->when($day, fn ($q) => $q->whereDate('appointment_date', $day))
 
-        // ===================== Search =====================
+        // Search
         ->when($q !== '', function ($query) use ($q) {
             $query->where(function ($qq) use ($q) {
                 $qq->where('patient_name', 'like', "%{$q}%")
                    ->orWhere('patient_number', 'like', "%{$q}%")
-                   ->orWhere('doctor_name', 'like', "%{$q}%")
-                   ->orWhere('appointment_date', 'like', "%{$q}%");
+                   ->orWhere('doctor_name', 'like', "%{$q}%");
             });
         })
 
-        ->latest()
+        ->orderBy('appointment_date')
+        ->orderBy('appointment_time')
         ->paginate(10)
-        ->withQueryString();
+        ->appends($request->query()); // يحافظ على نفس الصفحة
 
-    return view('dashboard.appointment.show', compact('appointments', 'status', 'q', 'day'));
+    // 👇 تحديد الـ view حسب المكان اللي جاي منه
+    $view = $viewMode === 'cards'
+        ? 'dashboard.appointment.cards'
+        : 'dashboard.appointment.show';
+
+    return view($view, compact(
+        'appointments',
+        'status',
+        'q',
+        'day',
+        'viewMode'
+    ));
 }
+
 
  
 
