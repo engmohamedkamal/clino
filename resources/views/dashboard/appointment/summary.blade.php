@@ -6,61 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<style>
-  .ds-wrap{ font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial; }
-  .ds-head{
-    display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    margin-bottom:16px;
-  }
-  .ds-title{ margin:0; font-weight:800; letter-spacing:.2px; }
-  .ds-sub{ color:#6b7280; margin-top:4px; }
-
-  .ds-card{
-    border:1px solid #e9eef6; border-radius:16px; background:#fff;
-    box-shadow:0 10px 28px rgba(16,24,40,.06);
-  }
-  .ds-stat{
-    padding:16px; display:flex; align-items:center; justify-content:space-between; gap:14px;
-  }
-  .ds-stat .k{ color:#6b7280; font-weight:600; font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
-  .ds-stat .v{ font-weight:800; font-size:22px; margin-top:2px; }
-  .ds-ico{
-    width:44px; height:44px; border-radius:14px; display:grid; place-items:center;
-    background:#f5f9ff; color:#1C5197; font-size:20px; flex:0 0 auto;
-    border:1px solid #e9eef6;
-  }
-
-  .ds-filter{ display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
-  .ds-filter .form-label{ font-weight:700; font-size:12px; color:#374151; }
-  .ds-filter .form-control, .ds-filter .form-select{
-    border-radius:12px; border:1px solid #e5e7eb; padding:.6rem .8rem;
-  }
-  .ds-btn{
-    border-radius:12px; padding:.62rem 1rem; font-weight:800;
-    background:#1C5197; border:1px solid #1C5197; color:#fff;
-  }
-  .ds-btn:hover{ filter:brightness(.96); }
-  .ds-btn-soft{
-    border-radius:12px; padding:.62rem 1rem; font-weight:800;
-    background:#fff; border:1px solid #e5e7eb; color:#111827;
-  }
-
-  .ds-table thead th{ font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.08em; }
-  .ds-pill{
-    display:inline-flex; align-items:center; gap:6px;
-    padding:.35rem .7rem; border-radius:999px; font-weight:800; font-size:12px;
-    border:1px solid #e5e7eb; background:#fff;
-  }
-  .ds-pill-ok{ background:#ecfdf3; border-color:#bbf7d0; color:#166534; }
-  .ds-pill-warn{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
-
-  @media print {
-    .ds-no-print{ display:none !important; }
-    body{ background:#fff !important; }
-    .ds-card{ box-shadow:none !important; }
-  }
-</style>
+<link rel="stylesheet" href="{{ asset('CSS/daySummary.css') }}">
 
 <div class="ds-wrap container-fluid py-3 py-md-4">
 
@@ -136,7 +82,7 @@
   <div class="row g-3">
     {{-- By visit type --}}
     <div class="col-12 col-lg-5">
-      <div class="ds-card p-3">
+      <div class="ds-card p-4">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <div>
             <div class="fw-bold" style="font-size:16px;">By Visit Type</div>
@@ -159,7 +105,7 @@
                 <tr>
                   <td class="fw-semibold">{{ $row['visit_type'] }}</td>
                   <td class="text-end">{{ $row['items_count'] }}</td>
-                  <td class="text-end fw-bold">{{ number_format((float)$row['total_price'], 2) }}</td>
+                  <td class="text-end fw-semibold">{{ number_format((float)$row['total_price'], 2) }}</td>
                 </tr>
               @empty
                 <tr>
@@ -177,7 +123,7 @@
 
     {{-- Appointments list --}}
     <div class="col-12 col-lg-7">
-      <div class="ds-card p-3">
+      <div class="ds-card p-4">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <div>
             <div class="fw-bold" style="font-size:16px;">Completed Appointments</div>

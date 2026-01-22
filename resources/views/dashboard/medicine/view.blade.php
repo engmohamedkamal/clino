@@ -68,7 +68,7 @@
             <th style="min-width:140px;">Dosage</th>
             <th style="min-width:140px;">Duration</th>
             <th style="min-width:140px;">Notes</th>
-            <th class="text-nowrap" style="min-width:150px;">Created</th>
+            {{-- <th class="text-nowrap" style="min-width:150px;">Created</th> --}}
             <th class="text-end text-nowrap" style="width:1%;">Actions</th>
           </tr>
         </thead>
@@ -122,15 +122,7 @@
 <td>  {{ $order->duration ?? '' }}</td>
 <td>  {{ $order->notes ?? '' }}</td>
               {{-- Created --}}
-              <td class="text-nowrap">
-                <div class="fw-semibold">
-                  {{ optional($order->created_at)->format('Y-m-d') ?? '-' }}
-                </div>
-                <div class="text-muted small">
-                  {{ optional($order->created_at)->format('h:i A') ?? '' }}
-                </div>
-              </td>
-
+             
               {{-- Actions --}}
               <td class="text-end text-nowrap">
 

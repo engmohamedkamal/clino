@@ -1,6 +1,5 @@
 @extends('layouts.dash')
 @section('dash-content')
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="{{ asset('css/addProduct.css') }}" />
@@ -8,15 +7,15 @@
   <section class="ap-body">
     <div class="d-flex min-vh-100">
       <main class="flex-grow-1">
-        <div class="container-fluid ap-container py-3 py-md-4">
+        <div class="container-fluid ap-container">
 
-          <header class="topbar">
+          <header class="topbar mb-3 mt-1">
             <div class="d-flex align-items-center gap-2">
               <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
                 <i class="fa-solid fa-bars"></i>
               </button>
-              <h3 class="mb-1 ap-title">Add Product</h3>
+              <h3 class="ap-title">Add Product</h3>
 
             </div>
           </header>
@@ -25,7 +24,7 @@
           <div class="row g-4 justify-content-center align-items-center" style="min-height: calc(100vh - 140px);">
 
             <!-- Form -->
-            <div class="col-12 col-lg-10 col-xl-8 mx-auto">
+            <div class="col-12">
               <section class="card ap-card">
                 <div class="card-body p-0">
 

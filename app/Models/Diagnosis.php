@@ -26,4 +26,10 @@ class Diagnosis extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function doctorInfo()
+{
+    return $this->hasOne(DoctorInfo::class, 'user_id');
+}
+
 }

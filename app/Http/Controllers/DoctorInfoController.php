@@ -137,14 +137,7 @@ class DoctorInfoController extends Controller
         return $data;
     }
 
-    /**
-     * ✅ تنظيف visit types
-     * expected:
-     * [
-     *   ['type'=>'كشف عادي','price'=>300],
-     *   ['type'=>'استشارة','price'=>500],
-     * ]
-     */
+ 
     private function cleanVisitTypes($rows): array
     {
         if (!is_array($rows)) return [];

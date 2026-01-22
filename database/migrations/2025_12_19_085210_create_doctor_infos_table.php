@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('facebook')->nullable();
             $table->string('instagram')->nullable();
             $table->string('twitter')->nullable();
+            $table->string('social_link');
 
             $table->json('activities')->nullable();
             $table->json('skills')->nullable();

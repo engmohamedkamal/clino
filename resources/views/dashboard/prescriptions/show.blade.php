@@ -116,20 +116,7 @@
           <div class="text-muted small">Medical Prescription</div>
         </div>
 
-        <!-- ✅ Doctor QR Top -->
-        <div class="rx-qr-top">
-          <div class="text-center">
-            <div class="qr-wrap">
-              <img
-                class="qr-img qr-doctor"
-                style="width:70px;height:70px"
-                src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($doctorUrl) }}"
-                alt="Doctor QR">
-             
-            </div>
-            
-          </div>
-        </div>
+       
       </div>
 
       <!-- Contact + Meta -->
@@ -252,14 +239,29 @@
 
         <div class="col-md-4 d-flex justify-content-end mt-3 mt-md-0 pe-md-4">
   <div class="rx-qr-bottom text-center">
-    <div class="qr-wrap">
-     <img
-  class="qr-img qr-patient"
-  style="width:70px;height:70px"
-  src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($patientUrl) }}"
-  alt="Patient QR">
+    <div class="pt-stamp text-center">
+  @php
+    // RX doctor is usually DoctorInfo (because you access $rx->doctor?->user?->name)
+    $socialLink = $rx->doctor?->social_link;
 
-    </div>
+    // If your RX doctor is actually a User model, fallback to user->doctorInfo->social_link
+    if (!$socialLink) {
+      $socialLink = $rx->doctor?->doctorInfo?->social_link ?? null;
+    }
+
+    // Optional: also fallback to creator (if you store created_by doctor)
+    if (!$socialLink && $rx->creator?->doctorInfo?->social_link) {
+      $socialLink = $rx->creator->doctorInfo->social_link;
+    }
+  @endphp
+
+  @if($socialLink)
+    {!! QrCode::size(80)->generate($socialLink) !!}
+    <div class="qr-caption">Scan to open doctor social link</div>
+  @else
+    <div class="text-muted small">No social link available</div>
+  @endif
+</div>
   </div>
 </div>
 

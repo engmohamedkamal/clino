@@ -281,19 +281,12 @@
           <small>Representative Signature</small>
         </div>
 
-       <div class="pt-stamp text-center">
-  {{-- <div class="fw-semibold mb-2">Scan QR</div> --}}
-
-  <img
-    src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={{ urlencode(route('/')) }}"
-    alt="QR Code"
-    style="width:120px;height:120px"
-  >
-
-  {{-- <div class="pt-muted mt-1 small">
-    Transfer Details
-  </div> --}}
+   <div class="pt-stamp text-center">
+  @if(!empty($transfer->primaryPhysician?->doctorInfo?->social_link))
+    {!! QrCode::size(120)->generate($transfer->primaryPhysician->doctorInfo->social_link) !!}
+  @endif
 </div>
+
 
       </div>
 

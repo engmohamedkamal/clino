@@ -25,6 +25,7 @@ class DoctorInfo extends Model
         'image',
         'about',
         'visit_types',
+        'social_link',
     ];
 
     protected $casts = [

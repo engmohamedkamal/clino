@@ -20,6 +20,7 @@ class DoctorInfoRequest extends FormRequest
             'dob'            => ['required','date'],
             'license_number' => ['required','string','max:255'],
             'address'        => ['required','string','max:255'],
+            'social_link'        => ['required','string','max:255'],
 
             // ✅ image: required في create، optional في update
             'image' => [

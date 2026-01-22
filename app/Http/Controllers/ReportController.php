@@ -51,17 +51,8 @@ public function index(Request $request)
 
 public function create()
 {
-    $patientsFromPatients = Patient::query()
-        ->orderBy('patient_name')
-        ->get()
-        ->map(fn($p) => (object) [
-            'source' => 'patients',
-            'id'     => $p->id,
-            'name'   => $p->patient_name,
-            'phone'  => $p->patient_number ?? null,
-        ]);
 
-    $patientsFromUsers = User::query()
+    $patients = User::query()
         ->where('role', 'patient')
         ->orderBy('name')
         ->get()
@@ -72,14 +63,10 @@ public function create()
             'phone'  => $u->phone ?? null,
         ]);
 
-    $patients = $patientsFromPatients
-        ->merge($patientsFromUsers)
-        ->sortBy('name')
-        ->values();
 
     return view('dashboard.reports.create', [
     'patients'   => $patients,
-    'patient_id' => request('patient_id'), // أو اللي جاي من الراوت
+    'patient_id' => request('patient_id'), 
 ]);
 
 }

@@ -132,13 +132,13 @@
         </div>
 
         {{-- QR بدل Stamp --}}
-        <div class="pt-stamp text-center">
-          <img
-            src="{{ $qrSrc }}"
-            alt="QR Code"
-            style="width:120px;height:120px"
-          >
-        </div>
+     <div class="pt-stamp text-center">
+  @if(!empty($diagnosis->creator?->doctorInfo?->social_link))
+    {!! QrCode::size(120)->generate($diagnosis->creator->doctorInfo->social_link) !!}
+  @endif
+</div>
+
+
       </div>
 
       <hr class="text-muted mt-5">

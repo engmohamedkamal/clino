@@ -2,6 +2,7 @@
 @section('dash-content')
 
 <link rel="stylesheet" href="{{ asset('CSS/appointments.css') }}" />
+<link rel="stylesheet" href="{{ asset('CSS/app.css') }}" />
 <link rel="stylesheet" href="{{ asset('CSS/patientList.css') }}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -15,8 +16,10 @@
   $groups = $appointments->getCollection()
     ->groupBy(fn($a) => $a->appointment_date ?? 'unknown');
 @endphp
+
 <section class="pl-main container">
-  
+
+  {{-- ================= Topbar ================= --}}
   <div class="pl-topbar">
     <h2 class="pl-title">Appointments List</h2>
 
@@ -43,7 +46,7 @@
           <span class="material-icons-round">add</span>
         </a>
 
-        {{-- ✅ Table View (يحافظ على نفس الفلاتر + يضيف view=table) --}}
+        {{-- ✅ Table View --}}
         <a href="{{ route('appointment.show', array_merge(request()->query(), ['view' => 'table'])) }}"
            class="ap-icon-btn"
            aria-label="Table View"
@@ -52,8 +55,10 @@
         </a>
 
         {{-- Filters --}}
-        <form class="pl-filter d-flex align-items-center gap-2" method="GET" action="{{ route('appointments.cards') }}">
-          {{-- ✅ يخلي أي submit من هنا يرجع Card View --}}
+        <form class="pl-filter d-flex align-items-center gap-2 flex-wrap"
+              method="GET"
+              action="{{ route('appointments.cards') }}">
+
           <input type="hidden" name="view" value="cards">
 
           @if(request('q'))
@@ -63,7 +68,7 @@
             <input type="hidden" name="status" value="{{ request('status') }}">
           @endif
 
-          <input type="date" name="day" class="form-control form-control-sm" value="{{ $day }}">
+          <input type="date" name="day" value="{{ $day }}">
 
           <button class="pl-icon-btn" type="submit" aria-label="Filter">
             <span class="material-icons-round">filter_alt</span>
@@ -93,7 +98,6 @@
 
       {{-- Search --}}
       <form class="pl-search" method="GET" action="{{ route('appointments.cards') }}">
-        {{-- ✅ يخلي أي submit من هنا يرجع Card View --}}
         <input type="hidden" name="view" value="cards">
 
         <span class="material-icons-round">search</span>
@@ -110,6 +114,7 @@
     </div>
   </div>
 
+  {{-- ================= Alerts ================= --}}
   @if(session('success'))
     <div class="alert alert-success mb-3">{{ session('success') }}</div>
   @endif
@@ -118,15 +123,14 @@
     <div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
   @endif
 
-  @php
-    $currentStatus = request('status', 'pending');
-  @endphp
+  {{-- ================= Status Filter + Counters ================= --}}
+  @php $currentStatus = request('status', 'pending'); @endphp
 
-  <form method="GET" action="{{ route('appointments.cards') }}" class="d-inline-flex align-items-center gap-2 mb-3">
-    {{-- ✅ يخلي أي submit من هنا يرجع Card View --}}
+  <form method="GET" action="{{ route('appointments.cards') }}"
+        class="d-flex align-items-end gap-3 flex-wrap mb-3 w-100">
+
     <input type="hidden" name="view" value="cards">
 
-    {{-- حافظي على باقي الفلاتر --}}
     @if(request('q'))
       <input type="hidden" name="q" value="{{ request('q') }}">
     @endif
@@ -134,14 +138,44 @@
       <input type="hidden" name="day" value="{{ request('day') }}">
     @endif
 
-    <label class="form-label mb-0 fw-semibold">Status</label>
+    <div class="d-flex flex-column">
+      <label class="form-label mb-0 fw-semibold">Status</label>
+      <select name="status"
+              class="form-select form-select-sm"
+              style="min-width:160px"
+              onchange="this.form.submit()">
+        <option value="pending"   {{ $currentStatus === 'pending' ? 'selected' : '' }}>Pending</option>
+        <option value="completed" {{ $currentStatus === 'completed' ? 'selected' : '' }}>Completed</option>
+        <option value="cancelled" {{ $currentStatus === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+        <option value="all"       {{ $currentStatus === 'all' ? 'selected' : '' }}>All</option>
+      </select>
+    </div>
 
-    <select name="status" class="form-select form-select-sm" style="min-width:160px" onchange="this.form.submit()">
-      <option value="pending" {{ $currentStatus === 'pending' ? 'selected' : '' }}>Pending</option>
-      <option value="completed" {{ $currentStatus === 'completed' ? 'selected' : '' }}>Completed</option>
-      <option value="cancelled" {{ $currentStatus === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-      <option value="all" {{ $currentStatus === 'all' ? 'selected' : '' }}>All</option>
-    </select>
+    {{-- ✅ Counters جنب الـ select و Responsive --}}
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+            <span class="ap-pill ap-pill-total">
+            <i class="fa-solid fa-chart-pie"></i>
+            Total
+            <span class="ap-pill-count">
+              {{ ($pendingCount ?? 0) + ($completedCount ?? 0) + ($cancelledCount ?? 0) }}
+            </span>
+          </span>
+      <div class="ad-status-pill ad-pending">
+        <span class="material-icons-round">schedule</span>
+        Pending <strong>{{ $pendingCount ?? 0 }}</strong>
+      </div>
+
+      <div class="ad-status-pill ad-completed">
+        <span class="material-icons-round">check_circle</span>
+        Completed <strong>{{ $completedCount ?? 0 }}</strong>
+      </div>
+
+      <div class="ad-status-pill ad-cancelled">
+        <span class="material-icons-round">cancel</span>
+        Cancelled <strong>{{ $cancelledCount ?? 0 }}</strong>
+      </div>
+    </div>
+
   </form>
 
   {{-- ================= Cards ================= --}}
@@ -187,7 +221,7 @@
               <div class="ap-card">
 
                 <div class="ap-card-head d-flex align-items-center justify-content-between">
-                  <div class="ap-name ">{{ $appt->patient_name ?? '-' }}</div>
+                  <div class="ap-name">{{ $appt->patient_name ?? '-' }}</div>
                   <span class="ap-status ap-status-{{ $st }}">{{ ucfirst($st) }}</span>
                 </div>
 
@@ -276,6 +310,7 @@
 
     </div>
   </section>
+
 </section>
 
 @if($canManage)

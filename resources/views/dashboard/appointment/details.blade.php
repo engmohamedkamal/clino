@@ -72,37 +72,79 @@
 
         {{-- Patient --}}
         <div class="ad-box">
-          <div class="ad-box-title">
-            <span class="material-icons-round">person</span>
-            <span>Patient</span>
-          </div>
+  <div class="row g-3">
 
-          <div class="ad-row">
-            <div class="ad-label">Name</div>
-            <div class="ad-value">{{ $appointment->patient_name ?? '-' }}</div>
+    <!-- Name -->
+    <div class="col-md-6">
+      <div class="card ad-card h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <span class="material-icons-round text-primary fs-3">person</span>
+          <div class="flex-grow-1 min-w-0">
+            <div class="ad-card-label">Name</div>
+            <div class="ad-card-value ad-wrap">{{ $appointment->patient_name ?? '-' }}</div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="ad-row">
-            <div class="ad-label">Phone</div>
-            <div class="ad-value">{{ $appointment->patient_number ?? '-' }}</div>
+    <!-- Phone -->
+    <div class="col-md-6">
+      <div class="card ad-card h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <span class="material-icons-round text-success fs-3">call</span>
+          <div class="flex-grow-1 min-w-0">
+            <div class="ad-card-label">Phone</div>
+            <div class="ad-card-value ad-wrap">{{ $appointment->patient_number ?? '-' }}</div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="ad-row">
-            <div class="ad-label">DOB</div>
-            <div class="ad-value">
+    <!-- DOB -->
+    <div class="col-md-6">
+      <div class="card ad-card h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <span class="material-icons-round text-warning fs-3">calendar_month</span>
+          <div class="flex-grow-1 min-w-0">
+            <div class="ad-card-label">DOB</div>
+            <div class="ad-card-value ad-wrap">
               {{ $appointment->dob ? \Carbon\Carbon::parse($appointment->dob)->format('d/m/Y') : '-' }}
             </div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="ad-row">
-            <div class="ad-label">Gender</div>
-            <div class="ad-value">{{ $appointment->gender ?? '-' }}</div>
-          </div>
-          <div class="ad-row">
-            <div class="ad-label">Reason</div>
-            <div class="ad-value">{{ $appointment->reason ?? '-' }}</div>
+    <!-- Gender -->
+    <div class="col-md-6">
+      <div class="card ad-card h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <span class="material-icons-round text-info fs-3">wc</span>
+          <div class="flex-grow-1 min-w-0">
+            <div class="ad-card-label">Gender</div>
+            <div class="ad-card-value ad-wrap">{{ $appointment->gender ?? '-' }}</div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Reason -->
+    <div class="col-12">
+      <div class="card ad-card h-100">
+        <div class="card-body d-flex align-items-start gap-3">
+          <span class="material-icons-round text-danger fs-3">help_outline</span>
+          <div class="flex-grow-1 min-w-0">
+            <div class="ad-card-label">Reason</div>
+            <div class="ad-card-value ad-wrap">{{ $appointment->reason ?? '-' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
 
         {{-- Doctor --}}
         <div class="ad-box">
@@ -122,85 +164,85 @@
           </div>
 
           {{-- Actions under doctor name --}}
- @if(auth()->user()->role === 'admin' || auth()->user()->role === 'doctor')
+          @if(auth()->user()->role === 'admin' || auth()->user()->role === 'doctor')
 
-  @php
-    session(['return_to' => url()->current()]);
-  @endphp
+            @php
+              session(['return_to' => url()->current()]);
+            @endphp
 
-  <div class="ad-row mt-3">
-    <div class="ad-label"></div>
+            <div class="ad-row mt-3">
+              <div class="ad-label"></div>
 
-    <div class="ad-value w-100">
+              <div class="ad-value w-100">
 
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <div class="fw-semibold">Quick Actions</div>
-      </div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="fw-semibold">Quick Actions</div>
+                </div>
 
-      {{-- ✅ 2 cards per row on ALL screens --}}
-      <div class="row g-3 row-cols-2">
+                {{-- ✅ 2 cards per row on ALL screens --}}
+                <div class="row g-3 row-cols-2">
 
-        {{-- Report --}}
-        <div class="col">
-          <a href="{{ route('reports.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
-             class="ad-action-card text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
+                  {{-- Report --}}
+                  <div class="col">
+                    <a href="{{ route('reports.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
+                      class="ad-action-card text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
 
-            <div class="ad-card-icon soft mb-3">
-              <span class="material-icons-round">description</span>
+                      <div class="ad-card-icon soft mb-3">
+                        <span class="material-icons-round">description</span>
+                      </div>
+
+                      <div class="ad-card-title">Report</div>
+                      <div class="ad-card-sub">Add medical report</div>
+                    </a>
+                  </div>
+
+                  {{-- Prescription --}}
+                  <div class="col">
+                    <a href="{{ route('prescriptions.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
+                      class="ad-action-card primary text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
+
+                      <div class="ad-card-icon primary mb-3">
+                        <span class="material-icons-round">medication</span>
+                      </div>
+
+                      <div class="ad-card-title">Prescription</div>
+                      <div class="ad-card-sub">Write patient Rx</div>
+                    </a>
+                  </div>
+
+                  {{-- Diagnosis --}}
+                  <div class="col">
+                    <a href="{{ route('diagnoses.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
+                      class="ad-action-card text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
+
+                      <div class="ad-card-icon soft mb-3">
+                        <span class="material-icons-round">medical_information</span>
+                      </div>
+
+                      <div class="ad-card-title">Diagnosis</div>
+                      <div class="ad-card-sub">Add diagnosis</div>
+                    </a>
+                  </div>
+
+                  {{-- Transfer --}}
+                  <div class="col">
+                    <a href="{{ route('patient-transfers.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
+                      class="ad-action-card warning text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
+
+                      <div class="ad-card-icon warning mb-3">
+                        <span class="material-icons-round">sync_alt</span>
+                      </div>
+
+                      <div class="ad-card-title">Transfer</div>
+                      <div class="ad-card-sub">Patient transfer</div>
+                    </a>
+                  </div>
+
+                </div>
+              </div>
             </div>
 
-            <div class="ad-card-title">Report</div>
-            <div class="ad-card-sub">Add medical report</div>
-          </a>
-        </div>
-
-        {{-- Prescription --}}
-        <div class="col">
-          <a href="{{ route('prescriptions.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
-             class="ad-action-card primary text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
-
-            <div class="ad-card-icon primary mb-3">
-              <span class="material-icons-round">medication</span>
-            </div>
-
-            <div class="ad-card-title">Prescription</div>
-            <div class="ad-card-sub">Write patient Rx</div>
-          </a>
-        </div>
-
-        {{-- Diagnosis --}}
-        <div class="col">
-          <a href="{{ route('diagnoses.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
-             class="ad-action-card text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
-
-            <div class="ad-card-icon soft mb-3">
-              <span class="material-icons-round">medical_information</span>
-            </div>
-
-            <div class="ad-card-title">Diagnosis</div>
-            <div class="ad-card-sub">Add diagnosis</div>
-          </a>
-        </div>
-
-        {{-- Transfer --}}
-        <div class="col">
-          <a href="{{ route('patient-transfers.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
-             class="ad-action-card warning text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
-
-            <div class="ad-card-icon warning mb-3">
-              <span class="material-icons-round">sync_alt</span>
-            </div>
-
-            <div class="ad-card-title">Transfer</div>
-            <div class="ad-card-sub">Patient transfer</div>
-          </a>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-@endif
+          @endif
 
 
 

@@ -7,12 +7,6 @@
  
 }
 
-/* Sidebar already exists عندك */
-.sidebar{
-  width:260px;
-  height:100vh;
-  flex:0 0 260px;
-}
 /* ===== Main Layout ===== */
 .dp-main{
   flex:1;
@@ -33,6 +27,7 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
+  
 }
 
 .dp-title{
@@ -244,7 +239,7 @@
 }
 
 .dp-h2{
-  font-size:30px;
+  font-size:20px;
   font-weight:900;
   margin-bottom:12px;
 }

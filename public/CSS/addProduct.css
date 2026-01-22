@@ -372,19 +372,3 @@
   background: #f97316;
   border-radius: 999px;
 }
-.topbar {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 12px 16px;
-}
-
-.topbar .ap-title {
-  font-weight: 700;
-}
-
-.topbar .icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-}

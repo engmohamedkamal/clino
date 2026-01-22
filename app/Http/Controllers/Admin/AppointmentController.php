@@ -24,7 +24,7 @@ class AppointmentController extends Controller
     {
         $doctors = User::where('role', 'doctor')->get(['id', 'name']);
         $patients = User::where('role', 'patient')->get(['id', 'name']);
-        return view('dashboard.appointment.index', compact('doctors','patients'));
+        return view('dashboard.appointment.index', compact('doctors', 'patients'));
     }
 
     public function store(AppointmentRequest $request)
@@ -37,11 +37,7 @@ class AppointmentController extends Controller
             ->where('name', $request->doctor_name)
             ->firstOrFail();
 
-        // =========================
-        // ✅ Visit Type (JSON)
-        // expected from form: visit_type + visit_price
-        // store in DB column: visit_types (json)
-        // =========================
+    
         $visitTypes = [];
         if ($request->filled('visit_type')) {
             $visitTypes[] = [
@@ -112,75 +108,87 @@ class AppointmentController extends Controller
             ->with('success', 'Appointment created successfully');
     }
 
-public function show(Request $request)
-{
-    $user = Auth::user();
+    public function show(Request $request)
+    {
+        $user = Auth::user();
 
-    $q      = trim((string) $request->get('q', ''));
-    $day    = $request->get('day');
-    $status = $request->get('status', 'pending');
+        $q = trim((string) $request->get('q', ''));
+        $day = $request->get('day');
+        $status = $request->get('status', 'pending');
 
-    // view mode (table | cards)
-    $viewMode = $request->get('view', 'table');
+        // view mode (table | cards)
+        $viewMode = $request->get('view', 'table');
 
-    $allowedStatus = ['pending', 'completed', 'cancelled', 'all'];
-    if (!in_array($status, $allowedStatus, true)) {
-        $status = 'pending';
+        $allowedStatus = ['pending', 'completed', 'cancelled', 'all'];
+        if (!in_array($status, $allowedStatus, true)) {
+            $status = 'pending';
+        }
+
+    
+        $baseQuery = Appointment::query()
+            ->when($user && $user->role === 'doctor', function ($q) use ($user) {
+                $q->where('doctor_name', $user->name);
+            })
+
+            // Patient
+            ->when($user && $user->role === 'patient', function ($q) use ($user) {
+                $q->where(function ($qq) use ($user) {
+                    $qq->where('patient_name', $user->name);
+                    if (!empty($user->phone)) {
+                        $qq->orWhere('patient_number', $user->phone);
+                    }
+                });
+            })
+
+            // Day
+            ->when($day, fn($q) => $q->whereDate('appointment_date', $day))
+
+            // Search
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($qq) use ($q) {
+                    $qq->where('patient_name', 'like', "%{$q}%")
+                        ->orWhere('patient_number', 'like', "%{$q}%")
+                        ->orWhere('doctor_name', 'like', "%{$q}%");
+                });
+            });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Counters (من غير status filter)
+        |--------------------------------------------------------------------------
+        */
+        $pendingCount = (clone $baseQuery)->where('status', 'pending')->count();
+        $completedCount = (clone $baseQuery)->where('status', 'completed')->count();
+        $cancelledCount = (clone $baseQuery)->where('status', 'cancelled')->count();
+
+   
+        $appointments = (clone $baseQuery)
+            ->when($status !== 'all', fn($q) => $q->where('status', $status))
+            ->orderBy('appointment_date')
+            ->orderBy('appointment_time')
+            ->paginate(10)
+            ->appends($request->query());
+
+        /*
+        |--------------------------------------------------------------------------
+        | View selection
+        |--------------------------------------------------------------------------
+        */
+        $view = $viewMode === 'cards'
+            ? 'dashboard.appointment.cards'
+            : 'dashboard.appointment.show';
+
+        return view($view, compact(
+            'appointments',
+            'status',
+            'q',
+            'day',
+            'viewMode',
+            'pendingCount',
+            'completedCount',
+            'cancelledCount'
+        ));
     }
-
-    $appointments = Appointment::query()
-
-        // Doctor
-        ->when($user && $user->role === 'doctor', function ($q) use ($user) {
-            $q->where('doctor_name', $user->name);
-        })
-
-        // Patient
-        ->when($user && $user->role === 'patient', function ($q) use ($user) {
-            $q->where(function ($qq) use ($user) {
-                $qq->where('patient_name', $user->name);
-                if (!empty($user->phone)) {
-                    $qq->orWhere('patient_number', $user->phone);
-                }
-            });
-        })
-
-        // Status
-        ->when($status !== 'all', fn ($q) => $q->where('status', $status))
-
-        // Day
-        ->when($day, fn ($q) => $q->whereDate('appointment_date', $day))
-
-        // Search
-        ->when($q !== '', function ($query) use ($q) {
-            $query->where(function ($qq) use ($q) {
-                $qq->where('patient_name', 'like', "%{$q}%")
-                   ->orWhere('patient_number', 'like', "%{$q}%")
-                   ->orWhere('doctor_name', 'like', "%{$q}%");
-            });
-        })
-
-        ->orderBy('appointment_date')
-        ->orderBy('appointment_time')
-        ->paginate(10)
-        ->appends($request->query()); // يحافظ على نفس الصفحة
-
-    // 👇 تحديد الـ view حسب المكان اللي جاي منه
-    $view = $viewMode === 'cards'
-        ? 'dashboard.appointment.cards'
-        : 'dashboard.appointment.show';
-
-    return view($view, compact(
-        'appointments',
-        'status',
-        'q',
-        'day',
-        'viewMode'
-    ));
-}
-
-
- 
 
     public function edit($id)
     {
@@ -206,9 +214,6 @@ public function show(Request $request)
         if ($user->role === 'doctor' && $appointment->doctor_name !== $user->name)
             abort(403);
 
-        // =========================
-        // ✅ Visit Type (JSON)
-        // =========================
         $visitTypes = [];
         if ($request->filled('visit_type')) {
             $visitTypes[] = [
@@ -296,12 +301,6 @@ public function show(Request $request)
         return back()->with('success', 'Status updated successfully');
     }
 
-    /**
-     * ✅ API: يرجّع dates[] + times[] لكل تاريخ
-     * schedule stored as: [{day:"Mon", from:"13:00", to:"17:00"}, ...]
-     * slots: 15 min
-     * excludes booked (except cancelled)
-     */
     public function doctorAvailability(User $doctor)
     {
         $info = DoctorInfo::where('user_id', $doctor->id)->first();
@@ -432,65 +431,64 @@ public function show(Request $request)
         return ['dates' => $dates];
     }
 
-public function singleShow($id)
-{
-    $appointment = Appointment::findOrFail($id);
+    public function singleShow($id)
+    {
+        $appointment = Appointment::findOrFail($id);
 
-    $patient = User::query()
-        ->where('name', $appointment->patient_name)
-        ->where('phone', $appointment->patient_number)
-        ->first();
+        $patient = User::query()
+            ->where('name', $appointment->patient_name)
+            ->where('phone', $appointment->patient_number)
+            ->first();
 
-    $patientId = $patient?->id;
+        $patientId = $patient?->id;
+        $reports = $patientId
+            ? Report::where('patient_user_id', $patientId)
+                ->latest()
+                ->select(['id', 'exam_type', 'exam_date', 'created_at'])
+                ->paginate(3, ['*'], 'reports_page')
+                ->withQueryString()
+            : collect();
 
-    $reports = $patientId
-        ? Report::where('patient_user_id', $patientId)
-            ->latest()
-            ->select(['id', 'exam_type', 'exam_date', 'created_at'])
-            ->paginate(3, ['*'], 'reports_page')
-            ->withQueryString()
-        : collect();
+        $prescriptions = $patientId
+            ? Prescription::where('patient_id', $patientId)
+                ->latest()
+                ->select(['id', 'created_at'])
+                ->paginate(3, ['*'], 'rx_page')
+                ->withQueryString()
+            : collect();
 
-    $prescriptions = $patientId
-        ? Prescription::where('patient_id', $patientId)
+        $diagnoses = Diagnosis::query()
+            ->where('patient_name', $appointment->patient_name)
             ->latest()
             ->select(['id', 'created_at'])
-            ->paginate(3, ['*'], 'rx_page')
-            ->withQueryString()
-        : collect();
+            ->paginate(3, ['*'], 'dx_page')
+            ->withQueryString();
 
-    $diagnoses = Diagnosis::query()
-        ->where('patient_name', $appointment->patient_name)
-        ->latest()
-        ->select(['id', 'created_at'])
-        ->paginate(3, ['*'], 'dx_page')
-        ->withQueryString();
+        $transfers = PatientTransfer::query()
+            ->where('patient_name', $appointment->patient_name)
+            ->latest()
+            ->select(['id', 'transfer_code', 'created_at'])
+            ->paginate(3, ['*'], 'tr_page')
+            ->withQueryString();
 
-    $transfers = PatientTransfer::query()
-        ->where('patient_name', $appointment->patient_name)
-        ->latest()
-        ->select(['id', 'transfer_code', 'created_at'])
-        ->paginate(3, ['*'], 'tr_page')
-        ->withQueryString();
+        $nextAppointment = Appointment::query()
+            ->where('status', 'pending')
+            ->where('doctor_name', $appointment->doctor_name)
+            ->whereDate('appointment_date', $appointment->appointment_date)
+            ->where('appointment_time', '>', $appointment->appointment_time)
+            ->orderBy('appointment_time')
+            ->first();
 
-    $nextAppointment = Appointment::query()
-        ->where('status', 'pending')
-        ->where('doctor_name', $appointment->doctor_name)
-        ->whereDate('appointment_date', $appointment->appointment_date)
-        ->where('appointment_time', '>', $appointment->appointment_time)
-        ->orderBy('appointment_time')
-        ->first();
-
-    return view('dashboard.appointment.details', compact(
-        'appointment',
-        'patient',
-        'reports',
-        'prescriptions',
-        'diagnoses',
-        'transfers',
-        'nextAppointment'
-    ));
-}
+        return view('dashboard.appointment.details', compact(
+            'appointment',
+            'patient',
+            'reports',
+            'prescriptions',
+            'diagnoses',
+            'transfers',
+            'nextAppointment'
+        ));
+    }
 
 
 
@@ -600,27 +598,85 @@ public function singleShow($id)
             'appointments' => $appointments,
         ]);
     }
-
 public function cards(Request $request)
 {
-    $appointments = Appointment::query()
-        ->when($request->q, fn ($q) =>
-            $q->where('patient_name', 'like', "%{$request->q}%")
-              ->orWhere('doctor_name', 'like', "%{$request->q}%")
-        )
-        ->when($request->day, fn ($q) =>
-            $q->whereDate('appointment_date', $request->day)
-        )
-        ->when($request->status && $request->status !== 'all', fn ($q) =>
-            $q->where('status', $request->status)
-        )
+    $user = auth()->user();
+
+    $q      = trim((string) $request->get('q', ''));
+    $day    = $request->get('day');
+    $status = $request->get('status', 'pending');
+
+    $allowedStatus = ['pending', 'completed', 'cancelled', 'all'];
+    if (!in_array($status, $allowedStatus, true)) {
+        $status = 'pending';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Base Query (نفس الفلاتر — بدون status)
+    |--------------------------------------------------------------------------
+    */
+    $baseQuery = Appointment::query()
+
+        // ✅ لو دكتور: يعرض مواعيده فقط (عدّلها لو عندك doctor_id بدل الاسم)
+        ->when($user && $user->role === 'doctor', function ($q) use ($user) {
+            $q->where('doctor_name', $user->name);
+        })
+
+        // ✅ لو Patient: يعرض مواعيده فقط (عدّلها لو عندك patient_id بدل الاسم/الموبايل)
+        ->when($user && $user->role === 'patient', function ($q) use ($user) {
+            $q->where(function ($qq) use ($user) {
+                $qq->where('patient_name', $user->name);
+                if (!empty($user->phone)) {
+                    $qq->orWhere('patient_number', $user->phone);
+                }
+            });
+        })
+
+        // Search
+        ->when($q !== '', function ($query) use ($q) {
+            $query->where(function ($qq) use ($q) {
+                $qq->where('patient_name', 'like', "%{$q}%")
+                   ->orWhere('doctor_name', 'like', "%{$q}%")
+                   ->orWhere('patient_number', 'like', "%{$q}%");
+            });
+        })
+
+        // Day
+        ->when($day, fn ($query) => $query->whereDate('appointment_date', $day));
+
+    /*
+    |--------------------------------------------------------------------------
+    | Counters (بنفس الفلاتر — بدون status filter)
+    |--------------------------------------------------------------------------
+    */
+    $pendingCount   = (clone $baseQuery)->where('status', 'pending')->count();
+    $completedCount = (clone $baseQuery)->where('status', 'completed')->count();
+    $cancelledCount = (clone $baseQuery)->where('status', 'cancelled')->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Appointments (مع status)
+    |--------------------------------------------------------------------------
+    */
+    $appointments = (clone $baseQuery)
+        ->when($status !== 'all', fn ($q2) => $q2->where('status', $status))
         ->orderBy('appointment_date')
         ->orderBy('appointment_time')
         ->paginate(12)
         ->withQueryString();
 
-    return view('dashboard.appointment.cards', compact('appointments'));
+    return view('dashboard.appointment.cards', compact(
+        'appointments',
+        'status',
+        'q',
+        'day',
+        'pendingCount',
+        'completedCount',
+        'cancelledCount'
+    ));
 }
+
 
 
 }

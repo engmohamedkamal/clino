@@ -10,35 +10,35 @@
     rel="stylesheet" />
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
-@php
-  // $info و $user جايين من الكنترولر
-  // greeting
-  $hour = now()->format('H');
-  $greeting = $hour < 12 ? 'Good Morning,' : ($hour < 18 ? 'Good Afternoon,' : 'Good Evening,');
+  @php
+    // $info و $user جايين من الكنترولر
+    // greeting
+    $hour = now()->format('H');
+    $greeting = $hour < 12 ? 'Good Morning,' : ($hour < 18 ? 'Good Afternoon,' : 'Good Evening,');
 
-  // Image
-  $img = ($info && $info->image) ? asset('storage/' . $info->image) : asset('Images/doctor-placeholder.png');
+    // Image
+    $img = ($info && $info->image) ? asset('storage/' . $info->image) : asset('Images/doctor-placeholder.png');
 
-  // Name
-  $doctorName = 'Dr. ' . ($user->name ?? 'Doctor');
+    // Name
+    $doctorName = 'Dr. ' . ($user->name ?? 'Doctor');
 
-  // ✅ Multi arrays (JSON)
-  $specializations = $info?->Specialization ?? [];
-  $availability = $info?->availability_schedule ?? [];
-  $activities = $info?->activities ?? [];
-  $skills = $info?->skills ?? [];
+    // ✅ Multi arrays (JSON)
+    $specializations = $info?->Specialization ?? [];
+    $availability = $info?->availability_schedule ?? [];
+    $activities = $info?->activities ?? [];
+    $skills = $info?->skills ?? [];
 
-  $specTitle = (is_array($specializations) && count($specializations)) ? $specializations[0] : null;
+    $specTitle = (is_array($specializations) && count($specializations)) ? $specializations[0] : null;
 
-  $about = $info?->about ?? 'No description yet.';
+    $about = $info?->about ?? 'No description yet.';
 
-  $phone = $info?->phone ?? ($user->phone ?? '-');
-  $address = $info?->address ?? '-';
+    $phone = $info?->phone ?? ($user->phone ?? '-');
+    $address = $info?->address ?? '-';
 
-  $age = ($info && $info->dob) ? \Carbon\Carbon::parse($info->dob)->age : null;
+    $age = ($info && $info->dob) ? \Carbon\Carbon::parse($info->dob)->age : null;
 
-  $rating = 4;
-@endphp
+    $rating = 4;
+  @endphp
 
   <main class="dp-main">
 
@@ -47,13 +47,9 @@
       <h1 class="dp-title">Doctor Profile</h1>
 
       <div class="dp-top-actions">
-
-        {{-- لو عندك route لقائمة الأطباء حطه هنا --}}
-   
         @if(auth()->check() && auth()->id() === ($info->user_id ?? null))
-  <a class="dp-btn" href="{{ route('doctor-info.edit', $info->id) }}">Edit</a>
-@endif
-
+          <a class="dp-btn" href="{{ route('doctor-info.edit', $info->id) }}">Edit</a>
+        @endif
       </div>
     </header>
 
@@ -166,7 +162,7 @@
 
                   <div>
                     <h2 class="dp-h2">About me</h2>
-              <p class="dp-para about-text">{{ $about }}</p>
+                    <p class="dp-para about-text">{{ $about }}</p>
 
                   </div>
 
@@ -223,31 +219,48 @@
                 <h2 class="dp-h2">Availability</h2>
 
                 <div class="row g-3 dp-chips">
-                 @forelse($availability as $row)
-  @php
-    $day  = $row['day'] ?? '';
-    $from = $row['from'] ?? '';
-    $to   = $row['to'] ?? '';
+                  @forelse($availability as $row)
+                    @php
+                      $day = $row['day'] ?? '';
+                      $from = $row['from'] ?? '';
+                      $to = $row['to'] ?? '';
 
-    // optional: format 09:00 -> 9:00 AM
-    $fromLabel = $from ? \Carbon\Carbon::createFromFormat('H:i', $from)->format('g:i A') : '';
-    $toLabel   = $to   ? \Carbon\Carbon::createFromFormat('H:i', $to)->format('g:i A') : '';
-  @endphp
+                      $fromLabel = $from ? \Carbon\Carbon::createFromFormat('H:i', $from)->format('g:i A') : '';
+                      $toLabel = $to ? \Carbon\Carbon::createFromFormat('H:i', $to)->format('g:i A') : '';
+                    @endphp
 
-  <div class="col-6">
-    <div class="dp-chip">
-      {{ $day }} {{ $fromLabel }} to {{ $toLabel }}
-    </div>
-  </div>
-@empty
-  <div class="col-12">
-    <div class="dp-chip">No schedule added</div>
-  </div>
-@endforelse
-
+                    <div class="col-6">
+                      <div class="dp-chip">
+                        {{ $day }} {{ $fromLabel }} to {{ $toLabel }}
+                      </div>
+                    </div>
+                  @empty
+                    <div class="col-12">
+                      <div class="dp-chip">No schedule added</div>
+                    </div>
+                  @endforelse
                 </div>
+
+                {{-- ✅ Social Link QR --}}
+                @if(!empty($info->social_link))
+                  <hr class="my-3">
+
+                  <div class="text-center">
+                    <div class="fw-semibold mb-2">Social Link</div>
+
+                    <div class="d-inline-block p-2 bg-white rounded shadow-sm">
+                      {!! QrCode::size(120)->generate($info->social_link) !!}
+                    </div>
+
+                    <div class="small text-muted mt-2">
+                      Scan to open social link
+                    </div>
+                  </div>
+                @endif
+
               </div>
             </div>
+
 
           </section>
 
@@ -255,48 +268,48 @@
           <section class="row g-4 dp-section">
 
             <!-- Speciality -->
-          <div class="col-12 col-lg-4">
-  <div class="dp-card dp-box">
-    <h2 class="dp-h2">Visit Types</h2>
+            <div class="col-12 col-lg-4">
+              <div class="dp-card dp-box">
+                <h2 class="dp-h2">Visit Types</h2>
 
-    <div class="dp-list">
-      @forelse(($info->visit_types ?? []) as $vt)
-        @php
-          $type  = is_array($vt) ? ($vt['type'] ?? '') : '';
-          $price = is_array($vt) ? ($vt['price'] ?? null) : null;
-        @endphp
+                <div class="dp-list">
+                  @forelse(($info->visit_types ?? []) as $vt)
+                    @php
+                      $type = is_array($vt) ? ($vt['type'] ?? '') : '';
+                      $price = is_array($vt) ? ($vt['price'] ?? null) : null;
+                    @endphp
 
-        <div class="dp-li">
-          <div class="dp-badge b-blue">
-            <span class="material-icons-round">payments</span>
-          </div>
+                    <div class="dp-li">
+                      <div class="dp-badge b-blue">
+                        <span class="material-icons-round">payments</span>
+                      </div>
 
-          <div class="flex-grow-1">
-            <div class="dp-li-title">{{ $type ?: 'Visit Type' }}</div>
-            <div class="dp-li-sub d-flex align-items-center justify-content-between gap-2">
-              {{-- <span>{{ $type ?: '-' }}</span> --}}
-              <span class="fw-bold">
-                {{ $price !== null ? number_format((float)$price, 2) . ' EGP' : '-' }}
-              </span>
+                      <div class="flex-grow-1">
+                        <div class="dp-li-title">{{ $type ?: 'Visit Type' }}</div>
+                        <div class="dp-li-sub d-flex align-items-center justify-content-between gap-2">
+                          {{-- <span>{{ $type ?: '-' }}</span> --}}
+                          <span class="fw-bold">
+                            {{ $price !== null ? number_format((float) $price, 2) . ' EGP' : '-' }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                  @empty
+                    <div class="dp-li">
+                      <div class="dp-badge b-blue">
+                        <span class="material-icons-round">info</span>
+                      </div>
+                      <div>
+                        <div class="dp-li-title">Not Set</div>
+                        <div class="dp-li-sub">No visit types added</div>
+                      </div>
+                    </div>
+                  @endforelse
+                </div>
+
+              </div>
             </div>
-          </div>
-        </div>
-
-      @empty
-        <div class="dp-li">
-          <div class="dp-badge b-blue">
-            <span class="material-icons-round">info</span>
-          </div>
-          <div>
-            <div class="dp-li-title">Not Set</div>
-            <div class="dp-li-sub">No visit types added</div>
-          </div>
-        </div>
-      @endforelse
-    </div>
-
-  </div>
-</div>
 
             <!-- Activities -->
             <div class="col-12 col-lg-4">

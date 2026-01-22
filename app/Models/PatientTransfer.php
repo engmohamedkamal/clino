@@ -54,4 +54,9 @@ class PatientTransfer extends Model
     {
         return $this->belongsTo(User::class, 'primary_physician_id');
     }
+
+        public function doctorInfo()
+{
+    return $this->hasOne(DoctorInfo::class, 'user_id');
+}
 }

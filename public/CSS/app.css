@@ -1,0 +1,343 @@
+:root{
+  --bg:#f4f8ff;
+  --card:#ffffff;
+  --text:#1f2a37;
+  --muted:#8b95a7;
+  --line:#e7edf7;
+
+  --brand:#1C5197;        
+  --brand-2:#2f6fed;    
+  --pending:#f6c343;      
+  --pending-bg:#fff5cc;
+
+  --green:#16a34a;
+  --green-bg:#eaf7ee;
+
+  --red:#ef4444;
+  --red-bg:#ffecec;
+}
+
+*{ box-sizing:border-box; }
+
+body.ap-body{
+  margin:0;
+  font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.app, .main{ min-height:100vh; }
+
+/* container like screenshot */
+.ap-container{ max-width: 1180px; }
+
+/* page spacing */
+.ap-main{ padding: 20px 0 40px; }
+
+.ap-title{
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #111827;
+}
+
+/* ===== icon buttons ===== */
+.ap-ic-btn{
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: .15s ease;
+  text-decoration: none;
+}
+
+.ap-ic-btn:hover{
+  background: whitesmoke;
+  border-color: rgba(47,111,237,.25);
+}
+
+.ap-ic-primary{
+  background: var(--brand-2);
+  border-color: var(--brand-2);
+  color:#fff;
+  
+}
+.ap-ic-primary:hover{
+background-color: #1C5197;}
+
+/* ===== date input ===== */
+.ap-date-wrap{
+  position: relative;
+}
+.ap-date{
+  width: 160px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding-left: 38px;
+}
+.ap-date-ic{
+  position:absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events:none;
+}
+
+/* ===== search ===== */
+.ap-search{
+  position:relative;
+  width: 280px;
+  max-width: 100%;
+}
+.ap-search-ic{
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#9aa6b2;
+  pointer-events:none;
+  font-size:14px;
+}
+.ap-search-input{
+  padding-left:40px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  height:40px;
+  background:#fff;
+}
+.ap-search-input:focus{
+  border-color: rgba(47,111,237,.35);
+  box-shadow: 0 0 0 .2rem rgba(47,111,237,.10);
+}
+
+/* ===== status block ===== */
+.ap-status-block{ min-width: 260px; }
+.ap-status-label{
+  font-weight: 700;
+  color:#111827;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+.ap-select{
+  height: 40px;
+  border-radius: 10px;
+  border-color: var(--line);
+}
+
+/* ===== pills ===== */
+.ap-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.ap-pill-count{
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 12px;
+  background: rgba(0,0,0,.06);
+}
+
+.ap-pill-pending{
+  background: var(--pending-bg);
+  color: #8a6a00;
+  border-color: rgba(246,195,67,.55);
+}
+.ap-pill-pending .ap-pill-count{ background: rgba(246,195,67,.25); }
+
+.ap-pill-completed{
+  background: var(--green-bg);
+  color: #0b6b2a;
+  border-color: rgba(22,163,74,.25);
+}
+.ap-pill-completed .ap-pill-count{ background: rgba(22,163,74,.18); }
+
+.ap-pill-cancelled{
+  background: var(--red-bg);
+  color: #b42318;
+  border-color: rgba(239,68,68,.25);
+}
+.ap-pill-cancelled .ap-pill-count{ background: rgba(239,68,68,.18); }
+
+/* ===== table card ===== */
+.ap-table-card{
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 12px 26px rgba(18, 64, 143, 0.10);
+  overflow: hidden;
+  border: 1px solid #eaf0fb;
+}
+
+.ap-table-responsive{
+  padding: 0;
+}
+
+/* header row */
+.ap-table thead th{
+  background: var(--brand);
+  color:#fff;
+  border: none !important;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 14px 14px;
+}
+
+.ap-th-check{ width: 54px; }
+
+/* group row */
+.ap-group td{
+  background: #ffffff;
+  color: #111827;
+  font-weight: 700;
+  padding: 14px 16px;
+  border-top: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* data row */
+.ap-row td{
+  background: #f7fbff;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 16px 14px;
+}
+
+.ap-td-check{ width: 54px; }
+.ap-check{
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border-color: #cbd5e1;
+}
+.ap-td-no{
+  font-weight: 600;
+  color:#111827;
+}
+.ap-td-strong{
+  font-weight: 600;
+  color:#111827;
+}
+
+/* badge */
+.ap-badge{
+  display:inline-flex;
+  align-items:center;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid transparent;
+}
+.ap-badge-pending{
+  background: var(--pending);
+  color:#111827;
+}
+
+/* actions buttons */
+.ap-action{
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #e6edf7;
+  background: #fff;
+  color: #111827;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  transition: .15s ease;
+  text-decoration: none;
+}
+.ap-action:hover{
+  background: #f4f7ff;
+  border-color: rgba(47,111,237,.25);
+}
+.ap-action i{ font-size: 18px; }
+
+/* Mobile meta under Patient */
+.ap-mob-meta{
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.ap-mob-item{
+  display: flex;
+  gap: 6px;
+  line-height: 1.35;
+}
+
+.ap-mob-item span{
+  color: #000000c4;
+  font-weight: 800;
+
+}
+
+.ap-mob-meta{
+  border-top: 1px dashed var(--line);
+  padding-top: 6px;
+}
+
+.ap-pill-total{
+  background:#eff6ff;
+  color:#1d4ed8;
+  border:1px solid #bfdbfe;
+}
+
+.ap-pill-total .ap-pill-count{
+  background:#1d4ed8;
+  color:#fff;
+}
+.ap-badge{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:12px;
+  line-height:1;
+}
+
+/* الحالة Pending */
+.ap-badge.ap-badge-pending{
+  background:#FEF9C3; /* yellow */
+  color:#92400E;
+  border:1px solid #FDE68A;
+}
+
+/* الحالة Completed */
+.ap-badge.ap-badge-completed{
+  background:#DCFCE7; /* green */
+  color:#166534;
+  border:1px solid #86EFAC;
+}
+
+/* الحالة Cancelled */
+.ap-badge.ap-badge-cancelled{
+  background:#FEE2E2; /* red */
+  color:#991B1B;
+  border:1px solid #FCA5A5;
+}
+
+/* responsive tweaks */
+@media (max-width: 575.98px){
+  .ap-title{ font-size: 28px; }
+  .ap-status-block{ min-width: 100%; }
+  .ap-search{ width: 100%; }
+  .ap-date{ width: 100%; }
+}
