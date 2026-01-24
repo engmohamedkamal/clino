@@ -57,7 +57,7 @@
       'doctor'  => $user->doctorInfo
                       ? route('doctor-info.show', $user->doctorInfo->id)
                       : route('doctor-info.create'),
-      'patient' => route('patient-info.my'),
+      'patient' => route('patient-info.my', auth()->id()),
       default   => route('dashboard'),
   };
 @endphp

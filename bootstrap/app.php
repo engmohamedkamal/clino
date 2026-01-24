@@ -21,7 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         'admin.area'  => \App\Http\Middleware\AdminMiddleware::class,
         'doctor.area' => \App\Http\Middleware\DoctorMiddleware::class,
         'patient.area' => \App\Http\Middleware\PatientMiddleware::class,
+        'secretary.area' => \App\Http\Middleware\SecretaryMiddleware::class,
         'admin_or_doctor' => \App\Http\Middleware\AdminOrDoctor::class,
+        'secretary_or_doctor' => \App\Http\Middleware\SecretaryOrDoctorMiddleware::class,
+        'secretary_or_admin' => \App\Http\Middleware\SecretaryOrAdminMiddleware::class,
     ]);
 
     // append to web group

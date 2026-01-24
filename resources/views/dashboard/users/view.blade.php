@@ -37,12 +37,10 @@
       </div>
     </div>
 
-    @if(session('success'))
-      <div class="alert alert-success mb-3">{{ session('success') }}</div>
-    @endif
-
-    @if($errors->any())
-      <div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
+    @if (session('success'))
+      <div class="alert alert-success alert-dismissible fade show mb-3" id="successAlert">
+        {{ session('success') }}
+      </div>
     @endif
 
     <!-- Table Card -->
@@ -77,6 +75,7 @@
                       'admin' => 'bg-danger',
                       'doctor' => 'bg-primary',
                       'patient' => 'bg-success',
+                      'secretary' => 'bg-info',
                     ];
 
                     $roleClass = $roleClasses[$user->role] ?? 'bg-secondary';
@@ -126,7 +125,7 @@
     editBtn?.addEventListener('click', () => {
       const ids = getCheckedIds();
       if (ids.length !== 1) {
-        alert('اختار يوزر واحد بس عشان تعمل Edit');
+        alert('Select User To Edit');
         return;
       }
       window.location.href = "{{ url('/users') }}/" + ids[0] + "/edit";
@@ -136,12 +135,20 @@
       const ids = getCheckedIds();
       if (ids.length === 0) {
         e.preventDefault();
-        alert('اختار يوزر/يوزرز الأول عشان تعمل Delete');
+        alert('Select User / Users To Delete');
         return;
       }
       if (!confirm('Delete selected users?')) {
         e.preventDefault();
       }
     });
+    setTimeout(() => {
+      const alert = document.getElementById('successAlert');
+      if (alert) {
+        alert.classList.add('fade');
+        alert.classList.remove('show');
+        setTimeout(() => alert.remove(), 500);
+      }
+    }, 3000); 
   </script>
 @endsection

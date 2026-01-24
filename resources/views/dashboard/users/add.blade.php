@@ -3,8 +3,8 @@
   <main class="main">
     <header class="topbar">
       <div class="d-flex align-items-center gap-2">
-        <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
-          data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"
+          aria-controls="mobileSidebar">
           <i class="fa-solid fa-bars"></i>
         </button>
         <div>
@@ -18,12 +18,13 @@
       <div class="h-100 d-flex align-items-start justify-content-center pt-3 pt-md-4">
         <div class="appointment-card">
 
-          {{-- Success Message --}}
+
           @if (session('success'))
-            <div class="alert alert-success mb-3">
+            <div class="alert alert-success alert-dismissible fade show mb-3" id="successAlert">
               {{ session('success') }}
             </div>
           @endif
+
 
           <form method="POST" action="{{ route('register') }}" novalidate>
             @csrf
@@ -72,19 +73,22 @@
               <div class="col-md-6">
 
                 <!-- Role -->
+                @if (auth()->user()->role === 'admin')
+                  
                 <div class="mb-3">
                   <label class="form-label appointment-label">Role</label>
-                  <select name="role"
-                    class="form-select appointment-control @error('role') is-invalid @enderror">
+                  <select name="role" class="form-select appointment-control @error('role') is-invalid @enderror">
                     <option value="" disabled {{ old('role') ? '' : 'selected' }}>Select role</option>
                     <option value="admin" @selected(old('role') === 'admin')>Admin</option>
                     <option value="doctor" @selected(old('role') === 'doctor')>Doctor</option>
                     <option value="patient" @selected(old('role') === 'patient')>Patient</option>
+                    <option value="secretary" @selected(old('role') === 'secretary')>secretary</option>
                   </select>
                   @error('role')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                  <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
                 </div>
+                @endif
 
                 <!-- Password -->
                 <div class="mb-3">
@@ -100,8 +104,7 @@
                 <!-- Password Confirmation -->
                 <div class="mb-3">
                   <label class="form-label appointment-label">Confirm Password</label>
-                  <input type="password" name="password_confirmation"
-                    class="form-control appointment-control"
+                  <input type="password" name="password_confirmation" class="form-control appointment-control"
                     placeholder="Confirm password">
                 </div>
 
@@ -119,6 +122,17 @@
 
         </div>
       </div>
+      <script>
+        setTimeout(() => {
+          const alert = document.getElementById('successAlert');
+          if (alert) {
+            alert.classList.add('fade');
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 500);
+          }
+        }, 3000); 
+      </script>
+
     </section>
 
   </main>

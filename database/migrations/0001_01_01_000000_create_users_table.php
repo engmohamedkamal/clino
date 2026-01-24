@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone')->unique();
             $table->string('id_number')->unique()->nullable();
-            $table->enum('role', ['admin', 'doctor','patient'])->default('patient');
+            $table->enum('role', ['admin', 'doctor','patient','secretary'])->default('patient');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

@@ -45,7 +45,7 @@
         {{ $typeLabel }}
       </span>
 
-      @if(auth()->user()->role === 'admin')
+      @if(auth()->user()->role === 'secretary')
         <a href="{{ route('reports.edit', $report->id) }}"
            class="btn btn-primary d-none d-md-inline-flex align-items-center gap-2">
           <i class="bi bi-pencil-square"></i>
@@ -187,7 +187,7 @@
                   All Reports
                 </a>
 
-                @if(auth()->user()->role === 'admin')
+                @if(auth()->user()->role === 'secretary')
                   <div class="d-flex gap-2">
                     <a href="{{ route('reports.edit', $report->id) }}" class="btn btn-primary">
                       <i class="bi bi-pencil-square me-1"></i> Edit

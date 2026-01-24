@@ -201,7 +201,8 @@ class AppointmentController extends Controller
             abort(403);
 
         $doctors = User::where('role', 'doctor')->get(['id', 'name']);
-        return view('dashboard.appointment.edit', compact('appointment', 'doctors'));
+        $patients = User::where('role', 'patient')->get(['id', 'name']);
+        return view('dashboard.appointment.edit', compact('appointment', 'doctors','patients'));
     }
 
     public function update(AppointmentRequest $request, $id)

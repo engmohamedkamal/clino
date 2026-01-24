@@ -28,7 +28,11 @@
                     <select id="patient_name" name="patient_name"
                       class="form-select appointment-control @error('patient_name') is-invalid @enderror">
                       <option value="">Select Patient</option>
-
+ @if (auth()->user()->role !== 'patient')
+                      <option value="Visit" {{ old('patient_name') =='Visit'? 'selected' : '' }}>
+                        Visit
+                      </option>
+                      @endif
                       @foreach($patients as $p)
                         <option value="{{ $p->name }}" {{ old('patient_name') == $p->id ? 'selected' : '' }}>
                           {{ $p->name }}

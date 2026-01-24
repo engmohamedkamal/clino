@@ -31,16 +31,16 @@ class AuthController extends Controller
     }
     public function bulkDestroy(Request $request)
     {
-        $ids = $request->input('ids', []);
+        $ids = $request->input('user_ids', []);
 
         if (!is_array($ids) || count($ids) === 0) {
-            return back()->withErrors('اختار يوزر/يوزرز الأول عشان تعمل Delete');
+            return back()->withErrors('Select User / Users First to Delete');
         }
         $ids = array_values(array_diff($ids, [auth()->id()]));
 
         User::whereIn('id', $ids)->delete();
 
-        return redirect()->route('users.index')->with('success', 'Users deleted successfully.');
+        return redirect()->back()->with('success', 'Users deleted successfully.');
     }
     public function register()
     {
@@ -74,11 +74,9 @@ class AuthController extends Controller
             'phone' => 'required|string|min:10|max:15|unique:users,phone',
             'id_number' => 'required|string|min:10|max:255|unique:users,id_number',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'nullable|string|in:admin,doctor,patient',
+            'role' => 'nullable|string|in:admin,doctor,patient,secretary',
         ]);
 
-        // لو اللي بيعمل register مش أدمن، خليه patient افتراضي
-        // لو أدمن هو اللي بيضيف، يقدر يختار role من الفورم
         $role = $validated['role'] ?? (Auth::check() && Auth::user()->role === 'admin' ? 'patient' : 'patient');
 
         $user = User::create([
@@ -93,6 +91,11 @@ class AuthController extends Controller
         if (Auth::check() && Auth::user()->role === 'admin') {
             return redirect()
                 ->route('users.index')
+                ->with('success', 'User created successfully');
+        }
+        if (Auth::check() && Auth::user()->role === 'secretary') {
+            return redirect()
+                ->back()
                 ->with('success', 'User created successfully');
         }
 
@@ -111,7 +114,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/'); // ✅ بدل route('/')
+        return redirect('/');
     }
     public function show($id)
     {
@@ -144,7 +147,7 @@ class AuthController extends Controller
                 'max:255',
                 Rule::unique('users', 'id_number')->ignore($user->id),
             ],
-            'role' => ['required', 'string', Rule::in(['admin', 'doctor', 'patient'])],
+            'role' => ['nullable', 'string', Rule::in(['admin', 'doctor', 'patient','secretary'])],
 
             // ✅ password optional
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],

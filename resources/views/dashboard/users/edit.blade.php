@@ -19,8 +19,8 @@
         <div class="appointment-card">
 
           {{-- Success Message --}}
-          @if (session('success'))
-            <div class="alert alert-success mb-3">
+       @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show mb-3" id="successAlert">
               {{ session('success') }}
             </div>
           @endif
@@ -74,7 +74,7 @@
 
               <!-- RIGHT COLUMN -->
               <div class="col-md-6">
-
+    @if (auth()->user()->role === 'admin')
                 <!-- Role -->
                 <div class="mb-3">
                   <label class="form-label appointment-label">Role</label>
@@ -86,12 +86,13 @@
                     <option value="admin"   {{ $currentRole === 'admin' ? 'selected' : '' }}>Admin</option>
                     <option value="doctor"  {{ $currentRole === 'doctor' ? 'selected' : '' }}>Doctor</option>
                     <option value="patient" {{ $currentRole === 'patient' ? 'selected' : '' }}>Patient</option>
+                    <option value="secretary" {{ $currentRole === 'secretary' ? 'selected' : '' }}>secretary</option>
                   </select>
                   @error('role')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
                 </div>
-
+@endif
                 <!-- Password (Optional) -->
                 <div class="mb-3">
                   <label class="form-label appointment-label">New Password (optional)</label>
@@ -125,6 +126,17 @@
 
         </div>
       </div>
+           <script>
+        setTimeout(() => {
+          const alert = document.getElementById('successAlert');
+          if (alert) {
+            alert.classList.add('fade');
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 500);
+          }
+        }, 3000); 
+      </script>
+
     </section>
 
   </main>

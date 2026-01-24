@@ -52,18 +52,32 @@
             {{-- LEFT COLUMN (Admin/Doctor فقط) --}}
             @if (auth()->user()->role !== 'patient')
               <div class="col-md-6">
+<label class="form-label appointment-label" for="patient_name">
+  Patient
+</label>
 
-                <div class="mb-3">
-                  <label class="form-label appointment-label" for="patient_name">Patient Name</label>
-                  <input
-                    type="text"
-                    id="patient_name"
-                    name="patient_name"
-                    value="{{ old('patient_name', $appointment->patient_name) }}"
-                    class="form-control appointment-control @error('patient_name') is-invalid @enderror"
-                    placeholder="Enter Name">
-                  @error('patient_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
+<select id="patient_name" name="patient_name"
+  class="form-select appointment-control @error('patient_name') is-invalid @enderror">
+
+  <option value="">Select Patient</option>
+
+  <option value="Visit"
+    {{ old('patient_name', $appointment->patient_name) == 'Visit' ? 'selected' : '' }}>
+    Visit
+  </option>
+
+  @foreach($patients as $p)
+    <option value="{{ $p->name }}"
+      {{ old('patient_name', $appointment->patient_name) == $p->name ? 'selected' : '' }}>
+      {{ $p->name }}
+    </option>
+  @endforeach
+</select>
+
+@error('patient_name')
+  <div class="invalid-feedback">{{ $message }}</div>
+@enderror
+
 
                 <div class="mb-3">
                   <label class="form-label appointment-label" for="patient_number">Patient Number</label>
@@ -301,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ✅ لو الدكتور ملوش أنواع كشف
     if (!Array.isArray(vts) || vts.length === 0) {
-      // لو edit وعندنا old value → اعرضه وخليه enabled
+     
       if (oldVisitType) {
         visitSel.disabled = false;
         visitSel.innerHTML =

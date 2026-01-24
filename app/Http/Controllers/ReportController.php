@@ -43,7 +43,7 @@ public function index(Request $request)
             });
         })
         ->latest()
-        ->paginate(10)
+        ->paginate(6)
         ->withQueryString();
 
     return view('dashboard.reports.index', compact('reports', 'q'));
@@ -161,17 +161,7 @@ public function show(Report $report)
     // =========================
     public function edit(Report $report)
     {
-         $patientsFromPatients = Patient::query()
-        ->orderBy('patient_name')
-        ->get()
-        ->map(fn($p) => (object) [
-            'source' => 'patients',
-            'id'     => $p->id,
-            'name'   => $p->patient_name,
-            'phone'  => $p->patient_number ?? null,
-        ]);
-
-    $patientsFromUsers = User::query()
+    $patients = User::query()
         ->where('role', 'patient')
         ->orderBy('name')
         ->get()
@@ -181,11 +171,6 @@ public function show(Report $report)
             'name'   => $u->name,
             'phone'  => $u->phone ?? null,
         ]);
-
-    $patients = $patientsFromPatients
-        ->merge($patientsFromUsers)
-        ->sortBy('name')
-        ->values();
         return view('dashboard.reports.edit', compact('report', 'patients'));
     }
 

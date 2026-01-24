@@ -43,26 +43,6 @@
 
         {{-- Actions --}}
         <div class="d-flex align-items-center gap-2">
-
-          {{-- Edit selected (patient/user) --}}
-          <button class="btn ap-icon-btn" type="button" aria-label="Edit" id="editBtn" title="Edit">
-            <i class="bi bi-pencil-square"></i>
-          </button>
-
-          {{-- Bulk delete patients only --}}
-          <form id="bulkDeleteForm" method="POST" action="{{ route('patients.bulkDestroy') }}" class="d-inline">
-            @csrf
-            @method('DELETE')
-            <button class="btn ap-icon-btn" type="submit" aria-label="Delete" title="Delete">
-              <i class="bi bi-trash"></i>
-            </button>
-          </form>
-
-          {{-- Add --}}
-          <a class="btn ap-icon-btn" href="{{ route('users.create') }}" aria-label="Add" title="Add">
-            <i class="bi bi-plus-lg"></i>
-          </a>
-
           {{-- Table View --}}
           <a class="btn ap-icon-btn" href="{{ route('patients.index', array_merge(request()->query(), ['view' => 'table'])) }}"
              aria-label="Table View" title="Table View">
@@ -93,10 +73,7 @@
         <div class="alert alert-success mt-3 mb-0">{{ session('success') }}</div>
       @endif
 
-      @if($errors->any())
-        <div class="alert alert-danger mt-3 mb-0">{{ $errors->first() }}</div>
-      @endif
-    </div>
+
   </header>
 
   {{-- Main --}}
@@ -182,18 +159,7 @@
                       <span class="ap-v">{{ $user->name }}</span>
                     </div>
 
-                    {{-- checkbox --}}
-                    <label title="Select" style="cursor:pointer;">
-                      <input
-                        class="form-check-input row-check"
-                        type="checkbox"
-                        name="user_ids[]"
-                        value="{{ $user->id }}"
-                        form="bulkDeleteForm"
-                        data-type="user"
-                        style="transform: translateY(2px);"
-                      >
-                    </label>
+             
                   </div>
 
                   <div class="ap-row">

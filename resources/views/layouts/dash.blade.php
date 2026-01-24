@@ -37,12 +37,11 @@
       ['route' => 'dashboard', 'icon' => 'fa-solid fa-border-all', 'label' => 'Dashboard'],
       ['route' => 'appointment.show', 'icon' => 'fa-regular fa-calendar', 'label' => 'Appointment'],
 
-      // Patient = ADMIN ONLY ✅
+     
       ['route' => 'patients.index', 'icon' => 'fa-solid fa-users', 'label' => 'Patient'],
 
       ['route' => 'admin.doctors.services.bulkEdit', 'icon' => 'fa-solid fa-stethoscope', 'label' => 'Doctor Services'],
-      ['route' => 'medical-orders.index', 'icon' => 'fa-solid fa-notes-medical', 'label' => 'Medical Orders'],
-
+    
       ['route' => 'invoices.index', 'icon' => 'fa-solid fa-circle-plus', 'label' => 'Invoices'],
       ['route' => 'service-invoices.index', 'icon' => 'fa-solid fa-file-invoice-dollar', 'label' => 'Service Invoices'],
       ['route' => 'patient-transfers.index', 'icon' => 'fa-solid fa-right-left', 'label' => 'Patient Transfers'],
@@ -73,7 +72,9 @@
         'label' => 'Profile',
         'is_active' => request()->routeIs('doctor-info.*'),
       ],
-    ];
+      ['route' => 'medical-orders.index', 'icon' => 'fa-solid fa-notes-medical', 'label' => 'Medical Orders'],
+         ['route' => 'cash.index', 'icon' => 'fa-solid fa-cash-register', 'label' => 'Cash Management'],
+      ];
   }
 
   // ================= PATIENT =================
@@ -96,6 +97,16 @@
       ],
 
       ['route' => 'feedback.form', 'icon' => 'fa-regular fa-comment-dots', 'label' => 'Feedback'],
+    ];
+  }
+  // ================= secretary =================
+  if ($role === 'secretary') {
+    $nav = [
+      ['route' => 'dashboard', 'icon' => 'fa-solid fa-border-all', 'label' => 'Dashboard'],
+      ['route' => 'appointment.show', 'icon' => 'fa-regular fa-calendar', 'label' => 'Appointment'],
+      ['route' => 'reports.index', 'icon' => 'fa-solid fa-file-lines', 'label' => 'Reports'],
+      ['route' => 'patients.index', 'icon' => 'fa-solid fa-users', 'label' => 'Patient'],
+      ['route' => 'cash.index', 'icon' => 'fa-solid fa-cash-register', 'label' => 'Cash Management'],
     ];
   }
 @endphp

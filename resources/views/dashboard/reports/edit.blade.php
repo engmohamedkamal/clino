@@ -31,18 +31,7 @@
           </div>
         @endif
 
-        {{-- ✅ Errors summary (اختياري) --}}
-        @if($errors->any())
-          <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
-            <div class="fw-semibold mb-1">Please fix the following:</div>
-            <ul class="mb-0 ps-3">
-              @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-        @endif
+
 
         {{-- ✅ FORM --}}
         <form class="rp-form"

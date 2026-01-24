@@ -5,8 +5,8 @@
 
   @php
     $role = auth()->user()->role ?? '';
-    $canManage = in_array($role, ['admin', 'doctor']);
-    $isAdmin = auth()->check() && auth()->user()->role === 'admin';
+    $canManage = in_array($role, ['doctor', 'secretary']);
+    $isAdmin = auth()->check() && auth()->user()->role === 'secretary';
 
     $day = request('day');
     $q = request('q');
@@ -161,7 +161,7 @@
 
             <thead>
               <tr>
-                @if($canManage)
+                @if($role == 'secretary')
                   <th style="width:44px;">
                     <input class="form-check-input ap-check" type="checkbox" id="selectAll">
                   </th>
@@ -215,7 +215,7 @@
 
                   <tr class="ap-row">
 
-                    @if($canManage)
+                    @if($role == 'secretary')
                       <td>
                         <input class="form-check-input ap-check row-check" type="checkbox" value="{{ $appt->id }}" name="ids[]"
                           form="bulkDeleteForm">
@@ -246,29 +246,28 @@
                       <span class="ap-badge {{ $badgeClass }}">{{ ucfirst($st) }}</span>
                     </td>
 
-                    @if($canManage)
-                      <td class="text-end">
-                        <div class="d-inline-flex gap-2">
 
+                    <td class="text-end">
+                      <div class="d-inline-flex gap-2">
+                        @if($role == 'doctor')
                           <a class="ap-action" href="{{ route('appointments.singleShow', $appt->id) }}" title="View">
                             <i class="fa-regular fa-eye"></i>
                           </a>
+                        @endif
+                        @if($canManage)
+                          <a class="ap-action" href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
+                            target="_blank" title="Print">
+                            <i class="fa-solid fa-print"></i>
+                          </a>
 
-                          @if($isAdmin)
-                            <a class="ap-action" href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
-                              target="_blank" title="Print">
-                              <i class="fa-solid fa-print"></i>
-                            </a>
+                          <a class="ap-action" href="{{ route('appointment.vipPrint', $appt->id) }}?no={{ $dayNo }}"
+                            target="_blank" title="Print VIP">
+                            <i class="fa-solid fa-award"></i>
+                          </a>
+                        @endif
+                      </div>
+                    </td>
 
-                            <a class="ap-action" href="{{ route('appointment.vipPrint', $appt->id) }}?no={{ $dayNo }}"
-                              target="_blank" title="Print VIP">
-                              <i class="fa-solid fa-award"></i>
-                            </a>
-                          @endif
-
-                        </div>
-                      </td>
-                    @endif
 
                   </tr>
                 @endforeach

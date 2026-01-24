@@ -120,3 +120,4 @@ require_once('auth.php');
 require_once('admin.php');
 require_once('doctor.php');
 require_once('patient.php');
+require_once('secretary.php');
