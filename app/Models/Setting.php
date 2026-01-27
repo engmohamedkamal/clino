@@ -13,5 +13,6 @@ class Setting extends Model
         'name','slogan','vision','mission',
         'facebook','instagram','twitter',
         'phone','email','address','logo',
+        'map_url'
     ];
 }

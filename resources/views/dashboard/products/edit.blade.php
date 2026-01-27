@@ -42,7 +42,7 @@
         <div class="row g-4 justify-content-center align-items-center" style="min-height: calc(100vh - 140px);">
 
           <!-- Form -->
-          <div class="col-12 col-lg-10 col-xl-8 mx-auto">
+          <div class="col-12 mx-auto">
             <section class="card ap-card">
               <div class="card-body p-0">
 

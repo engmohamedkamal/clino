@@ -69,22 +69,33 @@
                 </td>
 
                 <td>{{ $user->name }}</td>
-                <td>
-                  @php
-                    $roleClasses = [
-                      'admin' => 'bg-danger',
-                      'doctor' => 'bg-primary',
-                      'patient' => 'bg-success',
-                      'secretary' => 'bg-info',
-                    ];
+        <td>
+  @php
+    $roleClasses = [
+      'admin'     => 'bg-danger',
+      'doctor'    => 'bg-primary',
+      'patient'   => 'bg-success',
+      'secretary' => 'bg-info',
+    ];
 
-                    $roleClass = $roleClasses[$user->role] ?? 'bg-secondary';
-                  @endphp
+    $roleClass = $roleClasses[$user->role] ?? 'bg-secondary';
+  @endphp
 
-                  <span class="badge {{ $roleClass }} px-3 py-2 rounded-pill">
-                    {{ ucfirst($user->role) }}
-                  </span>
-                </td>
+  <div class="d-flex flex-column gap-1">
+
+    <span class="badge {{ $roleClass }} px-3 py-2 rounded-pill align-self-start">
+      {{ ucfirst($user->role) }}
+    </span>
+
+    @if ($user->role === 'secretary')
+      <small class="text-muted">
+        Dr. {{ $user->doctor?->name ?? '-' }}
+      </small>
+    @endif
+
+  </div>
+</td>
+
 
                 <td>{{ $user->phone ?? '-' }}</td>
                 <td>{{ $user->id_number ?? '-' }}</td>

@@ -34,43 +34,26 @@ class DashboardController extends Controller
         // Latest Patients (2 queries + merge)
         // =========================
 
-        $latestPatientsFromPatients = Patient::latest()
-            ->take(5)
-            ->get()
-            ->map(function ($p) {
-                return (object) [
-                    'source' => 'patients',
-                    'id'     => $p->id,
-                    'name'   => $p->patient_name,
-                    'email'  => $p->patient_email,
-                    'phone'  => $p->patient_number,
-                    'created_at' => $p->created_at,
-                    'raw'    => $p,
-                ];
-            });
+        // $latestPatientsFromPatients = Patient::latest()
+        //     ->take(5)
+        //     ->get()
+        //     ->map(function ($p) {
+        //         return (object) [
+        //             'source' => 'patients',
+        //             'id'     => $p->id,
+        //             'name'   => $p->patient_name,
+        //             'email'  => $p->patient_email,
+        //             'phone'  => $p->patient_number,
+        //             'created_at' => $p->created_at,
+        //             'raw'    => $p,
+        //         ];
+        //     });
 
         $latestPatientsFromUsers = User::where('role', 'patient')
             ->latest()
-            ->take(0)
-            ->get()
-            ->map(function ($u) {
-                return (object) [
-                    'source' => 'users',
-                    'id'     => $u->id,
-                    'name'   => $u->name,
-                    'email'  => $u->email,
-                    'phone'  => $u->phone ?? null,
-                    'created_at' => $u->created_at,
-                    'raw'    => $u,
-                ];
-            });
-
-        $latestPatients = $latestPatientsFromPatients
-            ->merge($latestPatientsFromUsers)
-            ->sortByDesc('created_at')
             ->take(5)
-            ->values();
-
+            ->get();
+        $latestPatients = $latestPatientsFromUsers;
         // =========================
         // Upcoming Appointments
         // =========================

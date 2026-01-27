@@ -125,9 +125,9 @@
       </p>
 
       <div class="care-social">
-        <a href="{{ $setting->facebook }}" aria-label="facebook"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="{{ $setting->instagram }}" aria-label="instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="{{ $setting->twitter }}" aria-label="twitter"><i class="fa-brands fa-twitter"></i></a>
+        <a href="{{ $setting->facebook }}" target="_blank" aria-label="facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="{{ $setting->instagram }}" target="_blank" aria-label="instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="{{ $setting->twitter }}" target="_blank" aria-label="twitter"><i class="fa-brands fa-twitter"></i></a>
       </div>
 
       <p class="care-foot">

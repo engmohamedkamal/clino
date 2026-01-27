@@ -271,10 +271,7 @@
                   <td>{{ number_format((float) $m->cash_out, 2) }} EGP</td>
                   <td>{{ \Carbon\Carbon::parse($m->created_at)->format('d M Y') }}</td>
                   <td>{{ $m->creator?->name ?? '-' }}</td>
-
                   <td class="text-end">
-            
-
                     <form action="{{ route('cash.destroy', $m->id) }}" method="POST" class="d-inline"
                           onsubmit="return confirm('Delete this item?')">
                       @csrf

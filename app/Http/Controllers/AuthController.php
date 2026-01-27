@@ -31,7 +31,7 @@ class AuthController extends Controller
     }
     public function bulkDestroy(Request $request)
     {
-        $ids = $request->input('user_ids', []);
+        $ids = $request->input('ids', []);
 
         if (!is_array($ids) || count($ids) === 0) {
             return back()->withErrors('Select User / Users First to Delete');
@@ -44,7 +44,8 @@ class AuthController extends Controller
     }
     public function register()
     {
-        return view('dashboard.users.add');
+        $doctors = User::where('role','doctor')->get();
+        return view('dashboard.users.add',compact('doctors'));
     }
     public function userRegister()
     {
@@ -69,13 +70,37 @@ class AuthController extends Controller
     }
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|min:3|max:255',
-            'phone' => 'required|string|min:10|max:15|unique:users,phone',
-            'id_number' => 'required|string|min:10|max:255|unique:users,id_number',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'nullable|string|in:admin,doctor,patient,secretary',
-        ]);
+   $validated = $request->validate([
+  'name'      => 'required|string|min:3|max:255',
+  'phone'     => 'required|string|min:10|max:15|unique:users,phone',
+  'id_number' => 'required|string|min:10|max:255|unique:users,id_number',
+  'password'  => 'required|string|min:8|confirmed',
+
+  'role'      => 'nullable|string|in:admin,doctor,patient,secretary',
+
+  'doctor_id' => [
+    'nullable',
+    // ✅ لازم يبقى دكتور فعلاً
+    \Illuminate\Validation\Rule::exists('users', 'id')->where(function ($q) {
+      $q->where('role', 'doctor');
+    }),
+
+    // ✅ لو سكرتيرة لازم تختار دكتور
+    function ($attr, $value, $fail) use ($request) {
+      if ($request->input('role') === 'secretary' && empty($value)) {
+        $fail('Doctor is required for secretary role.');
+      }
+    },
+
+    // ✅ لو مش سكرتيرة ممنوع تبعت doctor_id
+    function ($attr, $value, $fail) use ($request) {
+      if ($request->input('role') !== 'secretary' && !empty($value)) {
+        $fail('Doctor can only be assigned when role is secretary.');
+      }
+    },
+  ],
+]);
+
 
         $role = $validated['role'] ?? (Auth::check() && Auth::user()->role === 'admin' ? 'patient' : 'patient');
 
@@ -106,7 +131,6 @@ class AuthController extends Controller
             ->route('home')
             ->with('success', 'Registration successful');
     }
-
     public function logout(Request $request)
     {
         Auth::logout();
@@ -121,11 +145,11 @@ class AuthController extends Controller
         $users = User::latest()->paginate(10);
         return view('dashboard.users.view', compact('users'));
     }
-
     public function edit($id)
     {
+         $doctors = User::where('role','doctor')->get();
         $user = User::findOrFail($id);
-        return view('dashboard.users.edit', compact('user'));
+        return view('dashboard.users.edit', compact('user','doctors'));
     }
     public function update(Request $request, $id)
     {
@@ -151,6 +175,28 @@ class AuthController extends Controller
 
             // ✅ password optional
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            
+  'doctor_id' => [
+    'nullable',
+    // ✅ لازم يبقى دكتور فعلاً
+    \Illuminate\Validation\Rule::exists('users', 'id')->where(function ($q) {
+      $q->where('role', 'doctor');
+    }),
+
+    // ✅ لو سكرتيرة لازم تختار دكتور
+    function ($attr, $value, $fail) use ($request) {
+      if ($request->input('role') === 'secretary' && empty($value)) {
+        $fail('Doctor is required for secretary role.');
+      }
+    },
+
+    // ✅ لو مش سكرتيرة ممنوع تبعت doctor_id
+    function ($attr, $value, $fail) use ($request) {
+      if ($request->input('role') !== 'secretary' && !empty($value)) {
+        $fail('Doctor can only be assigned when role is secretary.');
+      }
+    },
+  ],
         ]);
 
         $data = [
@@ -158,6 +204,7 @@ class AuthController extends Controller
             'phone' => $validated['phone'],
             'id_number' => $validated['id_number'],
             'role' => $validated['role'],
+
         ];
 
         if (!empty($validated['password'])) {
@@ -173,7 +220,6 @@ class AuthController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-
         return redirect()->route('users.index')->with('success', 'User deleted successfully');
     }
 }

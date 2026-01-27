@@ -35,24 +35,11 @@
   if ($role === 'admin') {
     $nav = [
       ['route' => 'dashboard', 'icon' => 'fa-solid fa-border-all', 'label' => 'Dashboard'],
-      ['route' => 'appointment.show', 'icon' => 'fa-regular fa-calendar', 'label' => 'Appointment'],
-
-     
-      ['route' => 'patients.index', 'icon' => 'fa-solid fa-users', 'label' => 'Patient'],
-
-      ['route' => 'admin.doctors.services.bulkEdit', 'icon' => 'fa-solid fa-stethoscope', 'label' => 'Doctor Services'],
-    
+      ['route' => 'doctors.services.bulkEdit', 'icon' => 'fa-solid fa-stethoscope', 'label' => 'Doctor Services'],
       ['route' => 'invoices.index', 'icon' => 'fa-solid fa-circle-plus', 'label' => 'Invoices'],
       ['route' => 'service-invoices.index', 'icon' => 'fa-solid fa-file-invoice-dollar', 'label' => 'Service Invoices'],
-      ['route' => 'patient-transfers.index', 'icon' => 'fa-solid fa-right-left', 'label' => 'Patient Transfers'],
-
-      ['route' => 'diagnoses.index', 'icon' => 'fa-solid fa-notes-medical', 'label' => 'Diagnoses'],
-      ['route' => 'reports.index', 'icon' => 'fa-solid fa-file-lines', 'label' => 'Reports'],
-      ['route' => 'prescriptions.index', 'icon' => 'fa-solid fa-prescription-bottle-medical', 'label' => 'Prescription'],
-
       ['route' => 'products.index', 'icon' => 'fa-solid fa-boxes-stacked', 'label' => 'Products'],
       ['route' => 'messages.index', 'icon' => 'fa-solid fa-message', 'label' => 'Messages'],
-
       ['route' => 'doctor.list', 'icon' => 'fa-solid fa-users', 'label' => 'Doctor List'],
       ['route' => 'service.index', 'icon' => 'fa-solid fa-briefcase-medical', 'label' => 'Services'],
       ['route' => 'users.index', 'icon' => 'fa-solid fa-users', 'label' => 'Users'],

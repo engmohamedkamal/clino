@@ -11,60 +11,36 @@ use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\DoctorServicesBulkController;
 use App\Http\Controllers\Admin\AppointmentController;
 
-/*
-|--------------------------------------------------------------------------
-| Admin Routes
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth', 'admin.area'])
   ->group(function () {
-
-    // Messages
     Route::get('/messages', [ContactController::class, 'show'])->name('messages.index');
     Route::delete('/messages/bulk-destroy', [ContactController::class, 'bulkDestroy'])->name('messages.bulkDestroy');
-
-    // Services
     Route::get('/service', [ServiceController::class, 'index'])->name('service.index');
     Route::get('/service/create', [ServiceController::class, 'create'])->name('service.create');
     Route::post('/service', [ServiceController::class, 'store'])->name('service.store');
-
-    // ✅ Bulk delete قبل {service}
     Route::delete('/service/bulk-delete', [ServiceController::class, 'bulkDestroy'])->name('service.bulkDestroy');
-
     Route::get('/service/{service}/edit', [ServiceController::class, 'edit'])
       ->whereNumber('service')->name('service.edit');
-
     Route::put('/service/{service}', [ServiceController::class, 'update'])
       ->whereNumber('service')->name('service.update');
-
     Route::delete('/service/{service}', [ServiceController::class, 'destroy'])
       ->whereNumber('service')->name('service.destroy');
-
- 
-    // Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');
     Route::put('/settings/{setting}', [SettingController::class, 'update'])->name('settings.update');
-
-    // Bulk doctor services
     Route::get('/doctors/services/bulk', [DoctorServicesBulkController::class, 'bulkEdit'])
       ->name('doctors.services.bulkEdit');
-
     Route::put('/doctors/services/bulk', [DoctorServicesBulkController::class, 'bulkUpdate'])
       ->name('doctors.services.bulkUpdate');
   });
 
-/*
-|--------------------------------------------------------------------------
-| Shared Routes (Secretary / Doctor)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'secretary_or_doctor'])->group(function () {
 
-  // Patients
-  Route::delete('/patients/bulk-destroy', [PatientController::class, 'bulkDestroy'])->name('patients.bulkDestroy');
-  Route::get('/patients/cards', [PatientController::class, 'cards'])->name('patients.cards');
-  Route::resource('patients', PatientController::class);
+  Route::middleware(['auth', 'secretary_or_doctor'])->group(function () {
+    
+    // Patients
+    Route::delete('/patients/bulk-destroy', [PatientController::class, 'bulkDestroy'])->name('patients.bulkDestroy');
+    Route::get('/patients/cards', [PatientController::class, 'cards'])->name('patients.cards');
+    Route::resource('patients', PatientController::class);
 
   // Medical Orders
   Route::delete('/medical-orders/bulk-destroy', [MedicineController::class, 'bulkDestroy'])->name('medical-orders.bulkDestroy');
@@ -86,11 +62,6 @@ Route::middleware(['auth', 'secretary_or_doctor'])->group(function () {
   Route::get('/day-summary', [AppointmentController::class, 'daySummary'])->name('day.summary');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Auth Routes (All logged-in users)
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth'])->group(function () {
 
   // Booking + list (حسب نظامك الحالي)
@@ -124,4 +95,8 @@ Route::middleware(['auth', 'secretary_or_admin'])
     Route::delete('/users/bulk-destroy', [AuthController::class, 'bulkDestroy'])->name('users.bulkDestroy');
     Route::get('/users/{id}', [AuthController::class, 'show'])->name('users.show');
     Route::delete('/users/{id}', [AuthController::class, 'destroy'])->name('users.destroy');
-  });
+      Route::get('/users/{id}/edit', [AuthController::class, 'edit'])
+      ->name('users.edit');
+    Route::put('/users/{id}', [AuthController::class, 'update'])
+      ->name('users.update');
+    });

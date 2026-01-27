@@ -93,9 +93,9 @@
           </p>
 
           <div class="social-icons">
-            <a href="{{ $setting->facebook ?? '' }}" class="me-2" aria-label="facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="{{ $setting->twitter ?? '' }}" class="me-2" aria-label="twitter"><i class="fab fa-twitter"></i></a>
-            <a href="{{ $setting->instagram ?? '' }}" aria-label="instagram"><i class="fab fa-instagram"></i></a>
+            <a href="{{ $setting->facebook ?? '' }}" target="_blank" class="me-2" aria-label="facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="{{ $setting->twitter ?? '' }}" target="_blank" class="me-2" aria-label="twitter"><i class="fab fa-twitter"></i></a>
+            <a href="{{ $setting->instagram ?? '' }}" target="_blank" aria-label="instagram"><i class="fab fa-instagram"></i></a>
           </div>
         </div>
 
@@ -106,7 +106,6 @@
             <li class="mb-2"><a href="{{ route('home') }}">Home</a></li>
             <li class="mb-2"><a href="{{ route('about') }}">About Us</a></li>
             <li class="mb-2"><a href="{{ route('our.service') }}">Services</a></li>
-            {{-- <li class="mb-2"><a href="#Testimonials">Testimonials</a></li> --}}
             <li><a href="{{ route('contact.index') }}">Contact Us</a></li>
           </ul>
         </div>
@@ -137,7 +136,7 @@
         <div class="col-12 col-lg-3">
           <div class="footer-map">
             <iframe title="Clinic location" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-              src="https://www.google.com/maps?q=Elmahkama%20Street&output=embed">
+              src="{{ $setting->map_url ?? 'https://www.google.com/maps?q=Elmahkama%20Street&output=embed' }}">
             </iframe>
           </div>
         </div>

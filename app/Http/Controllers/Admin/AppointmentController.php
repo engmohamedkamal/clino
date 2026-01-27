@@ -129,6 +129,13 @@ class AppointmentController extends Controller
             ->when($user && $user->role === 'doctor', function ($q) use ($user) {
                 $q->where('doctor_name', $user->name);
             })
+            ->when($user && $user->role === 'secretary', function ($q) use ($user) {
+                $doctorName = \App\Models\User::where('id', $user->doctor_id)->value('name');
+
+                if ($doctorName) {
+                    $q->where('doctor_name', $doctorName);
+                }
+            })
 
             // Patient
             ->when($user && $user->role === 'patient', function ($q) use ($user) {
@@ -623,7 +630,13 @@ public function cards(Request $request)
         ->when($user && $user->role === 'doctor', function ($q) use ($user) {
             $q->where('doctor_name', $user->name);
         })
+      ->when($user && $user->role === 'secretary', function ($q) use ($user) {
+                $doctorName = \App\Models\User::where('id', $user->doctor_id)->value('name');
 
+                if ($doctorName) {
+                    $q->where('doctor_name', $doctorName);
+                }
+            })
         // ✅ لو Patient: يعرض مواعيده فقط (عدّلها لو عندك patient_id بدل الاسم/الموبايل)
         ->when($user && $user->role === 'patient', function ($q) use ($user) {
             $q->where(function ($qq) use ($user) {

@@ -74,25 +74,59 @@
 
               <!-- RIGHT COLUMN -->
               <div class="col-md-6">
-    @if (auth()->user()->role === 'admin')
-                <!-- Role -->
-                <div class="mb-3">
-                  <label class="form-label appointment-label">Role</label>
-                  @php
-                    $currentRole = old('role', $user->role);
-                  @endphp
-                  <select name="role" class="form-select appointment-control @error('role') is-invalid @enderror">
-                    <option value="" disabled {{ $currentRole ? '' : 'selected' }}>Select role</option>
-                    <option value="admin"   {{ $currentRole === 'admin' ? 'selected' : '' }}>Admin</option>
-                    <option value="doctor"  {{ $currentRole === 'doctor' ? 'selected' : '' }}>Doctor</option>
-                    <option value="patient" {{ $currentRole === 'patient' ? 'selected' : '' }}>Patient</option>
-                    <option value="secretary" {{ $currentRole === 'secretary' ? 'selected' : '' }}>secretary</option>
-                  </select>
-                  @error('role')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>
+@if (auth()->user()->role === 'admin')
+
+  @php
+    $currentRole   = old('role', $user->role);
+    $currentDoctor = old('doctor_id', $user->doctor_id);
+  @endphp
+
+  <!-- Role -->
+  <div class="mb-3">
+    <label class="form-label appointment-label">Role</label>
+    <select
+      name="role"
+      id="roleSelect"
+      class="form-select appointment-control @error('role') is-invalid @enderror"
+    >
+      <option value="" disabled {{ $currentRole ? '' : 'selected' }}>Select role</option>
+      <option value="admin"   {{ $currentRole === 'admin' ? 'selected' : '' }}>Admin</option>
+      <option value="doctor"  {{ $currentRole === 'doctor' ? 'selected' : '' }}>Doctor</option>
+      <option value="patient" {{ $currentRole === 'patient' ? 'selected' : '' }}>Patient</option>
+      <option value="secretary" {{ $currentRole === 'secretary' ? 'selected' : '' }}>Secretary</option>
+    </select>
+
+    @error('role')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <!-- Doctor (Only for Secretary) -->
+  <div class="mb-3 {{ $currentRole === 'secretary' ? '' : 'd-none' }}" id="doctorWrapper">
+    <label class="form-label appointment-label">Assigned Doctor</label>
+    <select
+      name="doctor_id"
+      class="form-select appointment-control @error('doctor_id') is-invalid @enderror"
+    >
+      <option value="" disabled {{ $currentDoctor ? '' : 'selected' }}>Select doctor</option>
+
+      @foreach ($doctors as $doctor)
+        <option
+          value="{{ $doctor->id }}"
+          {{ (string)$currentDoctor === (string)$doctor->id ? 'selected' : '' }}
+        >
+          {{ $doctor->name }}
+        </option>
+      @endforeach
+    </select>
+
+    @error('doctor_id')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
 @endif
+
                 <!-- Password (Optional) -->
                 <div class="mb-3">
                   <label class="form-label appointment-label">New Password (optional)</label>
@@ -135,7 +169,26 @@
             setTimeout(() => alert.remove(), 500);
           }
         }, 3000); 
-      </script>
+      
+  document.addEventListener('DOMContentLoaded', function () {
+    const roleSelect = document.getElementById('roleSelect');
+    const doctorWrapper = document.getElementById('doctorWrapper');
+    const doctorSelect = doctorWrapper?.querySelector('select');
+
+    function toggleDoctor() {
+      if (roleSelect.value === 'secretary') {
+        doctorWrapper.classList.remove('d-none');
+      } else {
+        doctorWrapper.classList.add('d-none');
+        if (doctorSelect) doctorSelect.value = '';
+      }
+    }
+
+    roleSelect.addEventListener('change', toggleDoctor);
+    toggleDoctor(); // run on load
+  });
+</script>
+
 
     </section>
 

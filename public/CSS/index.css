@@ -59,6 +59,7 @@ body{
   justify-content: center; 
   padding: 8px 18px;
   white-space: nowrap;   
+  cursor: default;
 }
 
 

@@ -17,7 +17,7 @@
     </div>
 
     <div class="d-flex align-items-center gap-2">
-      <a href="{{ route('patient-info.my') }}" class="dp-btn">View</a>
+      <a href="{{ route('patient-info.my',$info->id) }}" class="dp-btn">View</a>
     </div>
   </header>
 
@@ -40,16 +40,6 @@
           </div>
         @endif
 
-        {{-- Validation Errors --}}
-        @if ($errors->any())
-          <div class="alert alert-danger mb-3">
-            <ul class="mb-0">
-              @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-        @endif
 
         {{-- ✅ هنا لازم id (resource update محتاج parameter) --}}
         <form method="POST" action="{{ route('patient-info.update', $info->id) }}">
@@ -238,7 +228,7 @@
               <textarea
                 id="notes"
                 name="notes"
-                rows="4"
+                rows="3"
                 class="form-control appointment-control appointment-textarea @error('notes') is-invalid @enderror"
                 placeholder="Additional notes...">{{ old('notes', $info->notes) }}</textarea>
               @error('notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -252,10 +242,7 @@
               Update
             </button>
 
-            {{-- ✅ Cancel يرجع لصفحة my --}}
-            <a href="{{ route('patient-info.my') }}" class="btn btn-outline-secondary btn-save-full">
-              Cancel
-            </a>
+      
           </div>
 
         </form>

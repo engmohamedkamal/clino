@@ -25,7 +25,10 @@
 
       <div class="d-flex align-items-center gap-2">
         @if($info && auth()->user()->role == 'patient')
-          <a href="{{ route('patient-info.edit', $info->id) }}" class="dp-btn">Edit</a>
+        <a href="{{ route('patient-info.edit', $info->id) }}" class="dp-btn">
+  Edit
+</a>
+
         @elseif(auth()->user()->role == 'patient')
           <a href="{{ route('patient-info.create') }}" class="dp-btn">Create</a>
         @endif
@@ -35,7 +38,7 @@
     <!-- Content -->
     <section class="content-area">
       <div class="h-100 d-flex align-items-start justify-content-center pt-3 pt-md-4">
-        <div class="appointment-card w-100" style="max-width:1100px;">
+        <div class="appointment-card w-100" >
 
           {{-- Alerts --}}
           @if(session('success'))

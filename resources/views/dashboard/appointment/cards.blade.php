@@ -38,11 +38,11 @@
                 <span class="material-icons-round">delete</span>
               </button>
             </form>
-          @endif
-
-          <a href="{{ route('appointment.index') }}" class="pl-icon-btn primary" aria-label="Add">
-            <span class="material-icons-round">add</span>
-          </a>
+            
+            @endif
+            <a href="{{ route('appointment.index') }}" class="pl-icon-btn primary" aria-label="Add">
+              <span class="material-icons-round">add</span>
+            </a>
 
           {{-- ✅ Table View --}}
           <a href="{{ route('appointment.show', array_merge(request()->query(), ['view' => 'table'])) }}"

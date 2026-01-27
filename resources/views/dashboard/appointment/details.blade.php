@@ -373,7 +373,7 @@
                       @foreach($reports as $r)
                         <a href="{{ route('reports.show', $r->id) }}" class="ad-prev-item">
                           <span class="material-icons-round">description</span>
-                          <span>Report #{{ $r->id }}</span>
+                          <span>Report #{{ $r->exam_type }}</span>
                         </a>
                       @endforeach
                     </div>

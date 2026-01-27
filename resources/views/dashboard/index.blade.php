@@ -174,9 +174,8 @@
       <thead>
         <tr>
           <th>Patient Name</th>
-          <th>Email</th>
+          <th>ID_number</th>
           <th>Phone</th>
-          <th>Source</th>
           <th class="text-end">Actions</th>
         </tr>
       </thead>
@@ -187,19 +186,15 @@
             {{-- Name --}}
             <td>
               {{ $p->name }}
-              @if($p->source === 'users')
-                <span class="badge bg-secondary ms-1">User</span>
-              @endif
             </td>
 
             {{-- Email --}}
-            <td class="text-muted">{{ $p->email ?? '-' }}</td>
+            <td class="text-muted">{{ $p->id_number ?? '-' }}</td>
 
             {{-- Phone --}}
             <td class="text-muted">{{ $p->phone ?? '-' }}</td>
 
-            {{-- Source --}}
-            <td class="text-muted text-capitalize">{{ $p->source }}</td>
+       
 
             {{-- Actions --}}
             <td class="text-end">

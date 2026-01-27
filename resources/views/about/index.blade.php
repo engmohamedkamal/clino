@@ -114,9 +114,9 @@
 </div>
 
                         <div class="team-social">
-                            <a href="{{ $doctor->facebook ?? '' }}" aria-label="facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                            <a href="{{ $doctor->instagram ?? '' }}" aria-label="instagram"><i class="fa-brands fa-instagram"></i></a>
-                            <a href="{{ $doctor->twitter ?? '' }}" aria-label="twitter"><i class="fa-brands fa-twitter"></i></a>
+                            <a href="{{ $doctor->facebook ?? '' }}" target="_blank" aria-label="facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                            <a href="{{ $doctor->instagram ?? '' }}" target="_blank" aria-label="instagram"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="{{ $doctor->twitter ?? '' }}" target="_blank" aria-label="twitter"><i class="fa-brands fa-twitter"></i></a>
                         </div>
                     </div>
                 </div>

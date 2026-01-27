@@ -41,7 +41,7 @@ class ContactController extends Controller
             $contact->delete();
         }
 
-        return redirect()->back()->with('success', 'تم حذف بيانات التواصل.');
+        return redirect()->back()->with('success', 'Message Deleted Successfully');
     }
 
 
@@ -78,11 +78,11 @@ public function bulkDestroy(Request $request)
     $ids = $request->ids;
 
     if (!$ids || count($ids) === 0) {
-        return back()->withErrors('اختار رسالة واحدة على الأقل للحذف');
+        return back()->withErrors('Select Message First');
     }
 
     Contact::whereIn('id', $ids)->delete();
 
-    return back()->with('success', 'تم حذف الرسائل المختارة بنجاح');
+    return back()->with('success', 'Message Deleted Successfully');
 }
 }

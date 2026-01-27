@@ -72,10 +72,7 @@
                   <div class="ci-sec-title">Patient Information</div>
                 </div>
 
-                <button type="button" class="btn btn-link p-0 ci-link-primary d-inline-flex align-items-center gap-2" id="toggleNewPatientBtn">
-                  <i class="bi bi-plus"></i>
-                  <span>Add New Patient</span>
-                </button>
+             
               </div>
 
               <div class="row g-3">
@@ -94,7 +91,7 @@
                       </option>
                     @endforeach
 
-                    <option value="__new__" {{ $useNewPatient ? 'selected' : '' }}>+ Add new patient</option>
+      
                   </select>
                   @error('patient_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>

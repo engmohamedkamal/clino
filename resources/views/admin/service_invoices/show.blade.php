@@ -184,14 +184,14 @@
                     </span>
                   @endif
                 </td>
-                <td class="text-end">${{ number_format($subtotal, 2) }}</td>
+                <td class="text-end">EGP  {{ number_format($subtotal, 2) }}</td>
               </tr>
 
               @if($insuranceProvider)
                 <tr>
                   <td class="text-secondary fw-bold">Insurance Coverage ({{ $insuranceProvider }})</td>
                   <td class="text-end text-green">
-                    -${{ number_format(max(0, $subtotal - $total), 2) }}
+                    -EGP  {{ number_format(max(0, $subtotal - $total), 2) }}
                   </td>
                 </tr>
               @endif
@@ -199,20 +199,20 @@
               @if($discount > 0)
                 <tr>
                   <td class="text-secondary fw-bold">Discount</td>
-                  <td class="text-end text-green">-${{ number_format($discount, 2) }}</td>
+                  <td class="text-end text-green">-EGP  {{ number_format($discount, 2) }}</td>
                 </tr>
               @endif
 
               @if($taxAmount > 0)
                 <tr>
                   <td class="text-secondary fw-bold">Tax</td>
-                  <td class="text-end">${{ number_format($taxAmount, 2) }}</td>
+                  <td class="text-end">EGP  {{ number_format($taxAmount, 2) }}</td>
                 </tr>
               @endif
 
               <tr class="fw-bold">
                 <td>Total Paid</td>
-                <td class="text-end text-primary">${{ number_format((float)$paidAmount, 2) }}</td>
+                <td class="text-end text-primary">EGP  {{ number_format((float)$paidAmount, 2) }}</td>
               </tr>
             </tbody>
           </table>
@@ -242,8 +242,8 @@
                       @endif
                     </td>
                     <td class="text-center">{{ (int)($it->qty ?? 1) }}</td>
-                    <td class="text-end">${{ number_format((float)($it->unit_price ?? 0), 2) }}</td>
-                    <td class="text-end">${{ number_format((float)($it->subtotal ?? ((float)($it->qty ?? 1) * (float)($it->unit_price ?? 0))), 2) }}</td>
+                    <td class="text-end">EGP  {{ number_format((float)($it->unit_price ?? 0), 2) }}</td>
+                    <td class="text-end">EGP  {{ number_format((float)($it->subtotal ?? ((float)($it->qty ?? 1) * (float)($it->unit_price ?? 0))), 2) }}</td>
                   </tr>
                 @endforeach
               </tbody>

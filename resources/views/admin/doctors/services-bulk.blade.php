@@ -14,7 +14,7 @@
     <h4 class="mb-0">Doctor ↔ Services</h4>
   </div>
 
-  <form method="POST" action="{{ route('admin.doctors.services.bulkUpdate') }}">
+  <form method="POST" action="{{ route('doctors.services.bulkUpdate') }}">
     @csrf
     @method('PUT')
 

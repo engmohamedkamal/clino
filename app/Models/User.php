@@ -59,7 +59,8 @@ public function patientProfile()
         'phone',
         'id_number',
         'password',
-        'role'
+        'role',
+        'doctor_id'
     ];
 
     /**
@@ -84,4 +85,9 @@ public function patientProfile()
             'password' => 'hashed',
         ];
     }
+    public function doctor()
+{
+    return $this->belongsTo(User::class, 'doctor_id');
+}
+
 }

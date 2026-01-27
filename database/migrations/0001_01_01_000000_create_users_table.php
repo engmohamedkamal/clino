@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('id_number')->unique()->nullable();
             $table->enum('role', ['admin', 'doctor','patient','secretary'])->default('patient');
             $table->string('password');
+            $table->integer('doctor_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

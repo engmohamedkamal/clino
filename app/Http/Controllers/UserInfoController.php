@@ -45,7 +45,7 @@ class UserInfoController extends Controller
         
         // ممنوع يعمل create لو عنده info
         if (Auth::user()->patientInfo) {
-            return redirect()->route('patient-info.my')
+            return redirect()->route('patient-info.my',auth()->id())
                 ->with('info', 'You already added your info. You can update it.');
         }
 
@@ -54,7 +54,7 @@ class UserInfoController extends Controller
 
         $info = PatientInfo::create($data);
 
-        return redirect()->route('patient-info.my')
+        return redirect()->route('patient-info.my',auth()->id())
             ->with('success', 'Info saved successfully ✅');
     }
 
@@ -91,7 +91,7 @@ class UserInfoController extends Controller
 
         $patient_info->update($data);
 
-        return redirect()->route('patient-info.my')
+        return redirect()->route('patient-info.my',auth()->id())
             ->with('success', 'Info updated successfully ✅');
     }
 

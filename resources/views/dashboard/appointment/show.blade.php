@@ -17,7 +17,7 @@
     $groups = $appointments->getCollection()
       ->groupBy(fn($a) => $a->appointment_date ?? 'unknown');
 
-    $colspan = $canManage ? 9 : 7;
+    $colspan = $canManage ? 10 : 8;
   @endphp
 
   <section class="ap-main">
@@ -41,11 +41,12 @@
                 <i class="fa-solid fa-trash"></i>
               </button>
             </form>
-          @endif
-
-          <a class="ap-ic-btn ap-ic-primary" href="{{ route('appointment.index') }}" title="Add">
-            <i class="fa-solid fa-plus"></i>
-          </a>
+            @endif
+            {{-- @if(auth()->user()->role = 'patient' || auth()->user()->role = 'secretary' ) --}}
+            <a class="ap-ic-btn ap-ic-primary" href="{{ route('appointment.index') }}" title="Add">
+              <i class="fa-solid fa-plus"></i>
+            </a>
+            {{-- @endif --}}
 
           <a class="ap-ic-btn"
             href="{{ route('appointments.cards', array_merge(request()->query(), ['view' => 'cards'])) }}"
@@ -167,7 +168,7 @@
                   </th>
                 @endif
 
-                <th style="width:72px;">No.</th>
+                <th >No.</th>
                 <th>Patient</th>
                 <th class="d-none d-md-table-cell">Phone</th>
                 <th class="d-none d-lg-table-cell">Doctor</th>
@@ -247,26 +248,38 @@
                     </td>
 
 
-                    <td class="text-end">
-                      <div class="d-inline-flex gap-2">
-                        @if($role == 'doctor')
-                          <a class="ap-action" href="{{ route('appointments.singleShow', $appt->id) }}" title="View">
-                            <i class="fa-regular fa-eye"></i>
-                          </a>
-                        @endif
-                        @if($canManage)
-                          <a class="ap-action" href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
-                            target="_blank" title="Print">
-                            <i class="fa-solid fa-print"></i>
-                          </a>
+              <td class="text-end">
+  <div class="d-inline-flex gap-2">
 
-                          <a class="ap-action" href="{{ route('appointment.vipPrint', $appt->id) }}?no={{ $dayNo }}"
-                            target="_blank" title="Print VIP">
-                            <i class="fa-solid fa-award"></i>
-                          </a>
-                        @endif
-                      </div>
-                    </td>
+    {{-- Doctor --}}
+    @if($role === 'doctor')
+      <a class="ap-action"
+         href="{{ route('appointments.singleShow', $appt->id) }}"
+         title="View">
+        <i class="fa-regular fa-eye"></i>
+      </a>
+    @endif
+
+    {{-- Secretary --}}
+    @if($role === 'secretary')
+      <a class="ap-action"
+         href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
+         target="_blank"
+         title="Print">
+        <i class="fa-solid fa-print"></i>
+      </a>
+
+      <a class="ap-action"
+         href="{{ route('appointment.vipPrint', $appt->id) }}?no={{ $dayNo }}"
+         target="_blank"
+         title="Print VIP">
+        <i class="fa-solid fa-award"></i>
+      </a>
+    @endif
+
+  </div>
+</td>
+
 
 
                   </tr>
