@@ -19,6 +19,10 @@
 
     {{-- ================= Header ================= --}}
     <header class="ad-header">
+        <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       <h1 class="ad-title">Edit Diagnosis</h1>
     </header>
 

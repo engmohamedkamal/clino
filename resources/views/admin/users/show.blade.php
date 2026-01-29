@@ -29,6 +29,10 @@
       @endif
 
       <div class="d-flex justify-content-between align-items-center mb-3">
+          <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
         <h3 class="mb-0">Users</h3>
         <a href="{{ route('users.index') }}" class="btn btn-primary">Create User</a>
       </div>

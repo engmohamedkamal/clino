@@ -44,6 +44,10 @@
 
     <!-- Topbar -->
     <header class="dp-topbar">
+        <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       <h1 class="dp-title">Doctor Profile</h1>
 
       <div class="dp-top-actions">

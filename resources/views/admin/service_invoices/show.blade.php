@@ -63,7 +63,10 @@
 <header class="page-header">
   <div class="page-width px-3">
     <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-
+  <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       <div>
         <h3 class="fw-bold mb-1">Payment Receipt</h3>
         <p class="text-secondary mb-0">Manage and view transaction details</p>

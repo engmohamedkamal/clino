@@ -9,7 +9,10 @@
 <link rel="stylesheet" href="{{ asset('CSS/daySummary.css') }}">
 
 <div class="ds-wrap container-fluid py-3 py-md-4">
-
+    <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+       data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+       <i class="fa-solid fa-bars"></i>
+     </button>
   <div class="ds-head">
     <div>
       <h3 class="ds-title">Day Summary</h3>

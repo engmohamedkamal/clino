@@ -65,6 +65,10 @@
       {{-- ================= Top Header ================= --}}
       <div class="d-flex align-items-start justify-content-between gap-3 mb-4 flex-wrap">
         <div>
+            <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
           <h3 class="mb-1 ci-title">Edit Invoice</h3>
           <div class="ci-subtitle">
             Invoice #{{ $invoice->invoice_no ?? ('INV-' . ($invoice->id ?? '')) }}

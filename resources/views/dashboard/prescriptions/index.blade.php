@@ -1,7 +1,10 @@
 @extends('layouts.dash')
 
 @section('dash-content')
-
+  <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
 <div class="container-fluid">
 
   {{-- ================= Doctor / Admin ================= --}}

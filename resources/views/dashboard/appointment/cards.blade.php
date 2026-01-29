@@ -21,6 +21,10 @@
 
     {{-- ================= Topbar ================= --}}
     <div class="pl-topbar">
+        <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       <h2 class="pl-title">App List</h2>
 
       <div class="pl-actions">

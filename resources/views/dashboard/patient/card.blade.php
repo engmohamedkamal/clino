@@ -18,7 +18,10 @@
   <header class="ap-topbar">
     <div class="container-fluid px-3 px-lg-4">
       <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
-
+  <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
         {{-- Title --}}
         <div class="d-flex align-items-center gap-3">
           <h1 class="ap-title m-0">Patient List</h1>

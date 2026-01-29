@@ -31,6 +31,10 @@
 
       <div class="card shadow-sm user-card">
         <div class="card-body">
+            <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
           <h4 class="mb-4 text-center">Create User</h4>
 
           <form action="{{ route('users.store') }}" method="POST" novalidate>

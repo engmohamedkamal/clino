@@ -47,6 +47,10 @@
   @endif
 
   <!-- Top row: title -->
+    <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
   <div class="d-flex align-items-center justify-content-between gap-2 mb-3 mb-md-4">
     <h3 class="pt-title mb-0">Patient Transfer</h3>
   </div>

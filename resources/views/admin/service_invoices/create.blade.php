@@ -45,6 +45,10 @@
 
       {{-- ================= Top Header ================= --}}
       <div class="d-flex align-items-start justify-content-between gap-3 mb-4 flex-wrap">
+          <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
         <div>
           <h3 class="mb-1 ci-title">Create New Invoice</h3>
           <div class="ci-subtitle">

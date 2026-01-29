@@ -2,48 +2,53 @@
 
 @section('dash-content')
 <link rel="stylesheet" href="{{ asset('CSS/patientList.css') }}">
+{{-- <link rel="stylesheet" href="{{ asset('CSS/medicine.css') }}"> --}}
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
 <section class="pl-main container">
 
   {{-- Topbar --}}
   <div class="pl-topbar">
+  <div class="d-flex align-items-start gap-3">
+    <button class="btn icon-btn d-lg-none" type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mobileSidebar"
+            aria-controls="mobileSidebar">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
     <div>
       <h2 class="pl-title mb-0">Medical Orders List</h2>
       <div class="pl-sub text-muted">Manage medicines, radiology and lab analysis orders.</div>
     </div>
-
-    <div class="pl-actions">
-
-  
-
-      {{-- Delete Selected --}}
-      <form id="bulkDeleteForm" method="POST" action="{{ route('medical-orders.bulkDestroy') }}" class="d-inline">
-        @csrf
-        @method('DELETE')
-        <button class="pl-icon-btn" type="submit" aria-label="Delete" id="deleteBtn" title="Delete selected">
-          <span class="material-icons-round">delete</span>
-        </button>
-      </form>
-
-      {{-- Add --}}
-      <a href="{{ route('medical-orders.create') }}" class="pl-icon-btn primary" aria-label="Add" title="Add new order">
-        <span class="material-icons-round">add</span>
-      </a>
-
-      {{-- Search --}}
-      <form class="pl-search" method="GET" action="{{ route('medical-orders.index') }}">
-        <span class="material-icons-round">search</span>
-        <input
-          id="searchInput"
-          name="q"
-          type="text"
-          value="{{ request('q') }}"
-          placeholder="Search by name or type..."
-        >
-      </form>
-    </div>
   </div>
+
+  <div class="pl-actions">
+    <form id="bulkDeleteForm" method="POST" action="{{ route('medical-orders.bulkDestroy') }}" class="d-inline">
+      @csrf
+      @method('DELETE')
+      <button class="pl-icon-btn" type="submit" aria-label="Delete" id="deleteBtn" title="Delete selected">
+        <span class="material-icons-round">delete</span>
+      </button>
+    </form>
+
+    <a href="{{ route('medical-orders.create') }}" class="pl-icon-btn primary" aria-label="Add" title="Add new order">
+      <span class="material-icons-round">add</span>
+    </a>
+
+    <form class="pl-search" method="GET" action="{{ route('medical-orders.index') }}">
+      <span class="material-icons-round">search</span>
+      <input
+        id="searchInput"
+        name="q"
+        type="text"
+        value="{{ request('q') }}"
+        placeholder="Search by name or type..."
+      >
+    </form>
+  </div>
+</div>
+
 
   {{-- Alerts --}}
   @if(session('success'))

@@ -135,42 +135,50 @@
     </div>
   </aside>
 
-  <!-- ================= Sidebar Mobile ================= -->
-  <div class="offcanvas offcanvas-start sidebar-offcanvas d-lg-none" id="mobileSidebar">
-    <div class="offcanvas-header">
-      <div class="brand d-flex align-items-center gap-2">
-        <div class="brand-logo"><i class="fa-solid fa-hospital"></i></div>
-        <span class="fw-bold fs-5">Helper Clinic</span>
-      </div>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+
+<div class="offcanvas offcanvas-start sidebar-offcanvas d-lg-none"
+     tabindex="-1"
+     id="mobileSidebar"
+     aria-labelledby="mobileSidebarLabel"
+     data-bs-scroll="true">
+
+  <div class="offcanvas-header">
+    <div class="brand d-flex align-items-center gap-2" id="mobileSidebarLabel">
+      <div class="brand-logo"><i class="fa-solid fa-hospital"></i></div>
+      <span class="fw-bold fs-5">Helper Clinic</span>
     </div>
 
-    <div class="offcanvas-body d-flex flex-column">
-      <nav class="side-nav flex-grow-1">
-        @foreach($nav as $item)
-          @php
-            $href = $item['href'] ?? (isset($item['route']) ? route($item['route']) : '#');
-            $active = $item['is_active'] ?? (isset($item['route']) ? request()->routeIs(($item['route']).'*') : false);
-          @endphp
-          <a href="{{ $href }}" class="side-link js-offcanvas-link {{ $active ? 'active' : '' }}">
-            <i class="{{ $item['icon'] }}"></i>
-            {{ $item['label'] }}
-          </a>
-        @endforeach
-      </nav>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
 
-      <div class="mt-auto">
-        <div class="side-divider"></div>
-        <form method="POST" action="{{ route('logout') }}">
-          @csrf
-          <button type="submit" class="side-link logout-link w-100 text-start border-0 bg-transparent">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            Logout
-          </button>
-        </form>
-      </div>
+  <div class="offcanvas-body d-flex flex-column">
+    <nav class="side-nav flex-grow-1">
+      @foreach($nav as $item)
+        @php
+          $href = $item['href'] ?? (isset($item['route']) ? route($item['route']) : '#');
+          $active = $item['is_active'] ?? (isset($item['route']) ? request()->routeIs(($item['route']).'*') : false);
+        @endphp
+
+        <a href="{{ $href }}" class="side-link js-offcanvas-link {{ $active ? 'active' : '' }}">
+          <i class="{{ $item['icon'] }}"></i>
+          {{ $item['label'] }}
+        </a>
+      @endforeach
+    </nav>
+
+    <div class="mt-auto">
+      <div class="side-divider"></div>
+      <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="side-link logout-link w-100 text-start border-0 bg-transparent">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Logout
+        </button>
+      </form>
     </div>
   </div>
+</div>
+
 
   <div class="main-wrap">
     @yield('dash-content')
@@ -182,14 +190,20 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  document.addEventListener('click', function (e) {
-    const link = e.target.closest('.js-offcanvas-link');
-    if (!link) return;
-    const offcanvas = document.getElementById('mobileSidebar');
-    const instance = bootstrap.Offcanvas.getInstance(offcanvas);
-    if (instance) instance.hide();
+  document.addEventListener("DOMContentLoaded", function () {
+    const offcanvasEl = document.getElementById("mobileSidebar");
+    if (!offcanvasEl) return;
+
+    const instance = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+
+    document.querySelectorAll(".js-offcanvas-link").forEach((a) => {
+      a.addEventListener("click", () => {
+        instance.hide();
+      });
+    });
   });
 </script>
+
 
 </body>
 </html>

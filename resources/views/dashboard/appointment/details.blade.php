@@ -18,7 +18,12 @@
   <section class="ad-main container">
     {{-- Topbar --}}
     <div class="ad-topbar">
+        <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       <div class="ad-left">
+
         <a href="{{ route('appointment.show')}}" class="ad-icon-btn" aria-label="Back" title="Back">
           <span class="material-icons-round">arrow_back</span>
         </a>

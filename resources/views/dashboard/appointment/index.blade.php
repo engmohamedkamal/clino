@@ -4,6 +4,10 @@
     <section class="content-area">
       <div class="h-100 d-flex align-items-start justify-content-center pt-3 pt-md-4">
         <div class="appointment-card">
+          <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+       data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+       <i class="fa-solid fa-bars"></i>
+     </button>
           <h3 class="appointment-title mb-4">Book Appointment</h3>
 
           {{-- SUCCESS --}}

@@ -11,6 +11,10 @@
   
 
   <div class="d-flex align-items-center justify-content-between mb-3">
+      <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
     <h4 class="mb-0">Doctor ↔ Services</h4>
   </div>
 

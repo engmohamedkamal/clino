@@ -28,6 +28,10 @@
 
           {{-- Header --}}
           <div class="mb-4 text-center">
+              <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
             <i class="fa-solid fa-prescription-bottle-medical fa-2x text-primary mb-2"></i>
             <h4 class="fw-bold mb-1">Create Prescription</h4>
             <p class="text-muted mb-0">Fill in the prescription details carefully</p>

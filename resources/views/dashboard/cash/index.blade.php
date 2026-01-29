@@ -11,15 +11,25 @@
   @endphp
 
   <main class="cash-layout">
-    <div class="cash-container">
+ <div class="cash-container">
+  <!-- Header -->
+  <div class="cash-head">
+    <div class="cash-head-top">
+      <button class="btn icon-btn d-lg-none cash-menu-btn" type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#mobileSidebar"
+              aria-controls="mobileSidebar" aria-label="Open menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
 
-      <!-- Header -->
-      <div class="cash-head">
-        <h1 class="cash-title">Services &amp; Cash Management</h1>
-        <p class="cash-subtitle">
-          Manage clinic services and monitor real-time financial performance.
-        </p>
-      </div>
+      <h1 class="cash-title mb-0">Services &amp; Cash Management</h1>
+    </div>
+
+    <p class="cash-subtitle mb-0">
+      Manage clinic services and monitor real-time financial performance.
+    </p>
+  </div>
+</div>
 
       {{-- ✅ Alerts --}}
       @if (session('success'))

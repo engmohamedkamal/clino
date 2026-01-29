@@ -25,6 +25,12 @@
 
       <!-- ===== Header ===== -->
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+        <button class="btn icon-btn d-lg-none cash-menu-btn" type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mobileSidebar"
+            aria-controls="mobileSidebar" aria-label="Open menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
         <h1 class="ap-title m-0">Appointments</h1>
 
         <div class="d-flex align-items-center gap-2 flex-wrap">

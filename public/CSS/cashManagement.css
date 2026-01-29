@@ -186,3 +186,64 @@ body {
 .cash-add-btn:hover {
   background: #eaf1ff94;
 }
+.cash-head{
+  padding: 18px 0 14px;
+}
+
+.cash-head-top{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cash-menu-btn{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cash-title{
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.cash-subtitle{
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 70ch;
+}
+
+/* Tablet & down */
+@media (max-width: 991.98px){
+  .cash-head{
+    padding: 14px 0 10px;
+  }
+
+  .cash-title{
+    font-size: 18px;
+  }
+
+  .cash-subtitle{
+    font-size: 13px;
+    margin-top: 6px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 380px){
+  .cash-title{
+    font-size: 16px;
+  }
+
+  .cash-menu-btn{
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+}
