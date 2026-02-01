@@ -8,6 +8,7 @@
   $clinicEmail = $setting->email  ?? 'memamo0338@helperclinic.com';
 
   $patientName = $rx->patientUser->name ?? '-';
+  $patientPhone = $rx->patientUser->phone ?? '-';
   $patientId   = $rx->patientUser->id ?? null;
 
   $doctorName  = $rx->doctor?->user?->name ?? 'Doctor';
@@ -90,19 +91,46 @@
 
 <div class="rx-body">
   <div class="rx-actions container py-3">
-  <div class="d-flex align-items-center justify-content-center">
-    <button
-      type="button"
-      class="rx-print-btn"
-      onclick="window.print()"
-    >
-      <span class="rx-print-icon">
-        <i class="bi bi-printer"></i>
-      </span>
-      <span class="rx-print-text">Print Prescription</span>
-    </button>
+    <div class="d-flex align-items-center justify-content-center gap-3">
+
+      <!-- Print -->
+      <button
+        type="button"
+        class="rx-print-btn"
+        onclick="window.print()"
+      >
+        <span class="rx-print-icon">
+          <i class="bi bi-printer"></i>
+        </span>
+        <span class="rx-print-text">Print Prescription</span>
+      </button>
+
+      <!-- WhatsApp -->
+@php
+  $pdfUrl = route('prescriptions.pdf', $rx->id);
+  $msg = "🧾 Your prescription PDF is ready:\n{$pdfUrl}";
+@endphp
+
+<a
+  href="https://wa.me/{{ preg_replace('/\D+/', '', $patientPhone) }}?text={{ urlencode($msg) }}"
+  target="_blank"
+  class="rx-whatsapp-btn rx-whatsapp-pro text-decoration-none"
+>
+  <span class="rx-wa-icon">
+    <i class="bi bi-whatsapp"></i>
+  </span>
+  <span class="rx-wa-text">
+    Send Prescription PDF
+  </span>
+</a>
+
+
+
+
+    </div>
   </div>
 </div>
+
 
   <div class="container pb-4">
     <div class="rx-card mx-auto">

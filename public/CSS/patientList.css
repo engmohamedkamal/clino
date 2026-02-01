@@ -302,3 +302,159 @@ html, body{
   }
   .ad-status-pill .material-icons-round{ font-size:15px; }
 }
+/* =====================================================
+   Layout: respect LEFT aside (desktop) + full width mobile
+===================================================== */
+:root{
+  --sidebar-w: 270px; /* ✅ عدّلها لو السايدبار عندك مختلف */
+}
+
+/* section.pl-main is inside .container حاليا
+   نخليه يملأ المساحة بدل ما يبقى centered container width */
+.pl-main.container{
+  max-width: 100% !important;
+  width: 100%;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* على الشاشات الكبيرة: خليك عارف إن المحتوى أصلاً جنب aside
+   فـ نمنع أي squeeze ونخليه يستغل المساحة */
+@media (min-width: 992px){
+  .pl-main{
+    /* لو الـ layout ما بيضيفش margin-left للمحتوى، ساعتها فعّل السطر ده */
+    /* margin-left: var(--sidebar-w); */
+
+    /* بديل آمن: نخلي العرض يحترم مساحة السايدبار */
+    max-width: calc(100vw - var(--sidebar-w)) !important;
+  }
+}
+
+/* على الموبايل: aside مخفي وبيظهر offcanvas => المحتوى ياخد كامل العرض */
+@media (max-width: 991.98px){
+  .pl-main.container{
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+/* =====================================================
+   Topbar (already good, just ensure no overflow)
+===================================================== */
+.pl-topbar{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.pl-title{
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.pl-actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Search */
+.pl-search{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #f7f9fc;
+  border-radius: 14px;
+  min-width: 280px;
+}
+
+.pl-search input{
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+}
+
+/* =====================================================
+   Table Card
+===================================================== */
+.pl-table-card{
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+  overflow: hidden;
+}
+
+.pl-table thead th{
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #6b7280;
+  background: #1f4f8c; /* لو عندك هيدر أزرق زي الصورة */
+  color: #fff;
+  border-bottom: 0;
+}
+
+.pl-table tbody td{
+  font-size: 14px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  vertical-align: middle;
+}
+
+.pl-table tbody tr:hover{
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.pl-table .badge{
+  white-space: nowrap;
+  border-radius: 10px;
+}
+
+/* =====================================================
+   Responsive tweaks
+===================================================== */
+@media (max-width: 991.98px){
+  .pl-topbar{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .pl-actions{
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .pl-search{
+    width: 100%;
+    min-width: 0;
+  }
+
+  .table-responsive{
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* قلل عرض الأعمدة لتقليل الـ scroll */
+  .pl-table th[style*="min-width:240px"]{ min-width: 180px !important; }
+  .pl-table th[style*="min-width:140px"]{ min-width: 120px !important; }
+
+  .pl-title{ font-size: 18px; }
+  .pl-sub{ font-size: 13px; }
+}
+
+@media (max-width: 420px){
+  .pl-main.container{
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .pl-title{ font-size: 17px; }
+}

@@ -78,37 +78,17 @@ public function create(Request $request)
     // /patient-transfers/create?patient_id=1&appointment_id=5
     $selectedPatientId = $request->query('patient_id');
     $appointmentId     = $request->query('appointment_id');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Patients from patients table
-    |--------------------------------------------------------------------------
-    */
     $patientsFromPatientsTable = Patient::query()
         ->selectRaw('id, patient_name as name')
         ->get();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Patients from users table (role = patient)
-    |--------------------------------------------------------------------------
-    */
     $patientsFromUsersTable = User::query()
         ->where('role', 'patient')
         ->selectRaw('id, name')
         ->get();
+$patients = User::where('role', 'patient')->latest()->get();
+        $patient = $request->patient_name;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Merge both collections
-    |--------------------------------------------------------------------------
-    */
-    $patients = $patientsFromPatientsTable
-        ->concat($patientsFromUsersTable)
-        ->sortBy('name')
-        ->values();
-
-    // تأكد إن المريض المحدد موجود في أي جدول
     if ($selectedPatientId) {
         $exists =
             Patient::whereKey($selectedPatientId)->exists()
@@ -128,7 +108,7 @@ public function create(Request $request)
     $transfer_code = 'TR-' . now()->format('Ymd') . '-' . random_int(1000, 9999);
 
     return view('dashboard.transfer.create', compact(
-        'patients',
+        'patients','patient',
         'selectedPatientId',
         'appointmentId',
         'doctors',
@@ -155,11 +135,7 @@ public function create(Request $request)
         $transfer = PatientTransfer::create($data);
 $user = auth()->user();
 
-if ($user->role === 'doctor') {
-    return session('return_to')
-        ? redirect(session('return_to'))->with('success', 'Report created successfully.')
-        : redirect()->back()->with('success', 'Report created successfully.');
-}
+
         return redirect()
             ->route('patient-transfers.show', $transfer->id)
             ->with('success', 'Transfer created successfully.');

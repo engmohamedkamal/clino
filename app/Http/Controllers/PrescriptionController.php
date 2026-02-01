@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Setting;
 use App\Models\DoctorInfo;
-use App\Models\Prescription;
-use App\Models\Medicine as MedicalOrder; // ✅ جدول medical orders (name,type)
-use Illuminate\Http\Request;
 use App\Models\PatientInfo;
+use App\Models\Prescription;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Medicine as MedicalOrder; // ✅ جدول medical orders (name,type)
+use ArPHP\I18N\Arabic;
 class PrescriptionController extends Controller
 {
     private function userRole(): string
@@ -139,25 +142,23 @@ class PrescriptionController extends Controller
 
     /* ================= Create ================= */
 
-    public function create()
+    public function create(Request $request)
     {
+        // dd($request->patient_name);
         if (!$this->canManage()) {
             abort(403);
         }
 
         $doctorId = $this->currentDoctorId();
-
         $patients = User::where('role', 'patient')->latest()->get();
-
+        $patient = $request->patient_name;
         $doctors = $this->isAdmin()
             ? DoctorInfo::with('user')->latest()->get()
             : collect();
-
-        // ✅ NEW: القوائم من جدول medical orders
         $lists = $this->getOrdersLists();
 
         return view('dashboard.prescriptions.create', array_merge(
-            compact('patients', 'doctors', 'doctorId'),
+            compact('patient','patients', 'doctors', 'doctorId'),
             $lists
         ));
     }
@@ -261,11 +262,11 @@ class PrescriptionController extends Controller
         $rx = Prescription::create($data);
         $user = auth()->user();
 
-        if ($user->role === 'doctor') {
-            return session('return_to')
-                ? redirect(session('return_to'))->with('success', 'Report created successfully.')
-                : redirect()->back()->with('success', 'Report created successfully.');
-        }
+        // if ($user->role === 'doctor') {
+        //     return session('return_to')
+        //         ? redirect(session('return_to'))->with('success', 'Report created successfully.')
+        //         : redirect()->back()->with('success', 'Report created successfully.');
+        // }
         return redirect()->route('prescriptions.show', $rx->id)
             ->with('success', 'Prescription created successfully.');
     }
@@ -429,4 +430,82 @@ class PrescriptionController extends Controller
         return redirect()->route('prescriptions.index')
             ->with('success', "Deleted {$deleted} prescription(s).");
     }
+
+
+private function fixPdfText($text): string
+{
+    $text = (string) $text;
+    if (trim($text) === '') return $text;
+
+    // لو فيه عربي → اعمل glyph shaping
+    if (preg_match('/\p{Arabic}/u', $text)) {
+        static $arabic = null;
+        $arabic ??= new Arabic();
+        return $arabic->utf8Glyphs($text);
+    }
+
+    return $text;
+}
+
+private function fixPdfArray(array $arr): array
+{
+    return array_map(fn($v) => $this->fixPdfText($v), $arr);
+}
+
+public function pdf($id)
+{
+    $rx = Prescription::with(['patientUser','doctor.user'])->findOrFail($id);
+    $setting = Setting::first();
+
+    // ===== Settings / Clinic =====
+    $clinicName  = $this->fixPdfText($setting->name ?? 'Helper Clinic');
+    $clinicAddr  = $this->fixPdfText($setting->address ?? 'Nazer, Eltar3a Street');
+    $clinicPhone = $setting->phone ?? '01221604325';
+    $clinicEmail = $setting->email ?? 'memamo0338@helperclinic.com';
+
+    // ===== RX / Patient / Doctor =====
+    $patientName = $this->fixPdfText($rx->patientUser->name ?? '-');
+    $patientId   = $rx->patientUser->id ?? null;
+    $doctorName  = $this->fixPdfText($rx->doctor?->user?->name ?? 'Doctor');
+
+    $date   = optional($rx->created_at)->format('M d, Y');
+    $rxCode = 'RX-' . str_pad($rx->id, 6, '0', STR_PAD_LEFT);
+
+    $diagnosis = $this->fixPdfText($rx->diagnosis ?? '-');
+
+    // ===== Arrays (Safe decode) =====
+    $medicines = is_array($rx->medicine_name) ? $rx->medicine_name : (json_decode($rx->medicine_name, true) ?: []);
+    $dosages   = is_array($rx->dosage)        ? $rx->dosage        : (json_decode($rx->dosage, true) ?: []);
+    $durations = is_array($rx->duration)      ? $rx->duration      : (json_decode($rx->duration, true) ?: []);
+    $notesArr  = is_array($rx->notes)         ? $rx->notes         : (json_decode($rx->notes, true) ?: []);
+
+    $rumors   = is_array($rx->rumor)    ? $rx->rumor    : (json_decode($rx->rumor, true) ?: []);
+    $analyses = is_array($rx->analysis) ? $rx->analysis : (json_decode($rx->analysis, true) ?: []);
+
+    // Clean empties
+    $medicines = array_values(array_filter($medicines, fn($v) => trim((string)$v) !== ''));
+    $dosages   = array_values($dosages);
+    $durations = array_values($durations);
+    $notesArr  = array_values($notesArr);
+
+    $rumors    = array_values(array_filter($rumors, fn($v) => trim((string)$v) !== ''));
+    $analyses  = array_values(array_filter($analyses, fn($v) => trim((string)$v) !== ''));
+
+    // ✅ Fix Arabic dynamic content in arrays too
+    $medicines = $this->fixPdfArray($medicines);
+    $dosages   = $this->fixPdfArray($dosages);
+    $durations = $this->fixPdfArray($durations);
+    $notesArr  = $this->fixPdfArray($notesArr);
+    $rumors    = $this->fixPdfArray($rumors);
+    $analyses  = $this->fixPdfArray($analyses);
+
+    $pdf = Pdf::loadView('dashboard.prescriptions.pdf', compact(
+        'rx','clinicName','clinicAddr','clinicPhone','clinicEmail',
+        'patientName','patientId','doctorName','date','rxCode','diagnosis',
+        'medicines','dosages','durations','notesArr','rumors','analyses'
+    ))->setPaper('a4');
+
+    return $pdf->stream("prescription-{$rx->id}.pdf");
+}
+
 }

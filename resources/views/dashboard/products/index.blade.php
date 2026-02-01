@@ -47,9 +47,8 @@
             <th>Category</th>
             <th>Unit</th>
             <th class="text-center">Qty</th>
-            <th>Purchase</th>
             <th>Selling</th>
-            <th>Status</th>
+            <th>Expiry Date</th>
             <th class="text-end">Actions</th>
           </tr>
         </thead>
@@ -91,21 +90,37 @@
 </td>
 
 
-              <td class="text-muted">
-                {{ number_format($product->purchase_price, 2) }}
-              </td>
+
 
               <td class="text-muted">
                 {{ number_format($product->selling_price, 2) }}
               </td>
+@php
+  $expiry = \Carbon\Carbon::parse($product->expiry_date);
+  $daysLeft = now()->diffInDays($expiry, false);
+@endphp
 
-              <td>
-                @if($product->status)
-                  <span class="badge bg-success">Active</span>
-                @else
-                  <span class="badge bg-secondary">Inactive</span>
-                @endif
-              </td>
+<td>
+  @if($daysLeft < 0)
+    {{-- ❌ منتهي --}}
+    <span class="badge bg-danger">
+      Expired ({{ $expiry->format('d-m-Y') }})
+    </span>
+
+  @elseif($daysLeft <= 10)
+    {{-- ⚠️ قرب الانتهاء --}}
+    <span class="badge bg-warning text-dark">
+      Expires Soon ({{ $expiry->format('d-m-Y') }})
+    </span>
+
+  @else
+    {{-- ✅ سليم --}}
+    <span class="badge bg-success">
+      {{ $expiry->format('d-m-Y') }}
+    </span>
+  @endif
+</td>
+
 
               <td class="text-end">
                 <a href="{{ route('products.edit', $product->id) }}"

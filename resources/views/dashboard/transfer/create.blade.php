@@ -77,35 +77,24 @@
               <div class="d-flex align-items-end gap-3 flex-wrap">
 
                 {{-- ================= Patient (Searchable) ================= --}}
-                <div class="mb-3" style="min-width:260px">
-                  <label class="form-label">Patient <span class="text-danger">*</span></label>
+                     <div class="pt-field">
+                <label class="form-label fw-semibold">Patient</label>
+                <select name="patient_name"
+                        class="form-control pt-control pt-control-sm w-auto @error('patient_name') is-invalid @enderror"
+                        required>
+                  <option value="">-- Select Patient --</option>
+                  @foreach($patients as $p)
+                  <option value="{{ $p->name }}"
+  @selected($patient === $p->name)>
+  {{ $p->name }}
+</option>
 
-                  {{-- hidden id to submit --}}
-                  <input type="hidden" name="patient_id" id="patient_id" value="{{ $pid }}">
-
-                  {{-- searchable input --}}
-                  <input
-                    type="text"
-                    name="patient_name"
-                    id="patient_name"
-                    class="form-control @error('patient_id') is-invalid @enderror"
-                    list="patientsList"
-                    placeholder="Search patient..."
-                    value="{{ $patientNameOld }}"
-                    autocomplete="off"
-                    required
-                  >
-
-                  <datalist id="patientsList">
-                    @foreach($patients as $p)
-                      <option value="{{ $p->name }}" data-id="{{ $p->id }}"></option>
-                    @endforeach
-                  </datalist>
-
-                  @error('patient_id')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                  @enderror
-                </div>
+                  @endforeach
+                </select>
+                @error('patient_name')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
 
                 {{-- ================= Transfer Code ================= --}}
                 <div class="pt-field">

@@ -24,18 +24,52 @@
 <main class="container-fluid py-2 py-md-3">
 
   {{-- =================== Top Actions =================== --}}
-  <div class="pt-actions container py-3">
-    <div class="d-flex align-items-center justify-content-end gap-2 flex-wrap">
+ <div class="pt-actions container py-3">
+  <div class="pt-actions-bar">
 
-      <button type="button" class="pt-btn pt-btn-primary" onclick="window.print()">
-        <i class="bi bi-printer"></i> Print
-      </button>
+    <!-- Print -->
+    <button
+      type="button"
+      class="pt-btn pt-btn-print"
+      onclick="window.print()"
+    >
+      <span class="pt-btn-icon">
+        <i class="bi bi-printer"></i>
+      </span>
+      <span class="pt-btn-text">Print</span>
+    </button>
 
-      <a href="{{ route('diagnoses.index') }}" class="pt-icon-circle" aria-label="Exit">
-        <i class="bi bi-box-arrow-right"></i>
+    {{-- WhatsApp --}}
+    @php
+      $pdfUrl = route('diagnoses.pdf', $diagnosis->id);
+      $msg = "🧾 Diagnosis Report PDF is ready:\n{$pdfUrl}";
+      $patient = $diagnosis->patient ?? null;
+      $patientPhone = $patient->phone ?? null;
+    @endphp
+
+    @if($patientPhone)
+      <a
+        href="https://wa.me/{{ preg_replace('/\D+/', '', $patientPhone) }}?text={{ urlencode($msg) }}"
+        target="_blank"
+        class="pt-btn pt-btn-wa text-decoration-none"
+      >
+        <span class="pt-btn-icon">
+          <i class="bi bi-whatsapp"></i>
+        </span>
+        <span class="pt-btn-text">Send Diagnosis PDF</span>
       </a>
-    </div>
+    @else
+      <button class="pt-btn pt-btn-wa disabled" disabled>
+        <span class="pt-btn-icon">
+          <i class="bi bi-whatsapp"></i>
+        </span>
+        <span class="pt-btn-text">No Patient Phone</span>
+      </button>
+    @endif
+
   </div>
+</div>
+
   <div class="container pb-5">
     <div class="pt-page mx-auto">
       <div class="d-flex justify-content-between align-items-start gap-3">

@@ -6,8 +6,6 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
 <section class="pl-main container">
-
-  {{-- Topbar --}}
   <div class="pl-topbar">
   <div class="d-flex align-items-start gap-3">
     <button class="btn icon-btn d-lg-none" type="button"

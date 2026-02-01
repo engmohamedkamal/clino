@@ -274,3 +274,72 @@
     display: none !important;
   }
 }
+/* ===== WhatsApp Pro Button ===== */
+.rx-whatsapp-pro{
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #25D366, #1ebd5a);
+  color: #fff !important;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: .2px;
+  box-shadow: 0 14px 28px rgba(37, 211, 102, 0.35);
+  transition: all .25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover */
+.rx-whatsapp-pro:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(37, 211, 102, 0.45);
+  color: #fff;
+}
+
+/* Active */
+.rx-whatsapp-pro:active{
+  transform: translateY(0);
+  box-shadow: 0 10px 22px rgba(37, 211, 102, 0.35);
+}
+
+/* Icon bubble */
+.rx-wa-icon{
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.18);
+  font-size: 20px;
+}
+
+/* Text */
+.rx-wa-text{
+  white-space: nowrap;
+}
+
+/* Optional glow on hover */
+.rx-whatsapp-pro::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(255,255,255,0.25), transparent 60%);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.rx-whatsapp-pro:hover::after{
+  opacity: 1;
+}
+
+/* Mobile */
+@media (max-width: 576px){
+  .rx-whatsapp-pro{
+    width: 100%;
+    justify-content: center;
+  }
+}

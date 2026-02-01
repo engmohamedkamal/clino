@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DiagnosisController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserInfoController;
@@ -20,6 +21,11 @@ Route::middleware(['auth', 'doctor.area'])->group(function () {
     Route::get('/my-info/edit', [UserInfoController::class, 'edit'])->name('my-info.edit');
     Route::put('/my-info', [UserInfoController::class, 'update'])->name('my-info.update');
 
+    Route::get('/prescriptions/{rx}/pdf', [PrescriptionController::class, 'pdf'])
+    ->name('prescriptions.pdf');
+    Route::get('/diagnoses/{diagnosis}/pdf', [DiagnosisController::class, 'pdf'])
+    ->name('diagnoses.pdf');
+    
 
 });
 

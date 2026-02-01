@@ -35,57 +35,31 @@
   </header>
 
   <div class="ad-card">
-    <form method="POST" action="{{ route('diagnoses.store') }}">
+    <form method="POST" action="{{ route('diagnoses.store') }}" novalidate>
       @csrf
 
       {{-- ✅ ده اللي هيتبعت للباك --}}
       <input type="hidden" name="patient_id" id="patientId" value="{{ $useNew ? '__new__' : ($oldPatientId ?? '') }}">
       <input type="hidden" name="patient_mode" id="patientMode" value="{{ $useNew ? '__new__' : 'existing' }}">
+              <div class="ad-group">
+                <label class="form-label fw-semibold">Patient</label>
+                <select name="patient_id"
+                        class="ad-input @error('patient_id') is-invalid @enderror"
+                        required>
+                  <option value="">-- Select Patient --</option>
+                  @foreach($patients as $p)
+                  <option value="{{ $p->id }}"
+  @selected($patient === $p->name)>
+  {{ $p->name }}
+</option>
 
-      <div class="ad-group">
-        <label>Patient</label>
+                  @endforeach
+                </select>
+                @error('patient_id')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
 
-        {{-- ✅ Searchable input --}}
-        <input
-          type="text"
-          name="patient_name"
-          id="patientName"
-          class="ad-input @error('patient_id') is-invalid @enderror"
-          placeholder="Search patient..."
-          list="patientsList"
-          autocomplete="off"
-          value="{{ $useNew ? '__new__' : $patientNameValue }}"
-        >
-
-        {{-- ✅ Add new patient first option --}}
-        <datalist id="patientsList">
-          {{-- <option value="__new__">+ Add new patient</option> --}}
-
-          @foreach(($patients ?? collect()) as $p)
-            <option value="{{ $p->name }}" data-id="{{ $p->id }}"></option>
-          @endforeach
-        </datalist>
-
-        @error('patient_id')
-          <div class="ad-error">{{ $message }}</div>
-        @enderror
-      </div>
-
-      <div class="ad-group" id="newPatientWrap" style="{{ $useNew ? '' : 'display:none;' }}">
-        <label>New Patient Name</label>
-        <input
-          type="text"
-          name="patient_name_new"
-          id="newPatientInput"
-          value="{{ $oldNewName }}"
-          class="ad-input @error('patient_name_new') is-invalid @enderror"
-          placeholder="Type patient name..."
-          {{ $useNew ? 'required' : '' }}
-        >
-        @error('patient_name_new')
-          <div class="ad-error">{{ $message }}</div>
-        @enderror
-      </div>
 
       <div class="ad-group">
         <label>Public Diagnosis</label>

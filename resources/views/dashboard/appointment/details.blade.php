@@ -203,7 +203,7 @@
 
                   {{-- Prescription --}}
                   <div class="col">
-                    <a href="{{ route('prescriptions.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
+                    <a href="{{ route('prescriptions.create', ['patient_name' => $appointment->patient_name, 'appointment_id' => $appointment->id]) }}"
                       class="ad-action-card primary text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
 
                       <div class="ad-card-icon primary mb-3">
@@ -217,7 +217,7 @@
 
                   {{-- Diagnosis --}}
                   <div class="col">
-                    <a href="{{ route('diagnoses.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
+                    <a href="{{ route('diagnoses.create', ['patient_name' => $appointment->patient_name, 'appointment_id' => $appointment->id]) }}"
                       class="ad-action-card text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
 
                       <div class="ad-card-icon soft mb-3">
@@ -231,7 +231,7 @@
 
                   {{-- Transfer --}}
                   <div class="col">
-                    <a href="{{ route('patient-transfers.create', ['patient_id' => $appointment->patient_id, 'appointment_id' => $appointment->id]) }}"
+                    <a href="{{ route('patient-transfers.create', ['patient_name' => $appointment->patient_name, 'appointment_id' => $appointment->id]) }}"
                       class="ad-action-card warning text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center text-center">
 
                       <div class="ad-card-icon warning mb-3">

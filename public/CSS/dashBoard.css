@@ -765,3 +765,40 @@ html, body {
 .logout-link:hover i {
   color: #b91c1c;
 }
+
+.app{
+  display: flex;
+  min-height: 100vh;
+  background: #f3f6fb; /* لو عندك لون خلفية */
+}
+
+/* Sidebar width */
+.sidebar{
+  width: 270px;           /* ✅ نفس عرض السايدبار */
+  flex: 0 0 270px;
+}
+
+/* Main content takes remaining space */
+.main-wrap{
+  flex: 1;
+  min-width: 0;           /* ✅ مهم علشان الجدول/overflow ما يكسرش */
+  /* padding: 22px 26px; */
+}
+
+@media (max-width: 991.98px){
+  .main-wrap{
+    padding: 16px 14px;
+  }
+}
+
+.main-wrap .container,
+.main-wrap .container-sm,
+.main-wrap .container-md,
+.main-wrap .container-lg,
+.main-wrap .container-xl,
+.main-wrap .container-xxl{
+  max-width: 100% !important;
+  width: 100%;
+  padding-left: 0;    /* لأن main-wrap أصلاً فيه padding */
+  padding-right: 0;
+}

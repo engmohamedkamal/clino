@@ -50,9 +50,11 @@
                         required>
                   <option value="">-- Select Patient --</option>
                   @foreach($patients as $p)
-                    <option value="{{ $p->id }}" @selected((string)$selectedPatientId === (string)$p->id)>
-                      {{ $p->name }}
-                    </option>
+                  <option value="{{ $p->id }}"
+  @selected($patient === $p->name)>
+  {{ $p->name }}
+</option>
+
                   @endforeach
                 </select>
                 @error('patient_id')
