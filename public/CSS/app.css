@@ -341,3 +341,47 @@ background-color: #1C5197;}
   .ap-search{ width: 100%; }
   .ap-date{ width: 100%; }
 }
+/* ================= Flags (Emergency / VIP) ================= */
+.ap-flag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  line-height:1;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+
+.ap-flag-emergency{
+  background: rgba(239, 68, 68, 0.12);
+  color:#dc2626;
+  border-color: rgba(239, 68, 68, 0.28);
+}
+
+.ap-flag-vip{
+  background: rgba(245, 158, 11, 0.14);
+  color:#b45309;
+  border-color: rgba(245, 158, 11, 0.30);
+}
+
+/* Row highlight */
+.ap-row-emergency{
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.ap-row-emergency td{
+  border-top-color: rgba(239, 68, 68, 0.18);
+  border-bottom-color: rgba(239, 68, 68, 0.18);
+}
+
+.ap-row-vip{
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.ap-row-vip td{
+  border-top-color: rgba(245, 158, 11, 0.18);
+  border-bottom-color: rgba(245, 158, 11, 0.18);
+}

@@ -44,12 +44,11 @@
       $pdfUrl = route('diagnoses.pdf', $diagnosis->id);
       $msg = "🧾 Diagnosis Report PDF is ready:\n{$pdfUrl}";
       $patient = $diagnosis->patient ?? null;
-      $patientPhone = $patient->phone ?? null;
     @endphp
 
-    @if($patientPhone)
+    @if(session('patient_phone'))
       <a
-        href="https://wa.me/{{ preg_replace('/\D+/', '', $patientPhone) }}?text={{ urlencode($msg) }}"
+        href="https://wa.me/{{ preg_replace('/\D+/', '',  session('patient_phone') ) }}?text={{ urlencode($msg) }}"
         target="_blank"
         class="pt-btn pt-btn-wa text-decoration-none"
       >

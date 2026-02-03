@@ -35,36 +35,21 @@
 
               {{-- ✅ Patient --}}
               <div class="col-12 col-md-6">
-                <label class="rp-label">Patient</label>
-                @php
-                  $selectedPatient = old('patient_ref')
-                    ?? (isset($patient_id) ? 'patient:' . $patient_id : null);
-                @endphp
-
                 <div class="rp-field">
-                  <select name="patient_ref" class="rp-control @error('patient_ref') is-invalid @enderror" required>
-                    <option value="" disabled {{ $selectedPatient ? '' : 'selected' }}>
-                      Select Patient
-                    </option>
-
+                  <label class="form-label fw-semibold">Patient</label>
+                  <select name="patient_id" class="rp-control @error('patient_id') is-invalid @enderror" required>
+                    <option value="">-- Select Patient --</option>
                     @foreach($patients as $p)
-                      @php
-                        $value = $p->source . ':' . $p->id;
-                      @endphp
-
-                      <option value="{{ $value }}" {{ $selectedPatient === $value ? 'selected' : '' }}>
-                        {{ $p->name }} {{ $p->phone ? ' - ' . $p->phone : '' }}
+                      <option value="{{ $p->id }}" @selected($patient === $p->name)>
+                        {{ $p->name }}
                       </option>
+
                     @endforeach
                   </select>
-
-                  <i class="bi bi-chevron-down rp-sfx"></i>
+                  @error('patient_id')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                  @enderror
                 </div>
-
-                @error('patient_ref')
-                  <div class="invalid-feedback d-block">{{ $message }}</div>
-                @enderror
-
                 <label class="rp-label mt-4">Examination Date</label>
                 <div class="rp-field">
                   <input name="exam_date" type="date" class="rp-control @error('exam_date') is-invalid @enderror"

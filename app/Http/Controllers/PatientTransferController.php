@@ -7,6 +7,7 @@ use App\Models\PatientTransfer;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PatientTransferController extends Controller
 {
@@ -202,4 +203,31 @@ $user = auth()->user();
             ->route('patient-transfers.index')
             ->with('success', 'Transfer deleted successfully.');
     }
+
+public function pdf(PatientTransfer $transfer)
+{
+    // حمّل أي علاقات محتاجها في الـ PDF
+    // $transfer->load([
+    //     '
+    //     'primaryPhysician.doctorInfo',
+    // ]);
+
+    $setting = \App\Models\Setting::first(); // أو بالطريقة اللي عندك
+
+    // نفس منطق الـ attachments عندك (اختياري)
+    $atts = $transfer->attachments ?? [];
+    if (is_string($atts)) $atts = json_decode($atts, true) ?: [];
+    $atts = is_array($atts) ? $atts : [];
+    $atts = array_values(array_filter(array_map(fn($v) => trim((string)$v), $atts)));
+
+    $pdf = Pdf::loadView('dashboard.transfer.pdf', compact('transfer', 'setting', 'atts'))
+        ->setPaper('a4', 'portrait');
+
+    // تنزيل
+    return $pdf->download("transfer-{$transfer->id}.pdf");
+
+    // عرض في المتصفح
+    // return $pdf->stream("transfer-{$transfer->id}.pdf");
+}
+
 }

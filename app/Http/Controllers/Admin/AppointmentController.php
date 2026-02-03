@@ -64,6 +64,8 @@ class AppointmentController extends Controller
                 'visit_types' => $visitTypes,
 
                 'reason' => $request->reason,
+                'emergency'=>$request->emergency,
+                'vip'=>$request->vip,
                 'status' => 'pending',
             ]);
 
@@ -244,6 +246,8 @@ class AppointmentController extends Controller
             'visit_types' => $visitTypes,
 
             'reason' => $request->reason,
+            'emergency' => $request->emergency,
+            'vip' => $request->vip,
             // 'status'            => $request->status,
         ]);
 
@@ -450,7 +454,7 @@ class AppointmentController extends Controller
 
         $patientId = $patient?->id;
         $reports = $patientId
-            ? Report::where('patient_user_id', $patientId)
+            ? Report::where('patient_id', $patientId)
                 ->latest()
                 ->select(['id', 'exam_type', 'exam_date', 'created_at'])
                 ->paginate(3, ['*'], 'reports_page')

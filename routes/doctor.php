@@ -26,7 +26,8 @@ Route::middleware(['auth', 'doctor.area'])->group(function () {
     Route::get('/diagnoses/{diagnosis}/pdf', [DiagnosisController::class, 'pdf'])
     ->name('diagnoses.pdf');
     
-
+    Route::get('/transfers/{transfer}/pdf', [PatientTransferController::class, 'pdf'])
+    ->name('transfers.pdf');
 });
 
 Route::middleware(['auth', 'admin_or_doctor'])->group(function () {

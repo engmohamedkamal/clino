@@ -169,129 +169,161 @@
 
     </form>
 
-    {{-- ================= Cards ================= --}}
-    <section class="ap-main">
-      <div class="container-fluid ap-container">
-        <div class="row g-4">
+{{-- ================= Cards ================= --}}
+<section class="ap-main">
+  <div class="container-fluid ap-container">
+    <div class="row g-4">
 
-          @forelse($groups as $dateKey => $items)
+      @forelse($groups as $dateKey => $items)
 
-            @php
-              $sorted = $items->sortBy(fn($a) => $a->appointment_time ?? '99:99');
-              $dayHeader = $dateKey !== 'unknown'
-                ? \Carbon\Carbon::parse($dateKey)->format('D, d M Y')
-                : 'Unknown Date';
-            @endphp
+        @php
+          $sorted = $items->sortBy(fn($a) => $a->appointment_time ?? '99:99');
+          $dayHeader = $dateKey !== 'unknown'
+            ? \Carbon\Carbon::parse($dateKey)->format('D, d M Y')
+            : 'Unknown Date';
+        @endphp
 
-            {{-- Day Header --}}
-            <div class="col-12">
-              <div class="ap-day-head">
-                <span class="ap-day-title">{{ $dayHeader }}</span>
+        {{-- Day Header --}}
+        <div class="col-12">
+          <div class="ap-day-head">
+            <span class="ap-day-title">{{ $dayHeader }}</span>
+          </div>
+        </div>
+
+        @foreach($sorted as $appt)
+          @php
+            $st = $appt->status ?? 'pending';
+
+            $dayCounters[$dateKey] = ($dayCounters[$dateKey] ?? 0) + 1;
+            $dayNo = $dayCounters[$dateKey];
+
+            $visitText = '-';
+            if (is_array($appt->visit_types) && count($appt->visit_types)) {
+              $visitText = collect($appt->visit_types)->pluck('type')->implode(', ');
+            }
+
+            $dtText = $appt->appointment_date ?? '-';
+            if (!empty($appt->appointment_time)) {
+              $dtText .= ' - ' . $appt->appointment_time;
+            }
+
+            // ✅ Flags
+            $isVip = (int)($appt->vip ?? 0) === 1;
+            $isEmergency = (int)($appt->emergency ?? 0) === 1;
+
+            // ✅ Card highlight class
+            $flagCardClass = $isEmergency ? 'ap-card-emergency' : ($isVip ? 'ap-card-vip' : '');
+          @endphp
+
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ap-card {{ $flagCardClass }}">
+
+              <div class="ap-card-head d-flex align-items-center justify-content-between gap-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <div class="ap-name">{{ $appt->patient_name ?? '-' }}</div>               
+                </div>
+
+                <span class="ap-status ap-status-{{ $st }}">{{ ucfirst($st) }}</span>
               </div>
-            </div>
 
-            @foreach($sorted as $appt)
-              @php
-                $st = $appt->status ?? 'pending';
+              {{-- ✅ small flag line (optional) --}}
+              @if($isEmergency || $isVip)
+                <div class="ap-flag-row">
+                  @if($isEmergency)
+                    <span class="ap-flag ap-flag-emergency">
+                      <i class="fa-solid fa-triangle-exclamation"></i> High Priority
+                    </span>
+                  @endif
+                  @if($isVip)
+                    <span class="ap-flag ap-flag-vip">
+                      <i class="fa-solid fa-crown"></i> Special Care
+                    </span>
+                  @endif
+                </div>
+              @endif
 
-                $dayCounters[$dateKey] = ($dayCounters[$dateKey] ?? 0) + 1;
-                $dayNo = $dayCounters[$dateKey];
+              <div class="ap-info">
+                <div class="ap-line">
+                  <i class="fa-regular fa-user ap-line-ic"></i>
+                  <span class="ap-line-label">Doctor :</span>
+                  <span class="ap-line-val">{{ $appt->doctor_name ?? '-' }}</span>
+                </div>
 
-                $visitText = '-';
-                if (is_array($appt->visit_types) && count($appt->visit_types)) {
-                  $visitText = collect($appt->visit_types)->pluck('type')->implode(', ');
-                }
+                <div class="ap-line">
+                  <i class="fa-regular fa-calendar ap-line-ic"></i>
+                  <span class="ap-line-label">Date:</span>
+                  <span class="ap-line-val">{{ $dtText }}</span>
+                </div>
 
-                $dtText = $appt->appointment_date ?? '-';
-                if (!empty($appt->appointment_time)) {
-                  $dtText .= ' - ' . $appt->appointment_time;
-                }
-              @endphp
+                <div class="ap-line">
+                  <i class="fa-solid fa-phone ap-line-ic"></i>
+                  <span class="ap-line-label">Phone :</span>
+                  <span class="ap-line-val">{{ $appt->patient_number ?? '-' }}</span>
+                </div>
 
-              <div class="col-12 col-md-6 col-lg-4">
-                <div class="ap-card">
-
-                  <div class="ap-card-head d-flex align-items-center justify-content-between">
-                    <div class="ap-name">{{ $appt->patient_name ?? '-' }}</div>
-                    <span class="ap-status ap-status-{{ $st }}">{{ ucfirst($st) }}</span>
-                  </div>
-
-                  <div class="ap-info">
-                    <div class="ap-line">
-                      <i class="fa-regular fa-user ap-line-ic"></i>
-                      <span class="ap-line-label">Doctor :</span>
-                      <span class="ap-line-val">{{ $appt->doctor_name ?? '-' }}</span>
-                    </div>
-
-                    <div class="ap-line">
-                      <i class="fa-regular fa-calendar ap-line-ic"></i>
-                      <span class="ap-line-label">Date:</span>
-                      <span class="ap-line-val">{{ $dtText }}</span>
-                    </div>
-
-                    <div class="ap-line">
-                      <i class="fa-solid fa-phone ap-line-ic"></i>
-                      <span class="ap-line-label">Phone :</span>
-                      <span class="ap-line-val">{{ $appt->patient_number ?? '-' }}</span>
-                    </div>
-
-                    <div class="ap-line">
-                      <i class="fa-solid fa-house-chimney-medical ap-line-ic"></i>
-                      <span class="ap-line-label">Visit :</span>
-                      <span class="ap-line-val">{{ $visitText }}</span>
-                    </div>
-                  </div>
-
-                  <div class="ap-actions">
-
-                    @if(auth()->check() && auth()->user()->role === 'secretary')
-                      <label class="ap-check-wrap" title="Select">
-                        <input class="form-check-input row-check" type="checkbox" value="{{ $appt->id }}" name="ids[]"
-                          form="bulkDeleteForm">
-                        <span class="ap-check-ui"><i class="fa-solid fa-check"></i></span>
-                      </label>
-                    @endif
-                    @if(auth()->check() && auth()->user()->role === 'doctor')
-                      <a class="ap-action-btn" href="{{ route('appointments.singleShow', $appt->id) }}" aria-label="View"
-                        title="View">
-                        <i class="fa-regular fa-eye"></i>
-                      </a>
-                    @endif
-                    @if(auth()->check() && auth()->user()->role === 'secretary')
-                      <a class="ap-action-btn" href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
-                        target="_blank" aria-label="Print" title="Print">
-                        <i class="fa-solid fa-print"></i>
-                      </a>
-
-                      <a class="ap-action-btn ap-action-btn-vip"
-                        href="{{ route('appointment.vipPrint', $appt->id) }}?no={{ $dayNo }}" target="_blank"
-                        aria-label="VIP Ticket" title="Print VIP Ticket">
-                        <i class="fa-solid fa-award"></i>
-                      </a>
-                    @endif
-
-                  </div>
-
+                <div class="ap-line">
+                  <i class="fa-solid fa-house-chimney-medical ap-line-ic"></i>
+                  <span class="ap-line-label">Visit :</span>
+                  <span class="ap-line-val">{{ $visitText }}</span>
                 </div>
               </div>
-            @endforeach
 
-          @empty
-            <div class="col-12">
-              <div class="text-center py-5">
-                No appointments found.
+              <div class="ap-actions">
+
+                @if(auth()->check() && auth()->user()->role === 'secretary')
+                  <label class="ap-check-wrap" title="Select">
+                    <input class="form-check-input row-check" type="checkbox" value="{{ $appt->id }}" name="ids[]"
+                      form="bulkDeleteForm">
+                    <span class="ap-check-ui"><i class="fa-solid fa-check"></i></span>
+                  </label>
+                @endif
+
+                @if(auth()->check() && auth()->user()->role === 'doctor')
+                  <a class="ap-action-btn" href="{{ route('appointments.singleShow', $appt->id) }}" aria-label="View"
+                    title="View">
+                    <i class="fa-regular fa-eye"></i>
+                  </a>
+                @endif
+
+                @if(auth()->check() && auth()->user()->role === 'secretary')
+                  <a class="ap-action-btn" href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
+                    target="_blank" aria-label="Print" title="Print">
+                    <i class="fa-solid fa-print"></i>
+                  </a>
+
+                  {{-- ✅ VIP Print only إذا VIP = 1 (اختياري) --}}
+                  <a class="ap-action-btn ap-action-btn-vip {{ $isVip ? '' : 'disabled' }}"
+                    href="{{ $isVip ? (route('appointment.vipPrint', $appt->id) . '?no=' . $dayNo) : '#' }}"
+                    target="{{ $isVip ? '_blank' : '' }}"
+                    aria-label="VIP Ticket"
+                    title="{{ $isVip ? 'Print VIP Ticket' : 'Not VIP' }}">
+                    <i class="fa-solid fa-award"></i>
+                  </a>
+                @endif
+
               </div>
+
             </div>
-          @endforelse
+          </div>
+        @endforeach
 
+      @empty
+        <div class="col-12">
+          <div class="text-center py-5">
+            No appointments found.
+          </div>
         </div>
+      @endforelse
 
-        <div class="mt-4 custom-pagination">
-          {{ $appointments->links('pagination::bootstrap-5') }}
-        </div>
+    </div>
 
-      </div>
-    </section>
+    <div class="mt-4 custom-pagination">
+      {{ $appointments->links('pagination::bootstrap-5') }}
+    </div>
+
+  </div>
+</section>
+
 
   </section>
 

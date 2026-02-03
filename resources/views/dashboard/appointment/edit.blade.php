@@ -115,6 +115,52 @@
                   </select>
                   @error('gender') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
+{{-- ================= Emergency / VIP ================= --}}
+<div class="row g-3">
+
+  {{-- Emergency --}}
+  <div class="col-6">
+    <div class="form-check form-switch">
+      {{-- hidden علشان دايمًا يبعت 0 --}}
+      <input type="hidden" name="emergency" value="0">
+
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="emergency"
+        name="emergency"
+        value="1"
+        {{ old('emergency', $appointment->emergency) ? 'checked' : '' }}
+      >
+
+      <label class="form-check-label fw-semibold" for="emergency">
+        🚨 Emergency
+      </label>
+    </div>
+  </div>
+
+  {{-- VIP --}}
+  <div class="col-6">
+    <div class="form-check form-switch">
+      {{-- hidden علشان دايمًا يبعت 0 --}}
+      <input type="hidden" name="vip" value="0">
+
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="vip"
+        name="vip"
+        value="1"
+        {{ old('vip', $appointment->vip) ? 'checked' : '' }}
+      >
+
+      <label class="form-check-label fw-semibold" for="vip">
+        ⭐ VIP
+      </label>
+    </div>
+  </div>
+
+</div>
 
               </div>
             @endif

@@ -21,27 +21,30 @@ class AppointmentRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    $rules = [
-        'doctor_name' => ['required','string', Rule::exists('users','name')->where('role','doctor')],
+        $rules = [
+            'doctor_name' => ['required', 'string', Rule::exists('users', 'name')->where('role', 'doctor')],
 
-        'appointment_date'  => ['required','date'],
-        'appointment_time'  => ['required'],
-        'reason'            => ['nullable','string'],
-    ];
+            'appointment_date' => ['required', 'date'],
+            'appointment_time' => ['required'],
+            'reason' => ['nullable', 'string'],
+            'emergency' => ['nullable', 'boolean'],
+            'vip' => ['nullable', 'boolean'],
 
-    // ✅ لو مش patient (Admin/Doctor) يبقى لازم يدخل بيانات المريض من الفورم
-    if ($user && $user->role !== 'patient') {
-        $rules['patient_name']   = ['required','string','max:255'];
-        $rules['patient_number'] = ['required','string','max:50'];
-        $rules['dob']            = ['required','date'];
-        $rules['gender']         = ['required','in:male,female,Other'];
+        ];
+
+        // ✅ لو مش patient (Admin/Doctor) يبقى لازم يدخل بيانات المريض من الفورم
+        if ($user && $user->role !== 'patient') {
+            $rules['patient_name'] = ['required', 'string', 'max:255'];
+            $rules['patient_number'] = ['required', 'string', 'max:50'];
+            $rules['dob'] = ['required', 'date'];
+            $rules['gender'] = ['required', 'in:male,female,Other'];
+        }
+
+        return $rules;
     }
-
-    return $rules;
-}
 
     public function messages(): array
     {

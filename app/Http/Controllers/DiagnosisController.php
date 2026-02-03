@@ -66,7 +66,9 @@ class DiagnosisController extends Controller
         }
 $patients = User::where('role', 'patient')->latest()->get();
         $patient = $request->patient_name;
-     
+        $request->session()->put('patient_phone', $request->patient_phone);
+
+        
 
         return view('dashboard.diagnosis.create', compact('patients','patient'));
     }
@@ -278,45 +280,43 @@ $patients = User::where('role', 'patient')->latest()->get();
             ->route('diagnoses.index')
             ->with('success', 'Diagnosis deleted.');
     }
-  
+      public function pdf(Diagnosis $diagnosis)
+    {
+        $patientPhone = session('patient_phone');
+        $diagnosis->load(['patient', 'creator', 'creator.doctorInfo']);
 
-public function pdf(Diagnosis $diagnosis)
-{
-    // ✅ حمّل العلاقات اللي محتاجها في PDF
-    $diagnosis->load(['patient', 'creator', 'creator.doctorInfo']);
+        $setting = Setting::first();
 
-    $setting = Setting::first();
+        // صلاحيات عرض private diagnosis
+        $role = auth()->user()->role ?? '';
+        $canSeePrivate = in_array($role, ['admin', 'doctor']);
 
-    // صلاحيات عرض private diagnosis
-    $role = auth()->user()->role ?? '';
-    $canSeePrivate = in_array($role, ['admin', 'doctor']);
+        // بيانات عرض
+        $patient = $diagnosis->patient ?? null;
 
-    // بيانات عرض
-    $patient = $diagnosis->patient ?? null;
+        $patientName = $patient->name ?? ($diagnosis->patient_name ?? '—');
+        $patientId   = $patient->id ?? ($diagnosis->patient_id ?? '—');
+        $doctorName  = $diagnosis->creator?->name ?? '—';
 
-    $patientName = $patient->name ?? ($diagnosis->patient_name ?? '—');
-    $patientId   = $patient->id ?? ($diagnosis->patient_id ?? '—');
-    $doctorName  = $diagnosis->creator?->name ?? '—';
+        $diagId = 'DX-' . str_pad($diagnosis->id, 6, '0', STR_PAD_LEFT);
+        $issued = optional($diagnosis->created_at)->format('M d, Y H:i');
 
-    $diagId = 'DX-' . str_pad($diagnosis->id, 6, '0', STR_PAD_LEFT);
-    $issued = optional($diagnosis->created_at)->format('M d, Y H:i');
+        // QR (اختياري) - social link
+        $socialLink = $diagnosis->creator?->doctorInfo?->social_link;
 
-    // QR (اختياري) - social link
-    $socialLink = $diagnosis->creator?->doctorInfo?->social_link;
+        $pdf = Pdf::loadView('dashboard.diagnosis.pdf', compact(
+            'diagnosis',
+            'setting',
+            'canSeePrivate',
+            'patientName',
+            'patientId',
+            'doctorName',
+            'diagId',
+            'issued',
+            'socialLink',
+            'patientPhone'
+        ))->setPaper('a4');
 
-    $pdf = Pdf::loadView('dashboard.diagnosis.pdf', compact(
-        'diagnosis',
-        'setting',
-        'canSeePrivate',
-        'patientName',
-        'patientId',
-        'doctorName',
-        'diagId',
-        'issued',
-        'socialLink'
-    ))->setPaper('a4');
-
-    return $pdf->stream("diagnosis-{$diagnosis->id}.pdf");
-}
-
+        return $pdf->stream("diagnosis-{$diagnosis->id}.pdf");
+    }
 }

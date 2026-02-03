@@ -120,13 +120,12 @@
                           @endif
                         </div>
                         @php
-                          $patientName = $report->patient?->patient_name
-                            ?? $report->patientUser?->name
-                            ?? '-';
+                       
+  $patientName = $report->patient?->name ?? '—' ;
 
-                          $patientPhone = $report->patient?->patient_number
-                            ?? $report->patientUser?->phone
-                            ?? '-';
+  $patientPhone = $report->patient?->phone
+      ?? $report->patientUser?->phone
+      ?? '-';
                         @endphp
 
                         <div class="col-12 col-md-8">

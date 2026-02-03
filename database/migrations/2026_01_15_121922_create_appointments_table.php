@@ -20,6 +20,8 @@ return new class extends Migration {
             $table->string('dob');
             $table->json('visit_types'); 
             $table->string('reason')->nullable();
+            $table->boolean('emergency')->default(0);
+            $table->boolean('vip')->default(0);
             $table->timestamps();
         });
     }

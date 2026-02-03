@@ -465,3 +465,120 @@ color: white;
     justify-content: center;
   }
 }
+/* ===============================
+   Actions (Print + WhatsApp)
+================================ */
+.pt-actions{
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.pt-actions .d-flex{
+  gap: 10px !important;
+}
+
+/* Base button */
+.pt-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  text-decoration: none !important;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease, color .15s ease;
+  box-shadow: 0 10px 22px rgba(2, 6, 23, .08);
+}
+
+/* icon bubble */
+.pt-btn-icon{
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* label */
+.pt-btn-text{
+  display: inline-flex;
+  align-items: center;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+/* Hover / Active */
+.pt-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(2, 6, 23, .12);
+}
+.pt-btn:active{
+  transform: translateY(0);
+  box-shadow: 0 10px 22px rgba(2, 6, 23, .10);
+}
+
+/* Print button */
+.pt-btn-primary{
+  background: #0570FD;
+  border-color: rgba(5,112,253,.20);
+  color: #fff;
+}
+.pt-btn-primary .pt-btn-icon{
+  background: rgba(255,255,255,.18);
+  color: #fff;
+}
+.pt-btn-primary:hover{
+  background: #0463df;
+}
+
+/* WhatsApp button */
+.pt-btn-wa{
+  background: #0ea45a;
+  border-color: rgba(14,164,90,.25);
+  color: #fff;
+  height: 40px;
+}
+.pt-btn-wa .pt-btn-icon{
+  background: rgba(255,255,255,.18);
+  color: #fff;
+}
+.pt-btn-wa:hover{
+  background: #0c8e4e;
+}
+
+/* Disabled */
+.pt-btn.disabled,
+.pt-btn:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Make buttons equal width on small screens */
+@media (max-width: 575.98px){
+  .pt-actions .d-flex{
+    justify-content: stretch !important;
+  }
+  .pt-actions .pt-btn{
+    width: 100%;
+  }
+  .pt-btn-icon{
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* Hide actions when printing */
+@media print{
+  .pt-actions{ display:none !important; }
+}

@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    
 public function index(Request $request)
 {
     $q = $request->query('q');
@@ -33,10 +32,6 @@ public function index(Request $request)
         ->when($q, function ($query) use ($q) {
             $query->where(function ($qq) use ($q) {
                 $qq->where('exam_type', 'like', "%{$q}%")
-                   ->orWhereHas('patient', function ($p) use ($q) {
-                       $p->where('patient_name', 'like', "%{$q}%")
-                         ->orWhere('patient_number', 'like', "%{$q}%");
-                   })
                    ->orWhereHas('doctor', function ($d) use ($q) {
                        $d->where('name', 'like', "%{$q}%");
                    });
@@ -49,54 +44,25 @@ public function index(Request $request)
     return view('dashboard.reports.index', compact('reports', 'q'));
 }
 
-public function create()
+public function create(Request $request)
 {
-
-    $patients = User::query()
-        ->where('role', 'patient')
-        ->orderBy('name')
-        ->get()
-        ->map(fn($u) => (object) [
-            'source' => 'users',
-            'id'     => $u->id,
-            'name'   => $u->name,
-            'phone'  => $u->phone ?? null,
-        ]);
-
-
-    return view('dashboard.reports.create', [
-    'patients'   => $patients,
-    'patient_id' => request('patient_id'), 
-]);
-
+    $patient = $request->patient_name;
+    $patientPhone = $request->patient_phone;
+    $patients = User::where('role', 'patient')->latest()->get();
+    return view('dashboard.reports.create', compact('patient','patientPhone','patients'));
 }
 
 public function store(Request $request)
 {
     $data = $request->validate([
-        'patient_ref' => 'required|string',
+        'patient_id' => 'required|numeric',
         'exam_type'   => 'required|string|max:100',
         'exam_date'   => 'required|date',
         'exam_image'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         'note'        => 'nullable|string',
     ]);
 
-    [$source, $id] = explode(':', $data['patient_ref']) + [null, null];
 
-    $data['patient_id'] = null;
-    $data['patient_user_id'] = null;
-
-    if ($source === 'patients') {
-        Patient::findOrFail($id);
-        $data['patient_id'] = (int) $id;
-    } elseif ($source === 'users') {
-        User::where('id', $id)->where('role', 'patient')->firstOrFail();
-        $data['patient_user_id'] = (int) $id;
-    } else {
-        return back()->withErrors(['patient_ref' => 'Invalid patient selection'])->withInput();
-    }
-
-    unset($data['patient_ref']);
 
     $data['doctor_id'] = auth()->id();
 
@@ -105,16 +71,6 @@ public function store(Request $request)
     }
 
     Report::create($data);
-$user = auth()->user();
-
-if ($user->role === 'doctor') {
-    $url = session('return_to');
-
-    return $url
-        ? redirect($url)->with('success', 'Report created successfully.')
-        : redirect()->back()->with('success', 'Report created successfully.');
-}
-
 return redirect()
     ->route('reports.index')
     ->with('success', 'Report created successfully.');
@@ -123,12 +79,11 @@ return redirect()
 
 public function show(Report $report)
 {
-    $report->load(['patient', 'patientUser', 'doctor']);
+    $report->load(['patient', 'doctor']);
 
     $user = auth()->user();
     $role = $user->role ?? '';
 
-    // ✅ Admin يشوف أي تقرير
     if ($role === 'admin') {
         return view('dashboard.reports.show', compact('report'));
     }
@@ -155,28 +110,21 @@ public function show(Report $report)
     // abort(403);
 }
 
+public function edit(Report $report)
+{
+$patients = User::query()
+    ->where('role', 'patient')
+    ->orderBy('name')
+    ->get()
+    ->map(fn($u) => (object) [
+        'source' => 'users',
+        'id'     => $u->id,
+        'name'   => $u->name,
+        'phone'  => $u->phone ?? null,
+    ]);
+    return view('dashboard.reports.edit', compact('report', 'patients'));
+}
 
-    // =========================
-    // EDIT
-    // =========================
-    public function edit(Report $report)
-    {
-    $patients = User::query()
-        ->where('role', 'patient')
-        ->orderBy('name')
-        ->get()
-        ->map(fn($u) => (object) [
-            'source' => 'users',
-            'id'     => $u->id,
-            'name'   => $u->name,
-            'phone'  => $u->phone ?? null,
-        ]);
-        return view('dashboard.reports.edit', compact('report', 'patients'));
-    }
-
-    // =========================
-    // UPDATE
-    // =========================
   public function update(Request $request, Report $report)
 {
     $data = $request->validate([
@@ -216,17 +164,12 @@ public function show(Report $report)
 
     return redirect()->route('reports.index', $report->id)->with('success', 'Report updated successfully.');
 }
+public function destroy(Report $report)
+{
+    $report->delete();
 
-
-    // =========================
-    // DESTROY
-    // =========================
-    public function destroy(Report $report)
-    {
-        $report->delete();
-
-        return redirect()
-            ->route('reports.index')
-            ->with('success', 'Report deleted successfully.');
-    }
+    return redirect()
+        ->route('reports.index')
+        ->with('success', 'Report deleted successfully.');
+}
 }

@@ -7,11 +7,9 @@
   $imgUrl = $report->exam_image ? asset('storage/'.$report->exam_image) : null;
   $typeLabel = ucfirst(str_replace('_',' ', $report->exam_type ?? 'report'));
 
-  $patientName = $report->patient?->patient_name
-      ?? $report->patientUser?->name
-      ?? '-';
+  $patientName = $report->patient?->name ?? '—' ;
 
-  $patientPhone = $report->patient?->patient_number
+  $patientPhone = $report->patient?->phone
       ?? $report->patientUser?->phone
       ?? '-';
 

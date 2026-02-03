@@ -17,7 +17,8 @@
     $groups = $appointments->getCollection()
       ->groupBy(fn($a) => $a->appointment_date ?? 'unknown');
 
-    $colspan = $canManage ? 10 : 8;
+    // ✅ زودنا عمود "Flags" = +1
+    $colspan = $canManage ? 11 : 9;
   @endphp
 
   <section class="ap-main">
@@ -29,8 +30,9 @@
             data-bs-toggle="offcanvas"
             data-bs-target="#mobileSidebar"
             aria-controls="mobileSidebar" aria-label="Open menu">
-      <i class="fa-solid fa-bars"></i>
-    </button>
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
         <h1 class="ap-title m-0">Appointments</h1>
 
         <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -47,12 +49,11 @@
                 <i class="fa-solid fa-trash"></i>
               </button>
             </form>
-            @endif
-            {{-- @if(auth()->user()->role = 'patient' || auth()->user()->role = 'secretary' ) --}}
-            <a class="ap-ic-btn ap-ic-primary" href="{{ route('appointment.index') }}" title="Add">
-              <i class="fa-solid fa-plus"></i>
-            </a>
-            {{-- @endif --}}
+          @endif
+
+          <a class="ap-ic-btn ap-ic-primary" href="{{ route('appointment.index') }}" title="Add">
+            <i class="fa-solid fa-plus"></i>
+          </a>
 
           <a class="ap-ic-btn"
             href="{{ route('appointments.cards', array_merge(request()->query(), ['view' => 'cards'])) }}"
@@ -84,19 +85,19 @@
             </button>
 
             <a class="ap-ic-btn" title="Today" href="{{ route('appointment.show', array_filter([
-    'q' => $q,
-    'status' => request('status'),
-    'day' => now()->toDateString(),
-    'view' => 'table'
-  ])) }}">
+              'q' => $q,
+              'status' => request('status'),
+              'day' => now()->toDateString(),
+              'view' => 'table'
+            ])) }}">
               <i class="fa-regular fa-calendar-days"></i>
             </a>
 
             <a class="ap-ic-btn" title="Clear" href="{{ route('appointment.show', array_filter([
-    'q' => $q,
-    'status' => request('status'),
-    'view' => 'table'
-  ])) }}">
+              'q' => $q,
+              'status' => request('status'),
+              'view' => 'table'
+            ])) }}">
               <i class="fa-solid fa-xmark"></i>
             </a>
           </form>
@@ -140,6 +141,7 @@
               {{ ($pendingCount ?? 0) + ($completedCount ?? 0) + ($cancelledCount ?? 0) }}
             </span>
           </span>
+
           <span class="ap-pill ap-pill-pending">
             <i class="fa-regular fa-clock"></i>
             Pending
@@ -174,8 +176,12 @@
                   </th>
                 @endif
 
-                <th >No.</th>
+                <th>No.</th>
                 <th>Patient</th>
+
+                {{-- ✅ Flags --}}
+                <th class="d-none d-md-table-cell">Flags</th>
+
                 <th class="d-none d-md-table-cell">Phone</th>
                 <th class="d-none d-lg-table-cell">Doctor</th>
                 <th class="d-none d-lg-table-cell">Visit</th>
@@ -218,9 +224,16 @@
                     if (is_array($appt->visit_types) && count($appt->visit_types)) {
                       $visitText = collect($appt->visit_types)->pluck('type')->implode(', ');
                     }
+
+                    // ✅ flags
+                    $isVip = (int)($appt->vip ?? 0) === 1;
+                    $isEmergency = (int)($appt->emergency ?? 0) === 1;
+
+                    // ✅ row highlight class
+                    $rowFlagClass = $isEmergency ? 'ap-row-emergency' : ($isVip ? 'ap-row-vip' : '');
                   @endphp
 
-                  <tr class="ap-row">
+                  <tr class="ap-row {{ $rowFlagClass }}">
 
                     @if($role == 'secretary')
                       <td>
@@ -233,13 +246,42 @@
 
                     <!-- Patient + mobile meta -->
                     <td>
-                      <div class="ap-td-strong">{{ $appt->patient_name ?? '-' }}</div>
+                      <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <div class="ap-td-strong">{{ $appt->patient_name ?? '-' }}</div>
+
+                      </div>
 
                       <div class="ap-mob-meta d-lg-none mt-1">
                         <div class="ap-mob-item"><span>Phone:</span> {{ $appt->patient_number ?? '-' }}</div>
                         <div class="ap-mob-item"><span>Doctor:</span> {{ $appt->doctor_name ?? '-' }}</div>
                         <div class="ap-mob-item"><span>Visit:</span> {{ $visitText }}</div>
+
+                        {{-- ✅ show flags in mobile too --}}
+                        @if($isEmergency || $isVip)
+                          <div class="ap-mob-item">
+                            <span>Flags:</span>
+                            @if($isEmergency) <span class="ap-flag ap-flag-emergency"><i class="fa-solid fa-triangle-exclamation"></i> Emergency</span> @endif
+                            @if($isVip) <span class="ap-flag ap-flag-vip"><i class="fa-solid fa-crown"></i> VIP</span> @endif
+                          </div>
+                        @endif
                       </div>
+                    </td>
+
+                    {{-- ✅ Flags desktop column --}}
+                    <td class="d-none d-md-table-cell">
+                      @if($isEmergency)
+                        <span class="ap-flag ap-flag-emergency">
+                          <i class="fa-solid fa-triangle-exclamation"></i> Emergency
+                        </span>
+                      @endif
+                      @if($isVip)
+                        <span class="ap-flag ap-flag-vip ms-1">
+                          <i class="fa-solid fa-crown"></i> VIP
+                        </span>
+                      @endif
+                      @if(!$isEmergency && !$isVip)
+                        <span class="text-muted">-</span>
+                      @endif
                     </td>
 
                     <!-- Desktop columns -->
@@ -253,40 +295,39 @@
                       <span class="ap-badge {{ $badgeClass }}">{{ ucfirst($st) }}</span>
                     </td>
 
+                    @if($canManage)
+                      <td class="text-end">
+                        <div class="d-inline-flex gap-2">
 
-              <td class="text-end">
-  <div class="d-inline-flex gap-2">
+                          {{-- Doctor --}}
+                          @if($role === 'doctor')
+                            <a class="ap-action"
+                              href="{{ route('appointments.singleShow', $appt->id) }}"
+                              title="View">
+                              <i class="fa-regular fa-eye"></i>
+                            </a>
+                          @endif
 
-    {{-- Doctor --}}
-    @if($role === 'doctor')
-      <a class="ap-action"
-         href="{{ route('appointments.singleShow', $appt->id) }}"
-         title="View">
-        <i class="fa-regular fa-eye"></i>
-      </a>
-    @endif
+                          {{-- Secretary --}}
+                          @if($role === 'secretary')
+                            <a class="ap-action"
+                              href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
+                              target="_blank"
+                              title="Print">
+                              <i class="fa-solid fa-print"></i>
+                            </a>
 
-    {{-- Secretary --}}
-    @if($role === 'secretary')
-      <a class="ap-action"
-         href="{{ route('appointment.reset', $appt->id) }}?no={{ $dayNo }}"
-         target="_blank"
-         title="Print">
-        <i class="fa-solid fa-print"></i>
-      </a>
+                            <a class="ap-action"
+                              href="{{ route('appointment.vipPrint', $appt->id) }}?no={{ $dayNo }}"
+                              target="_blank"
+                              title="Print VIP">
+                              <i class="fa-solid fa-award"></i>
+                            </a>
+                          @endif
 
-      <a class="ap-action"
-         href="{{ route('appointment.vipPrint', $appt->id) }}?no={{ $dayNo }}"
-         target="_blank"
-         title="Print VIP">
-        <i class="fa-solid fa-award"></i>
-      </a>
-    @endif
-
-  </div>
-</td>
-
-
+                        </div>
+                      </td>
+                    @endif
 
                   </tr>
                 @endforeach
