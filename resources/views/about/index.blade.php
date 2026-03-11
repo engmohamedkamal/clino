@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-<link rel="stylesheet" href="{{ asset('CSS/about.css') }}">
+<link rel="stylesheet" href="{{ asset('css/about.css') }}">
 <title>About Us</title>
 <section class="stats-section" id="statsSection">
   <div class="container rounded-3">

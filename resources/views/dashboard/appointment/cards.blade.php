@@ -1,9 +1,9 @@
 @extends('layouts.dash')
 @section('dash-content')
 
-  <link rel="stylesheet" href="{{ asset('CSS/appointments.css') }}" />
-  <link rel="stylesheet" href="{{ asset('CSS/app.css') }}" />
-  <link rel="stylesheet" href="{{ asset('CSS/patientList.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/appointments.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/app.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/patientList.css') }}">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 

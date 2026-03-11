@@ -11,7 +11,6 @@
   <section id="Home" class="hero-section ">
     <div class="container rounded-5 ">
       <div class="row align-items-center">
-
         <div class="col-lg-6">
           <p class="text-white hero-badge">
             <i class="fa-solid fa-heart me-2 heart-icon"></i>
