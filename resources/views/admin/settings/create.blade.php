@@ -1,7 +1,7 @@
 @extends('layouts.dash')
 @section('dash-content')
 
-  <link rel="stylesheet" href="{{ asset('CSS/Setting.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/Setting.css') }}" />
 
   @php
     $isEdit = !empty($settings);

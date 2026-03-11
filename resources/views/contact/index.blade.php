@@ -1,6 +1,6 @@
 @extends('layouts.app')    
 @section('content')
- <link rel="stylesheet" href="{{asset("CSS/contact.css")}}">
+ <link rel="stylesheet" href="{{asset("css/contact.css")}}">
 <title>Contact Us</title>
 <main class="contact-main py-5">
 

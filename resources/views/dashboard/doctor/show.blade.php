@@ -1,7 +1,7 @@
 @extends('layouts.dash')
 @section('dash-content')
 
-  <link rel="stylesheet" href="{{ asset('CSS/doctorProfile.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/doctorProfile.css') }}">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,7 +17,7 @@
     $greeting = $hour < 12 ? 'Good Morning,' : ($hour < 18 ? 'Good Afternoon,' : 'Good Evening,');
 
     // Image
-    $img = ($info && $info->image) ? asset('storage/' . $info->image) : asset('Images/doctor-placeholder.png');
+    $img = ($info && $info->image) ? asset('storage/' . $info->image) : asset('images/doctor-placeholder.png');
 
     // Name
     $doctorName = 'Dr. ' . ($user->name ?? 'Doctor');

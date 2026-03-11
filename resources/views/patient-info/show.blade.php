@@ -1,7 +1,7 @@
 @extends('layouts.dash')
 
 @section('dash-content')
-  <link rel="stylesheet" href="{{ asset('CSS/patientInfo.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/patientInfo.css') }}">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   @php

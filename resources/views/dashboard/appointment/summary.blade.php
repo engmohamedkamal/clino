@@ -6,7 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link rel="stylesheet" href="{{ asset('CSS/daySummary.css') }}">
+<link rel="stylesheet" href="{{ asset('css/daySummary.css') }}">
 
 <div class="ds-wrap container-fluid py-3 py-md-4">
     <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas"

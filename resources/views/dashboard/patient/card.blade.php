@@ -4,9 +4,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
 
-{{-- Page CSS --}}
-<link rel="stylesheet" href="{{ asset('CSS/patientLisst.css') }}" />
-<link rel="stylesheet" href="{{ asset('CSS/patientList.css') }}">
+{{-- Page css --}}
+<link rel="stylesheet" href="{{ asset('css/patientLisst.css') }}" />
+<link rel="stylesheet" href="{{ asset('css/patientList.css') }}">
 
 @php
   $q = request('q', '');

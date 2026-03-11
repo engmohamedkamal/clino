@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="{{ asset('CSS/printServices.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/printServices.css') }}" />
 
   <style>
     @media print { .no-print { display:none !important; } }

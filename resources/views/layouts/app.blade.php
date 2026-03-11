@@ -15,7 +15,7 @@
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="{{asset('CSS/index.css')}}">
+  <link rel="stylesheet" href="{{asset('css/index.css')}}">
  
 
 
@@ -151,9 +151,9 @@
     </div>
   </footer>
 
-  <!-- Bootstrap JS -->
-  <script src="JS/bootstrap.bundle.min.js"></script>
-  <script src="{{asset('JS/index.js')}}"></script>
+  <!-- Bootstrap js -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="{{asset('js/index.js')}}"></script>
 
 </body>
 

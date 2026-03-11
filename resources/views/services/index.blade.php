@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-  <link rel="stylesheet" href="{{{ asset('CSS/service.css') }}}">
+  <link rel="stylesheet" href="{{{ asset('css/service.css') }}}">
   <title>Our Services</title>
 
 

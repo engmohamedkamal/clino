@@ -1,7 +1,7 @@
 @extends('layouts.dash')
 @section('dash-content')
 
-<link rel="stylesheet" href="{{ asset('CSS/addReports.css') }}" />
+<link rel="stylesheet" href="{{ asset('css/addReports.css') }}" />
 
 @php
   $imgUrl = $report->exam_image ? asset('storage/'.$report->exam_image) : null;

@@ -1,7 +1,7 @@
 @extends('layouts.dash')
 @section('dash-content')
 
-<link rel="stylesheet" href="{{ asset('CSS/doctorInfo.css') }}">
+<link rel="stylesheet" href="{{ asset('css/doctorInfo.css') }}">
 @php
   $info = $info ?? null;
 

@@ -60,7 +60,7 @@
   $taxPct = (int) round($taxRate * 100);
 @endphp
 
-<link rel="stylesheet" href="{{ asset('CSS/paymentReceipt.css') }}">
+<link rel="stylesheet" href="{{ asset('css/paymentReceipt.css') }}">
 
 <div class="container-fluid p-0">
 

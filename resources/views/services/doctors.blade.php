@@ -3,7 +3,7 @@
 @extends('layouts.dash')
 @section('dash-content')
 
-<link rel="stylesheet" href="{{ asset('CSS/card.css') }}">
+<link rel="stylesheet" href="{{ asset('css/card.css') }}">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 
 @php
@@ -121,7 +121,7 @@
 
         @foreach($doctors as $doc)
           @php
-            $img  = $doc->image ? asset('storage/'.$doc->image) : asset('Images/doctor-placeholder.png');
+            $img  = $doc->image ? asset('storage/'.$doc->image) : asset('images/doctor-placeholder.png');
             $name = $doc->user->name ?? 'Doctor';
 
             $specArr = is_array($doc->Specialization) ? $doc->Specialization : [];

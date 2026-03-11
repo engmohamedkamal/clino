@@ -1,8 +1,8 @@
 @extends('layouts.dash')
 
 @section('dash-content')
-<link rel="stylesheet" href="{{ asset('CSS/patientList.css') }}">
-{{-- <link rel="stylesheet" href="{{ asset('CSS/medicine.css') }}"> --}}
+<link rel="stylesheet" href="{{ asset('css/patientList.css') }}">
+{{-- <link rel="stylesheet" href="{{ asset('css/medicine.css') }}"> --}}
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
 <section class="pl-main container">

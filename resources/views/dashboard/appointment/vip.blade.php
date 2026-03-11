@@ -19,8 +19,8 @@
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
     rel="stylesheet">
 
-  <!-- Reset / Ticket CSS -->
-  <link rel="stylesheet" href="{{ asset('CSS/reset.css') }}" />
+  <!-- Reset / Ticket css -->
+  <link rel="stylesheet" href="{{ asset('css/reset.css') }}" />
 
   {{-- Print Fixes + VIP add-ons --}}
   <style>
