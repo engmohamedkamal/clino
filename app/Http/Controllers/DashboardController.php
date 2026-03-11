@@ -106,11 +106,11 @@ class DashboardController extends Controller
         // Yearly
         $yStart = Carbon::now()->startOfMonth()->subMonths(11);
 
-        $yRows = Appointment::selectRaw("DATE_FORMAT(appointment_date,'%Y-%m') ym, COUNT(*) c")
-            ->whereDate('appointment_date', '>=', $yStart)
-            ->groupBy('ym')
-            ->pluck('c', 'ym')
-            ->toArray();
+        $yRows = Appointment::selectRaw("strftime('%Y-%m', appointment_date) as ym, COUNT(*) as c")
+           ->whereDate('appointment_date', '>=', $yStart)
+           ->groupBy('ym')
+           ->pluck('c', 'ym')
+           ->toArray();
 
         $yearlyLabels = [];
         $yearlyData   = [];
