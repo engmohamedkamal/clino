@@ -47,7 +47,7 @@
         </div>
 
         <div class="col-lg-6 text-center">
-          <img src="Images/Doctor.png" class="img-fluid" alt="Doctor">
+          <img src="{{ asset('images/Doctor.png') }}" class="img-fluid" alt="Doctor">
         </div>
 
       </div>
@@ -124,14 +124,14 @@
           </div>
         </div>
 
-        <!-- Images -->
+        <!-- images -->
         <div class="col-lg-6 col-md-12 d-flex flex-column justify-content-center">
           <div class="row g-3 w-75 mx-auto">
             <div class="col-12">
-              <img src="Images/medium-shot-doctors-discussing.jpg" class="img-fluid rounded-4 w-100 about-img" alt="">
+              <img src="images/medium-shot-doctors-discussing.jpg" class="img-fluid rounded-4 w-100 about-img" alt="">
             </div>
             <div class="col-12">
-              <img src="Images/group-healthcare-workers-analyzing-diagnostic-data-planning-treatment.jpg"
+              <img src="images/group-healthcare-workers-analyzing-diagnostic-data-planning-treatment.jpg"
                 class="img-fluid rounded-4 w-100 about-img" alt="">
             </div>
           </div>
